@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>街角作品集｜3D 旋轉電線桿</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, "Noto Sans TC", "Segoe UI", Roboto, sans-serif;
+      background: #dce5ec;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    /* ================= 1. 真實生活感背景（帶景深模糊） ================= */
+    .street-bg {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      background: linear-gradient(180deg, #b8cde0 0%, #dce6ee 48%, #e8ebe9 62%, #686b6e 62%, #4a4d50 100%);
+    }
+
+    /* 遠景柔和街屋剪影（營造生活感但不搶焦點） */
+    .distant-buildings {
+      position: absolute;
+      bottom: 38%;
+      left: 0;
+      width: 100%;
+      height: 28%;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      opacity: 0.42;
+      filter: blur(2.5px);
+      pointer-events: none;
+    }
+
+    .bldg {
+      background: #8c969e;
+      border-top: 4px solid #757f87;
+      position: relative;
+    }
+    .bldg-1 { width: 18%; height: 85%; background: #9aa3ab; }
+    .bldg-2 { width: 14%; height: 65%; background: #858f96; margin-left: -2%; }
+    .bldg-3 { width: 22%; height: 95%; background: #939ca3; margin-left: auto; }
+    .bldg-4 { width: 16%; height: 70%; background: #7f8991; }
+
+    /* 遠景綠樹叢 */
+    .tree-blob {
+      position: absolute;
+      bottom: 37%;
+      left: 16%;
+      width: 160px;
+      height: 110px;
+      background: radial-gradient(circle at 40% 40%, #7d9678, #5b7356);
+      border-radius: 50% 50% 20% 20%;
+      opacity: 0.55;
+      filter: blur(3px);
+    }
+
+    /* 空中電線剪影 */
+    .overhead-wires {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 35%;
+      pointer-events: none;
+      opacity: 0.55;
+    }
+
+    /* 人行道緣石與紅白線 */
+    .curb {
+      position: absolute;
+      bottom: 36.5%;
+      left: 0;
+      width: 100%;
+      height: 14px;
+      background: repeating-linear-gradient(
+        90deg,
+        #c94a4a 0px,
+        #c94a4a 70px,
+        #e6e6e6 70px,
+        #e6e6e6 140px
+      );
+      box-shadow: 0 3px 8px rgba(0,0,0,0.25);
+      opacity: 0.78;
+    }
+
+    /* 柏油路面微顆粒質感 */
+    .asphalt-texture {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 36.5%;
+      background-image: radial-gradient(rgba(255,255,255,0.06) 1px, transparent 0),
+                        radial-gradient(rgba(0,0,0,0.18) 1px, transparent 0);
+      background-size: 18px 18px;
+      background-position: 0 0, 9px 9px;
+    }
+
+    /* 電線桿底部落在地面的真實陰影 */
+    .pole-ground-shadow {
+      position: absolute;
+      bottom: 11%;
+      left: 50%;
+      transform: translateX(-35%) skewX(-38deg);
+      width: 340px;
+      height: 38px;
+      background: radial-gradient(ellipse at center, rgba(20, 22, 25, 0.55) 0%, rgba(20, 22, 25, 0) 72%);
+      border-radius: 50%;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* ================= 2. 頂部提示標題 ================= */
+    .header-guide {
+      position: absolute;
+      top: 22px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 20;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(8px);
+      padding: 8px 20px;
+      border-radius: 999px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+      font-size: 14px;
+      color: #334155;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+
+    /* ================= 3. 3D 舞台與一體化旋轉電線桿 ================= */
+    .scene {
+      width: 100%;
+      height: 100%;
+      perspective: 1300px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      z-index: 5;
+      cursor: grab;
+    }
+
+    .scene:active {
+      cursor: grabbing;
+    }
+
+    /* 整個 3D 旋轉中心：電線桿與傳單全部在這裡一起轉 */
+    .pole-assembly {
+      position: relative;
+      width: 0;
+      height: 100%;
+      transform-style: preserve-3d;
+      transition: transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .pole-assembly.dragging {
+      transition: none;
+    }
+
+    /* 3D 水泥電線桿（由 16 面多邊柱體組成，確保從任何角度旋轉都圓潤且有真實水泥紋理滾動） */
+    .pole-segment {
+      position: absolute;
+      top: -10%;
+      width: 56px; /* 16面柱體單面寬度，組合成直徑約 280px 的真實粗電線桿 */
+      height: 102%;
+      left: -28px;
+      backface-visibility: hidden;
+      /* 擬真水泥斑駁質感 */
+      background-color: #9b9ea1;
+      background-image: 
+        linear-gradient(90deg, rgba(0,0,0,0.12) 0%, rgba(255,255,255,0.06) 50%, rgba(0,0,0,0.14) 100%),
+        radial-gradient(rgba(60, 63, 66, 0.22) 1px, transparent 0),
+        radial-gradient(rgba(220, 223, 226, 0.25) 1.5px, transparent 0);
+      background-size: 100% 100%, 14px 14px, 23px 23px;
+      background-position: 0 0, 0 0, 7px 11px;
+    }
+
+    /* 電線桿上的台電風格黃黑反光警示貼條（跟著電線桿一起轉） */
+    .pole-segment::after {
+      content: "";
+      position: absolute;
+      bottom: 13%;
+      left: 0;
+      width: 100%;
+      height: 68px;
+      background: repeating-linear-gradient(
+        -45deg,
+        #eab308,
+        #eab308 10px,
+        #1e293b 10px,
+        #1e293b 20px
+      );
+      opacity: 0.88;
+      border-top: 2px solid #475569;
+      border-bottom: 2px solid #475569;
+    }
+
+    /* 電線桿上方金屬固定箍環（跟著一起轉） */
+    .pole-segment::before {
+      content: "";
+      position: absolute;
+      top: 22%;
+      left: 0;
+      width: 100%;
+      height: 14px;
+      background: linear-gradient(180deg, #64748b, #334155);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.35);
+    }
+
+    /* ================= 4. 貼在電線桿上的傳單 ================= */
+    .flyer-wrapper {
+      position: absolute;
+      width: 240px;
+      height: 350px;
+      left: -120px;
+      top: calc(50% - 195px);
+      transform-style: preserve-3d;
+      transition: filter 0.4s ease;
+    }
+
+    .flyer-card {
+      width: 100%;
+      height: 100%;
+      background: #ffffff;
+      border-radius: 3px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.28);
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      border: 1px solid rgba(0,0,0,0.08);
+    }
+
+    .flyer-card:hover {
+      transform: scale(1.025);
+      box-shadow: 0 14px 32px rgba(0, 0, 0, 0.36);
+    }
+
+    /* 傳單頂部紅色/黃色膠帶（加強貼在電線桿上的真實感） */
+    .tape-top {
+      position: absolute;
+      top: -6px;
+      left: 50%;
+      transform: translateX(-50%) rotate(-2deg);
+      width: 68px;
+      height: 18px;
+      background: rgba(239, 68, 68, 0.82);
+      z-index: 10;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+
+    /* 傳單圖片容器 */
+    .flyer-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* 內建預設海報範本樣式（未放入自訂圖片時顯示） */
+    .default-poster {
+      width: 100%;
+      height: 100%;
+      padding: 24px 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .poster-tag {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      padding: 4px 8px;
+      border-radius: 4px;
+      background: rgba(0,0,0,0.08);
+      width: fit-content;
+    }
+
+    .poster-title {
+      font-size: 22px;
+      font-weight: 800;
+      line-height: 1.3;
+      margin-top: 10px;
+    }
+
+    .poster-desc {
+      font-size: 13px;
+      line-height: 1.6;
+      opacity: 0.85;
+      margin-top: 8px;
+    }
+
+    .poster-footer {
+      border-top: 1px dashed rgba(0,0,0,0.25);
+      padding-top: 10px;
+      font-size: 12px;
+      font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* 背面傳單變暗遮罩（模擬真實圓柱體背光陰影） */
+    .shade-overlay {
+      position: absolute;
+      inset: 0;
+      background: #0f172a;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+      z-index: 8;
+    }
+
+    /* ================= 5. 底部旋轉控制按鈕 ================= */
+    .controls {
+      position: absolute;
+      bottom: 26px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(10px);
+      padding: 10px 18px;
+      border-radius: 999px;
+      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.16);
+    }
+
+    .btn-rotate {
+      border: none;
+      background: #1e293b;
+      color: #ffffff;
+      padding: 10px 18px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.2s, transform 0.15s;
+    }
+
+    .btn-rotate:hover {
+      background: #334155;
+      transform: translateY(-1px);
+    }
+
+    .btn-rotate:active {
+      transform: translateY(1px);
+    }
+
+    .page-indicator {
+      font-size: 14px;
+      font-weight: 700;
+      color: #334155;
+      min-width: 72px;
+      text-align: center;
+    }
+
+    /* ================= 6. 點擊放大檢視燈箱（Lightbox） ================= */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.82);
+      backdrop-filter: blur(6px);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+
+    .modal-backdrop.active {
+      display: flex;
+      opacity: 1;
+    }
+
+    .modal-content {
+      position: relative;
+      max-width: 480px;
+      width: 100%;
+      max-height: 88vh;
+      background: #ffffff;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .modal-body {
+      overflow-y: auto;
+      max-height: 75vh;
+    }
+
+    .modal-body img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(15, 23, 42, 0.75);
+      color: #fff;
+      font-size: 18px;
+      cursor: pointer;
+      z-index: 10;
+    }
+
+    .modal-actions {
+      padding: 14px 20px;
+      background: #f8fafc;
+      border-top: 1px solid #e2e8f0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-link-btn {
+      text-decoration: none;
+      background: #2563eb;
+      color: #fff;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 1. 真實街景背景 -->
+  <div class="street-bg">
+    <svg class="overhead-wires" viewBox="0 0 1440 320" preserveAspectRatio="none">
+      <path d="M0,40 Q720,160 1440,25" fill="none" stroke="#334155" stroke-width="2.5" />
+      <path d="M0,75 Q720,210 1440,60" fill="none" stroke="#475569" stroke-width="1.8" />
+      <path d="M0,115 Q720,245 1440,95" fill="none" stroke="#64748b" stroke-width="1.2" />
+    </svg>
+    <div class="tree-blob"></div>
+    <div class="distant-buildings">
+      <div class="bldg bldg-1"></div>
+      <div class="bldg bldg-2"></div>
+      <div class="bldg bldg-3"></div>
+      <div class="bldg bldg-4"></div>
+    </div>
+    <div class="curb"></div>
+    <div class="asphalt-texture"></div>
+    <div class="pole-ground-shadow"></div>
+  </div>
+
+  <!-- 2. 頂部操作引導 -->
+  <div class="header-guide">
+    <span>👈👉 拖曳電線桿或點擊按鈕旋轉切換傳單 ｜ 🔍 點擊傳單放大檢視</span>
+  </div>
+
+  <!-- 3. 3D 旋轉舞台（電線桿 + 傳單一體旋轉） -->
+  <div class="scene" id="scene">
+    <div class="pole-assembly" id="poleAssembly">
+      <!-- JavaScript 會自動在這裡生成 16 面水泥電線桿柱體 + 4 張貼附的傳單 -->
+    </div>
+  </div>
+
+  <!-- 4. 底部旋轉按鈕 -->
+  <div class="controls">
+    <button class="btn-rotate" id="prevBtn">↺ 往左轉</button>
+    <div class="page-indicator" id="pageIndicator">1 / 4</div>
+    <button class="btn-rotate" id="nextBtn">往右轉 ↻</button>
+  </div>
+
+  <!-- 5. 傳單放大檢視燈箱 -->
+  <div class="modal-backdrop" id="modalBackdrop">
+    <div class="modal-content">
+      <button class="modal-close" id="modalClose">✕</button>
+      <div class="modal-body" id="modalBody"></div>
+      <div class="modal-actions">
+        <span id="modalTitle" style="font-weight:700; font-size:14px; color:#1e293b;">作品詳情</span>
+        <a id="modalLink" href="#" target="_blank" class="modal-link-btn">開啟完整作品 / 聯絡方式 ↗</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /**
+     * =================================================================
+     * 【這裡替換你朋友的海報圖片與連結】
+     * 只要把做好的 4 張海報（建議比例 2:3）放在與 index.html 同一個資料夾，
+     * 並把下方的 imageUrl 改成檔名（例如 "./poster1.jpg"）即可！
+     * =================================================================
+     */
+    const FLYERS_DATA = [
+      {
+        title: "01. 個人簡介與履歷",
+        tag: "ABOUT ME / RESUME",
+        heading: "嗨！我是創意設計與行銷企劃",
+        desc: "擅長品牌視覺規劃、社群創意企劃與跨媒介行銷活動。點擊這張傳單可查看完整經歷與履歷！",
+        footerText: "點擊放大查看完整履歷",
+        bgColor: "#fef3c7",
+        textColor: "#78350f",
+        imageUrl: "", // ← 填入圖片檔名，例如 "./poster1.jpg"
+        externalLink: "https://www.linkedin.com" // ← 填入作品集或履歷連結
+      },
+      {
+        title: "02. 品牌行銷專案 A",
+        tag: "CAMPAIGN CASE 01",
+        heading: "年度社群話題操作與視覺統籌",
+        desc: "從前期市場洞察、主視覺海報設計到線下快閃互動，帶動品牌自然觸及成長 240%。",
+        footerText: "點擊查看專案成果圖",
+        bgColor: "#e0f2fe",
+        textColor: "#0c4a6e",
+        imageUrl: "", // ← 填入圖片檔名，例如 "./poster2.jpg"
+        externalLink: "https://www.behance.net"
+      },
+      {
+        title: "03. 視覺設計作品集 B",
+        tag: "VISUAL DESIGN 02",
+        heading: "包裝設計與活動主視覺系列",
+        desc: "結合街頭文化與極簡排版，打造高辨識度的產品包裝與展覽宣傳物。",
+        footerText: "點擊查看設計細節",
+        bgColor: "#fce7f3",
+        textColor: "#831843",
+        imageUrl: "", // ← 填入圖片檔名，例如 "./poster3.jpg"
+        externalLink: "https://www.behance.net"
+      },
+      {
+        title: "04. 聯絡我 / 撕紙條彩蛋",
+        tag: "CONTACT ME",
+        heading: "歡迎找我聊聊設計與行銷！",
+        desc: "正在尋找設計或行銷相關職位機會，歡迎隨時透過 Email 或 LinkedIn 與我聯繫面談。",
+        footerText: "點擊取得聯絡資訊",
+        bgColor: "#dcfce7",
+        textColor: "#14532d",
+        imageUrl: "", // ← 填入圖片檔名，例如 "./poster4.jpg"
+        externalLink: "mailto:example@email.com"
+      }
+    ];
+
+    const poleAssembly = document.getElementById("poleAssembly");
+    const scene = document.getElementById("scene");
+    const pageIndicator = document.getElementById("pageIndicator");
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+
+    // 1. 建立 16 面擬真 3D 水泥電線桿（半徑約 140px）
+    const POLE_SIDES = 16;
+    const POLE_RADIUS = 138;
+    for (let i = 0; i < POLE_SIDES; i++) {
+      const seg = document.createElement("div");
+      seg.className = "pole-segment";
+      const angle = (360 / POLE_SIDES) * i;
+      // 模擬圓柱體左右兩側的環境明暗
+      const shade = Math.cos((angle * Math.PI) / 180);
+      seg.style.filter = `brightness(${0.82 + shade * 0.22})`;
+      seg.style.transform = `rotateY(${angle}deg) translateZ(${POLE_RADIUS}px)`;
+      poleAssembly.appendChild(seg);
+    }
+
+    // 2. 將傳單貼附在電線桿外圍（半徑略大於電線桿 143px，確保緊貼表面並跟著電線桿一起轉）
+    const FLYER_RADIUS = 143;
+    const totalFlyers = FLYERS_DATA.length;
+    const stepAngle = 360 / totalFlyers;
+    const flyerElements = [];
+
+    FLYERS_DATA.forEach((item, index) => {
+      const wrapper = document.createElement("div");
+      wrapper.className = "flyer-wrapper";
+      const baseAngle = index * stepAngle;
+      wrapper.style.transform = `rotateY(${baseAngle}deg) translateZ(${FLYER_RADIUS}px)`;
+
+      const card = document.createElement("div");
+      card.className = "flyer-card";
+
+      // 頂部膠帶
+      const tape = document.createElement("div");
+      tape.className = "tape-top";
+      card.appendChild(tape);
+
+      // 光影遮罩（轉到背面時自動變暗）
+      const shadeOverlay = document.createElement("div");
+      shadeOverlay.className = "shade-overlay";
+      card.appendChild(shadeOverlay);
+
+      // 判斷是否有自訂海報圖片
+      if (item.imageUrl && item.imageUrl.trim() !== "") {
+        const img = document.createElement("img");
+        img.className = "flyer-img";
+        img.src = item.imageUrl;
+        img.alt = item.title;
+        card.appendChild(img);
+      } else {
+        // 顯示內建設計感範本
+        const poster = document.createElement("div");
+        poster.className = "default-poster";
+        poster.style.backgroundColor = item.bgColor;
+        poster.style.color = item.textColor;
+        poster.innerHTML = `
+          <div>
+            <span class="poster-tag">${item.tag}</span>
+            <h2 class="poster-title">${item.heading}</h2>
+            <p class="poster-desc">${item.desc}</p>
+          </div>
+          <div class="poster-footer">
+            <span>${item.footerText}</span>
+            <span>🔍</span>
+          </div>
+        `;
+        card.appendChild(poster);
+      }
+
+      // 點擊傳單開啟放大燈箱
+      card.addEventListener("click", (e) => {
+        if (hasDragged) return; // 避免拖曳旋轉放開時誤觸點擊
+        openModal(item);
+      });
+
+      wrapper.appendChild(card);
+      poleAssembly.appendChild(wrapper);
+      flyerElements.push({ wrapper, shadeOverlay, baseAngle });
+    });
+
+    // 3. 旋轉角度控制與即時陰影計算
+    let currentRotation = 0;
+
+    function updateRotation(angle) {
+      currentRotation = angle;
+      poleAssembly.style.transform = `rotateY(${currentRotation}deg)`;
+
+      // 計算目前正面是哪一張傳單
+      const normalized = (((-currentRotation % 360) + 360) % 360);
+      const activeIndex = Math.round(normalized / stepAngle) % totalFlyers;
+      pageIndicator.textContent = `${activeIndex + 1} / ${totalFlyers}`;
+
+      // 根據每張傳單相對於鏡頭的角度，動態調整明暗（背光處自然變暗）
+      flyerElements.forEach(({ shadeOverlay, baseAngle }) => {
+        const worldAngle = (((baseAngle + currentRotation) % 360) + 360) % 360;
+        const rad = (worldAngle * Math.PI) / 180;
+        const facing = Math.cos(rad); // 1 為正對鏡頭，-1 為完全背面
+        const darkness = Math.max(0, (1 - facing) * 0.35);
+        shadeOverlay.style.opacity = darkness.toFixed(2);
+      });
+    }
+
+    prevBtn.addEventListener("click", () => {
+      updateRotation(currentRotation + stepAngle);
+    });
+
+    nextBtn.addEventListener("click", () => {
+      updateRotation(currentRotation - stepAngle);
+    });
+
+    // 鍵盤左右方向鍵支援
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowLeft") updateRotation(currentRotation + stepAngle);
+      if (e.key === "ArrowRight") updateRotation(currentRotation - stepAngle);
+      if (e.key === "Escape") closeModal();
+    });
+
+    // 4. 滑鼠與觸控拖曳旋轉電線桿
+    let isDragging = false;
+    let hasDragged = false;
+    let startX = 0;
+    let startRotation = 0;
+
+    function onDragStart(clientX) {
+      isDragging = true;
+      hasDragged = false;
+      startX = clientX;
+      startRotation = currentRotation;
+      poleAssembly.classList.add("dragging");
+    }
+
+    function onDragMove(clientX) {
+      if (!isDragging) return;
+      const deltaX = clientX - startX;
+      if (Math.abs(deltaX) > 5) hasDragged = true;
+      updateRotation(startRotation + deltaX * 0.45);
+    }
+
+    function onDragEnd() {
+      if (!isDragging) return;
+      isDragging = false;
+      poleAssembly.classList.remove("dragging");
+      // 放開後自動吸附到最接近的傳單正面角度
+      const snapped = Math.round(currentRotation / stepAngle) * stepAngle;
+      updateRotation(snapped);
+      setTimeout(() => { hasDragged = false; }, 50);
+    }
+
+    scene.addEventListener("mousedown", (e) => onDragStart(e.clientX));
+    window.addEventListener("mousemove", (e) => onDragMove(e.clientX));
+    window.addEventListener("mouseup", onDragEnd);
+
+    scene.addEventListener("touchstart", (e) => onDragStart(e.touches[0].clientX), { passive: true });
+    window.addEventListener("touchmove", (e) => onDragMove(e.touches[0].clientX), { passive: true });
+    window.addEventListener("touchend", onDragEnd);
+
+    // 5. 燈箱放大預覽邏輯
+    const modalBackdrop = document.getElementById("modalBackdrop");
+    const modalBody = document.getElementById("modalBody");
+    const modalTitle = document.getElementById("modalTitle");
+    const modalLink = document.getElementById("modalLink");
+    const modalClose = document.getElementById("modalClose");
+
+    function openModal(item) {
+      modalTitle.textContent = item.title;
+      modalLink.href = item.externalLink || "#";
+      modalLink.style.display = item.externalLink ? "inline-block" : "none";
+
+      if (item.imageUrl && item.imageUrl.trim() !== "") {
+        modalBody.innerHTML = `<img src="${item.imageUrl}" alt="${item.title}" />`;
+      } else {
+        modalBody.innerHTML = `
+          <div style="padding: 36px 28px; background:${item.bgColor}; color:${item.textColor}; min-height: 360px; display:flex; flex-direction:column; justify-content:space-between;">
+            <div>
+              <span style="font-size:12px; font-weight:700; padding:4px 10px; border-radius:4px; background:rgba(0,0,0,0.08);">${item.tag}</span>
+              <h2 style="font-size:26px; font-weight:800; margin-top:16px; line-height:1.35;">${item.heading}</h2>
+              <p style="font-size:15px; line-height:1.75; margin-top:16px;">${item.desc}</p>
+            </div>
+            <p style="font-size:12px; opacity:0.75; margin-top:24px;">（提示：將程式碼內的 imageUrl 換成圖片檔名後，這裡就會顯示高清設計海報原圖）</p>
+          </div>
+        `;
+      }
+      modalBackdrop.classList.add("active");
+    }
+
+    function closeModal() {
+      modalBackdrop.classList.remove("active");
+    }
+
+    modalClose.addEventListener("click", closeModal);
+    modalBackdrop.addEventListener("click", (e) => {
+      if (e.target === modalBackdrop) closeModal();
+    });
+
+    // 初始化角度與光影
+    updateRotation(0);
+  </script>
+</body>
+</html>
