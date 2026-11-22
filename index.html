@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>街角作品集｜真實走動視角</title>
+  <title>街角作品集｜環繞視角體驗</title>
   <style>
     * {
       box-sizing: border-box;
@@ -21,35 +21,31 @@
       position: relative;
     }
 
-    /* ================= 1. 多視角真實背景層（馬路側 ↔ 磚牆側，無任何生硬鏡像接縫） ================= */
+    /* ================= 1. 獨立裁切的純淨背景層（100% 不含原圖電線桿） ================= */
     .bg-layer {
       position: absolute;
-      inset: -30px;
+      inset: -24px;
       z-index: 0;
       background-size: cover;
+      background-position: center center;
       background-repeat: no-repeat;
-      transition: transform 0.85s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.85s ease, filter 0.85s ease;
-      will-change: transform, opacity, filter;
+      transition: opacity 0.75s ease, transform 0.85s cubic-bezier(0.22, 1, 0.36, 1), filter 0.75s ease;
+      will-change: opacity, transform, filter;
     }
 
-    /* 背景 A：馬路與行道樹側（取原圖左側純淨街道，完全裁掉原圖靜止電線桿避免重影） */
+    /* 背景 A：純淨馬路與行道樹側 */
     .bg-road {
-      background-image: url('./bg.jpg?v=5');
-      background-position: 15% center;
-      transform: scale(1.12);
+      opacity: 1;
       filter: blur(2px) brightness(0.95);
     }
 
-    /* 背景 B：磁磚牆壁與盆栽側（聚焦右側建築牆面質感） */
+    /* 背景 B：純淨磁磚牆壁與盆栽側 */
     .bg-wall {
-      background-image: url('./bg.jpg?v=5');
-      background-position: 98% center;
-      transform: scale(1.18);
-      filter: blur(2.5px) brightness(0.92) sepia(0.08);
       opacity: 0;
+      filter: blur(2px) brightness(0.92) sepia(0.06);
     }
 
-    /* ================= 2. 動態陽光與環境光暈（隨走動方位改變光線） ================= */
+    /* ================= 2. 動態陽光與環境光暈 ================= */
     .dynamic-lighting {
       position: absolute;
       inset: 0;
@@ -79,7 +75,7 @@
       top: 22px;
       left: 32px;
       z-index: 20;
-      background: rgba(24, 22, 20, 0.75);
+      background: rgba(24, 22, 20, 0.76);
       backdrop-filter: blur(10px);
       border: 1px solid rgba(255, 255, 255, 0.16);
       padding: 9px 18px;
@@ -90,7 +86,7 @@
       letter-spacing: 0.3px;
     }
 
-    /* ================= 4. 3D 舞台（電線桿會隨人走動而在畫面左右移動位置） ================= */
+    /* ================= 4. 唯一一根 3D 電線桿與傳單舞台 ================= */
     .scene {
       position: absolute;
       inset: 0;
@@ -103,10 +99,9 @@
       cursor: grabbing;
     }
 
-    /* 關鍵：當人左右走動時，電線桿本身在螢幕上的水平位置（left）會真實左右移動 */
     .pole-axis {
       position: absolute;
-      left: 66%;
+      left: 65%;
       top: 0;
       width: 0;
       height: 100%;
@@ -385,7 +380,7 @@
 </head>
 <body>
 
-  <!-- 1. 雙層景深背景（純淨馬路林蔭側 ↔ 純淨磁磚牆壁側，無任何生硬鏡像對稱線） -->
+  <!-- 1. 純淨雙背景層（Canvas 自動剔除原圖電線桿，只保留「馬路側」與「磚牆側」） -->
   <div class="bg-layer bg-road" id="bgRoad"></div>
   <div class="bg-layer bg-wall" id="bgWall"></div>
 
@@ -393,12 +388,12 @@
   <div class="dynamic-lighting" id="dynamicLighting"></div>
   <div class="lens-flare" id="lensFlare"></div>
 
-  <!-- 3. 頂部操作提示 -->
+  <!-- 3. 頂部提示 -->
   <div class="header-guide">
     <span>🚶‍♂️ 左右滑動或按按鈕「繞著電線桿走一圈」 ｜ 🔍 點擊傳單放大閱讀</span>
   </div>
 
-  <!-- 4. 3D 舞台 -->
+  <!-- 4. 唯一一根 3D 電線桿 + 傳單 -->
   <div class="scene" id="scene">
     <div class="pole-axis" id="poleAxis"></div>
   </div>
@@ -437,7 +432,7 @@
         externalLink: "https://www.linkedin.com"
       },
       {
-        viewLabel: "右側牆壁側",
+        viewLabel: "右側磚牆側",
         title: "02. 品牌行銷專案 A",
         tag: "CAMPAIGN CASE 01",
         heading: "年度社群話題操作與視覺統籌",
@@ -492,34 +487,47 @@
     const flyerElements = [];
 
     /**
-     * 製作無 V 字對稱接縫的自然連續電線桿貼圖：
-     * 黃黑斜紋是「45度單向斜線」，如果直接水平鏡像會變成 V 字形（穿幫）。
-     * 這裡改用「垂直相位錯位無縫融合（Alpha Cross-blend）」讓斜線在背面自然斜向銜接，完全沒有對稱 V 字接縫！
+     * 徹底拆解 bg.jpg 為三個乾淨獨立圖層（杜絕任何雙電線桿穿幫）：
+     * 1. pureRoadUrl：只取原圖 0% ~ 56% 的「柏油馬路 + 行道樹」，完全不含電線桿
+     * 2. pureWallUrl：只取原圖 86% ~ 100% 的「磁磚牆壁 + 綠色盆栽」，完全不含電線桿
+     * 3. poleUrl：只取原圖 63.5% ~ 80.5% 的「黃黑警示電線桿本體」
      */
-    function buildNaturalPoleTexture() {
+    function buildCleanLayers() {
       const img = new Image();
-      img.src = "./bg.jpg?v=5";
+      img.src = "./bg.jpg?v=6";
 
       img.onload = () => {
         const iw = img.width;
         const ih = img.height;
 
-        // 擷取原圖電線桿核心區域（排除左右邊緣背景）
+        // 1. 生成純淨馬路背景（0% ~ 56%）
+        const roadW = Math.floor(iw * 0.56);
+        const roadCanvas = document.createElement("canvas");
+        roadCanvas.width = roadW;
+        roadCanvas.height = ih;
+        roadCanvas.getContext("2d").drawImage(img, 0, 0, roadW, ih, 0, 0, roadW, ih);
+        bgRoad.style.backgroundImage = `url('${roadCanvas.toDataURL("image/jpeg", 0.9)}')`;
+
+        // 2. 生成純淨磁磚牆壁與盆栽背景（86% ~ 100%）
+        const wallStart = Math.floor(iw * 0.86);
+        const wallW = iw - wallStart;
+        const wallCanvas = document.createElement("canvas");
+        wallCanvas.width = wallW;
+        wallCanvas.height = ih;
+        wallCanvas.getContext("2d").drawImage(img, wallStart, 0, wallW, ih, 0, 0, wallW, ih);
+        bgWall.style.backgroundImage = `url('${wallCanvas.toDataURL("image/jpeg", 0.9)}')`;
+
+        // 3. 生成唯一一根 3D 黃黑警示電線桿貼圖（63.5% ~ 80.5%）
         const poleSrcX = iw * 0.635;
         const poleSrcW = iw * 0.17;
-
         const texCanvas = document.createElement("canvas");
         texCanvas.width = poleSrcW * 2;
         texCanvas.height = ih;
         const ctx = texCanvas.getContext("2d");
 
-        // 左半部：原圖電線桿
         ctx.drawImage(img, poleSrcX, 0, poleSrcW, ih, 0, 0, poleSrcW, ih);
-
-        // 右半部（背面）：使用同一方向斜紋並做漸層羽化融合，避免出現 V 字鏡像破綻
         ctx.drawImage(img, poleSrcX, 0, poleSrcW, ih, poleSrcW, 0, poleSrcW, ih);
 
-        // 在兩張接縫處做柔焦羽化過渡
         const seamGrad = ctx.createLinearGradient(poleSrcW - 24, 0, poleSrcW + 24, 0);
         seamGrad.addColorStop(0, "rgba(110, 108, 104, 0)");
         seamGrad.addColorStop(0.5, "rgba(110, 108, 104, 0.55)");
@@ -610,13 +618,6 @@
       flyerElements.push({ wrapper, shadeOverlay, baseAngle });
     });
 
-    /**
-     * 物理透視核心：模擬「人走動」而非「電線桿原地轉」
-     * - walkAngle = 0°   (正面街角)：電線桿在偏右 66%，左邊馬路、右邊磚牆
-     * - walkAngle = -90° (人往右走)：電線桿在畫面中「往左移到 36%」，背景切換為「磁磚牆壁與盆栽側」
-     * - walkAngle = +90° (人往左走)：電線桿在畫面中「往右移到 72%」，背景切換為「柏油馬路與行道樹側」
-     * - walkAngle = 180° (人走到背面)：電線桿移至 46%，正面迎向陽光
-     */
     let walkAngle = 0;
 
     function updateWalkPerspective(angle) {
@@ -624,29 +625,25 @@
       const rad = (walkAngle * Math.PI) / 180;
       const isMobile = window.innerWidth <= 768;
 
-      // 1. 計算電線桿在螢幕上的真實透視水平位置（人往右走，電線桿相對往左移；人往左走，電線桿相對往右移）
-      const baseLeft = isMobile ? 54 : 54;
-      const shiftAmp = isMobile ? 16 : 18;
-      // 當 angle = 0 時 sin(rad + 0.7) > 0 讓初始位置在偏右 66% 處
-      const poleScreenLeft = baseLeft + Math.sin(rad + 0.72) * shiftAmp;
+      // 1. 電線桿在畫面上的透視位移（人往右走，電線桿相對往左移到 34% 處，讓出右側整片牆壁；人往左走，電線桿相對往右移到 68% 處，讓出左側整片馬路）
+      const baseLeft = 51;
+      const shiftAmp = isMobile ? 15 : 17;
+      const poleScreenLeft = baseLeft + Math.sin(rad + 0.85) * shiftAmp;
       poleAxis.style.left = `${poleScreenLeft.toFixed(1)}%`;
       poleAxis.style.transform = `rotateY(${walkAngle}deg)`;
 
-      // 2. 計算「磚牆背景」與「馬路背景」的真實視角權重
-      // 當 angle 趨近 -90°（往右走），sin(rad) 趨近 -1，顯示磚牆側
-      // 當 angle 趨近 +90°（往左走），sin(rad) 趨近 +1，顯示馬路側
-      const sideFactor = Math.sin(rad); // +1 = 往左走看馬路側, -1 = 往右走看磚牆側
-      const wallOpacity = Math.max(0, Math.min(1, (-sideFactor + 0.25) * 0.85));
+      // 2. 背景在「馬路側」與「磚牆側」之間平滑切換
+      const sideFactor = Math.sin(rad); // -1 = 往右走看磚牆側, +1 = 往左走看馬路側
+      const wallOpacity = Math.max(0, Math.min(1, (-sideFactor + 0.15) * 0.95));
 
       bgWall.style.opacity = wallOpacity.toFixed(2);
-      // 走動時背景產生自然的橫向視差滑動（無任何拼接斷層）
-      const roadPanX = Math.cos(rad) * 28 - sideFactor * 35;
-      const wallPanX = -sideFactor * 25;
-      bgRoad.style.transform = `scale(1.14) translate3d(${roadPanX.toFixed(1)}px, 0, 0)`;
-      bgWall.style.transform = `scale(1.22) translate3d(${wallPanX.toFixed(1)}px, 0, 0)`;
+      const roadPanX = Math.cos(rad) * 24 - sideFactor * 30;
+      const wallPanX = -sideFactor * 24;
+      bgRoad.style.transform = `scale(1.1) translate3d(${roadPanX.toFixed(1)}px, 0, 0)`;
+      bgWall.style.transform = `scale(1.1) translate3d(${wallPanX.toFixed(1)}px, 0, 0)`;
 
-      // 3. 陽光方向固定在馬路一側（世界座標），人走到不同側面時光線與暖陽光暈真實變化
-      const sunFacing = Math.cos(((walkAngle - 60) * Math.PI) / 180); // 面向馬路陽光側為正，面向陰涼磚牆側為負
+      // 3. 陽光方向固定在馬路一側，隨走動角度改變光影與暖陽色溫
+      const sunFacing = Math.cos(((walkAngle - 60) * Math.PI) / 180);
       const flareOpacity = Math.max(0.04, (sunFacing + 0.4) * 0.44);
       const flareShiftX = Math.sin(((walkAngle - 60) * Math.PI) / 180) * 160;
       lensFlare.style.opacity = flareOpacity.toFixed(2);
@@ -664,14 +661,13 @@
       const activeIndex = Math.round(normalized / stepAngle) % totalFlyers;
       pageIndicator.textContent = `${FLYERS_DATA[activeIndex].viewLabel} (${activeIndex + 1}/${totalFlyers})`;
 
-      // 5. 電線桿柱面受光方向隨世界陽光變化
+      // 5. 電線桿與傳單受光
       poleSegments.forEach(({ el, baseAngle }) => {
         const worldAngle = (((baseAngle + walkAngle) % 360) + 360) % 360;
         const light = Math.cos(((worldAngle + 28) * Math.PI) / 180);
         el.style.filter = `brightness(${(0.82 + light * 0.24).toFixed(2)})`;
       });
 
-      // 6. 傳單受光與遮蔽
       flyerElements.forEach(({ wrapper, shadeOverlay, baseAngle }) => {
         const worldAngle = (((baseAngle + walkAngle) % 360) + 360) % 360;
         const facing = Math.cos(((worldAngle + 25) * Math.PI) / 180);
@@ -780,9 +776,9 @@
       if (e.target === modalBackdrop) closeModal();
     });
 
-    buildNaturalPoleTexture();
+    buildCleanLayers();
     window.addEventListener("resize", () => {
-      buildNaturalPoleTexture();
+      buildCleanLayers();
       updateWalkPerspective(walkAngle);
     });
   </script>
