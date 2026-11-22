@@ -21,7 +21,7 @@
       position: relative;
     }
 
-    /* ================= 1. 直接使用你的真實背景照片（無任何假物件遮擋） ================= */
+    /* ================= 1. 真實街景背景照片 ================= */
     .photo-stage {
       position: absolute;
       inset: 0;
@@ -32,7 +32,7 @@
       background-repeat: no-repeat;
     }
 
-    /* ================= 2. 頂部簡潔操作提示 ================= */
+    /* ================= 2. 頂部操作提示 ================= */
     .header-guide {
       position: absolute;
       top: 22px;
@@ -49,7 +49,7 @@
       letter-spacing: 0.3px;
     }
 
-    /* ================= 3. 傳單旋轉舞台（精準對齊照片右側真實電線桿） ================= */
+    /* ================= 3. 3D 旋轉舞台（精準疊合在照片右側電線桿上） ================= */
     .scene {
       position: absolute;
       inset: 0;
@@ -62,13 +62,13 @@
       cursor: grabbing;
     }
 
-    /* 旋轉軸心對齊照片偏右 72% 處的真實電線桿中心 */
+    /* 旋轉軸心精準對齊照片偏右 72% 處的真實電線桿中心 */
     .pole-axis {
       position: absolute;
       left: 72%;
-      top: 46%;
+      top: 0;
       width: 0;
-      height: 0;
+      height: 100%;
       transform-style: preserve-3d;
       transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
     }
@@ -77,13 +77,22 @@
       transition: none;
     }
 
-    /* 傳單本身（完全不生成任何電線桿柱體） */
+    /* 採樣原圖電線桿真實紋理的 3D 柱面（與傳單同步旋轉） */
+    .real-pole-segment {
+      position: absolute;
+      top: 0;
+      height: 100%;
+      backface-visibility: hidden;
+      background-repeat: no-repeat;
+    }
+
+    /* 傳單容器 */
     .flyer-wrapper {
       position: absolute;
       width: 246px;
       height: 356px;
       left: -123px;
-      top: -178px;
+      top: calc(46% - 178px);
       transform-style: preserve-3d;
       transition: opacity 0.3s ease;
     }
@@ -182,7 +191,7 @@
       z-index: 8;
     }
 
-    /* ================= 4. 底部控制列（位於右側電線桿下方） ================= */
+    /* ================= 4. 底部控制列 ================= */
     .controls {
       position: absolute;
       bottom: 26px;
@@ -251,7 +260,7 @@
         width: 210px;
         height: 306px;
         left: -105px;
-        top: -153px;
+        top: calc(46% - 153px);
       }
     }
 
@@ -342,15 +351,15 @@
 </head>
 <body>
 
-  <!-- 1. 直接顯示你的照片 -->
+  <!-- 1. 真實背景照片 -->
   <div class="photo-stage"></div>
 
   <!-- 2. 操作提示 -->
   <div class="header-guide">
-    <span>👈👉 拖曳或按按鈕旋轉傳單 ｜ 🔍 點擊傳單放大閱讀</span>
+    <span>👈👉 拖曳電線桿或按按鈕旋轉 ｜ 🔍 點擊傳單放大閱讀</span>
   </div>
 
-  <!-- 3. 貼在照片電線桿上的傳單 -->
+  <!-- 3. 3D 旋轉舞台（真實電線桿貼圖 + 傳單同步旋轉） -->
   <div class="scene" id="scene">
     <div class="pole-axis" id="poleAxis"></div>
   </div>
@@ -428,10 +437,100 @@
     const prevBtn = document.getElementById("prevBtn");
     const nextBtn = document.getElementById("nextBtn");
 
-    const FLYER_RADIUS = 148;
+    const POLE_SIDES = 20;
+    const POLE_RADIUS = 138; // 精準匹配照片中這根電線桿的視覺寬度（直徑約 276px）
+    const FLYER_RADIUS = 142;
+
+    const poleSegments = [];
+    const flyerElements = [];
+
+    /**
+     * 核心技術：直接讀取 bg.jpg 照片裡偏右（72% 處）這根真實黃黑電線桿的像素，
+     * 製作無縫鏡像拼接的真實貼圖，讓照片裡的電線桿本體可以跟著傳單一起 3D 轉動！
+     */
+    function buildRealPhotoPole() {
+      const img = new Image();
+      img.src = "./bg.jpg?v=3";
+
+      img.onload = () => {
+        // 計算照片裁切比例（模擬 background-size: cover; background-position: 72% center）
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
+        const imgRatio = img.width / img.height;
+        const viewRatio = vw / vh;
+
+        let drawW, drawH, offsetX, offsetY;
+        if (viewRatio > imgRatio) {
+          drawW = vw;
+          drawH = vw / imgRatio;
+          offsetX = 0;
+          offsetY = (vh - drawH) * 0.5;
+        } else {
+          drawH = vh;
+          drawW = vh * imgRatio;
+          offsetX = (vw - drawW) * 0.72;
+          offsetY = 0;
+        }
+
+        // 離屏畫布重現完整背景畫面，精準擷取電線桿中心（72% 處）左右共 260px 寬的真實電線桿影像
+        const fullCanvas = document.createElement("canvas");
+        fullCanvas.width = vw;
+        fullCanvas.height = vh;
+        const fullCtx = fullCanvas.getContext("2d");
+        fullCtx.drawImage(img, offsetX, offsetY, drawW, drawH);
+
+        const poleCenterX = vw * (vw <= 768 ? 0.68 : 0.72);
+        const stripW = 250; // 擷取真實電線桿本體寬度
+        const srcX = Math.max(0, poleCenterX - stripW / 2);
+
+        // 建立「原圖 + 水平鏡像」無縫循環貼圖（確保轉 360 度時黃黑斜紋與水泥孔洞完全無接縫）
+        const seamlessCanvas = document.createElement("canvas");
+        seamlessCanvas.width = stripW * 2;
+        seamlessCanvas.height = vh;
+        const sCtx = seamlessCanvas.getContext("2d");
+
+        // 左半部：原始電線桿表面
+        sCtx.drawImage(fullCanvas, srcX, 0, stripW, vh, 0, 0, stripW, vh);
+        // 右半部：鏡像無縫銜接（讓斜線連續繞回背面）
+        sCtx.save();
+        sCtx.translate(stripW * 2, 0);
+        sCtx.scale(-1, 1);
+        sCtx.drawImage(fullCanvas, srcX, 0, stripW, vh, 0, 0, stripW, vh);
+        sCtx.restore();
+
+        const seamlessUrl = seamlessCanvas.toDataURL("image/jpeg", 0.92);
+
+        // 清除舊柱面並生成 20 面真實貼圖圓柱
+        poleSegments.forEach(s => s.el.remove());
+        poleSegments.length = 0;
+
+        const circumference = 2 * Math.PI * POLE_RADIUS;
+        const segWidth = Math.ceil(circumference / POLE_SIDES) + 2;
+
+        for (let i = 0; i < POLE_SIDES; i++) {
+          const seg = document.createElement("div");
+          seg.className = "real-pole-segment";
+          const angle = (360 / POLE_SIDES) * i;
+
+          seg.style.width = `${segWidth}px`;
+          seg.style.left = `${-segWidth / 2}px`;
+          seg.style.backgroundImage = `url('${seamlessUrl}')`;
+          seg.style.backgroundSize = `${circumference}px ${vh}px`;
+          seg.style.backgroundPosition = `${-(i * (circumference / POLE_SIDES))}px 0px`;
+          seg.style.transform = `rotateY(${angle}deg) translateZ(${POLE_RADIUS}px)`;
+
+          // 插入在傳單圖層之前，確保電線桿在傳單內側
+          poleAxis.insertBefore(seg, poleAxis.firstChild);
+          poleSegments.push({ el: seg, baseAngle: angle });
+        }
+
+        updateRotation(currentRotation);
+      };
+    }
+
+    // 建立 4 張傳單
     const totalFlyers = FLYERS_DATA.length;
     const stepAngle = 360 / totalFlyers;
-    const flyerElements = [];
 
     FLYERS_DATA.forEach((item, index) => {
       const wrapper = document.createElement("div");
@@ -495,13 +594,22 @@
       const activeIndex = Math.round(normalized / stepAngle) % totalFlyers;
       pageIndicator.textContent = `${activeIndex + 1} / ${totalFlyers}`;
 
+      // 柱面受光方向與原圖一致（左側陽光較亮、右側微背光）
+      poleSegments.forEach(({ el, baseAngle }) => {
+        const worldAngle = (((baseAngle + currentRotation) % 360) + 360) % 360;
+        const rad = ((worldAngle + 28) * Math.PI) / 180;
+        const light = Math.cos(rad);
+        el.style.filter = `brightness(${(0.84 + light * 0.22).toFixed(2)})`;
+      });
+
+      // 傳單受光與遮蔽
       flyerElements.forEach(({ wrapper, shadeOverlay, baseAngle }) => {
         const worldAngle = (((baseAngle + currentRotation) % 360) + 360) % 360;
         const rad = ((worldAngle + 25) * Math.PI) / 180;
         const facing = Math.cos(rad);
         const frontFacing = Math.cos((worldAngle * Math.PI) / 180);
 
-        if (frontFacing < -0.15) {
+        if (frontFacing < -0.25) {
           wrapper.style.opacity = "0";
           wrapper.style.pointerEvents = "none";
         } else {
@@ -509,7 +617,7 @@
           wrapper.style.pointerEvents = "auto";
         }
 
-        const darkness = Math.max(0, (1 - facing) * 0.34);
+        const darkness = Math.max(0, (1 - facing) * 0.32);
         shadeOverlay.style.opacity = darkness.toFixed(2);
       });
     }
@@ -597,6 +705,9 @@
       if (e.target === modalBackdrop) closeModal();
     });
 
+    // 初始化：擷取照片中的真實電線桿紋理並建立 3D 連動
+    buildRealPhotoPole();
+    window.addEventListener("resize", buildRealPhotoPole);
     updateRotation(0);
   </script>
 </body>
