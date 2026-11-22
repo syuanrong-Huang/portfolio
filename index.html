@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>街角作品集｜3D 寫實電線桿</title>
+  <title>台灣街角作品集｜3D 寫實電線桿</title>
   <style>
     * {
       box-sizing: border-box;
@@ -25,28 +25,29 @@
       position: relative;
     }
 
-    /* ================= 1. 寫實街景背景（GTA 陽光與景深風格） ================= */
+    /* ================= 1. 台灣寫實街景背景 ================= */
     .street-bg {
       position: absolute;
-      inset: -20px; /* 略微放大避免模糊邊緣露白 */
+      inset: -20px;
       z-index: 0;
       background-size: cover;
-      background-position: center bottom;
+      background-position: center center;
       background-repeat: no-repeat;
-      /* 模擬遊戲鏡頭景深與午后陽光對比 */
-      filter: blur(2.5px) contrast(1.06) saturate(1.12) brightness(0.95);
+      /* 模擬相機大光圈景深與台灣午后陽光對比 */
+      filter: blur(2.2px) contrast(1.06) saturate(1.15) brightness(0.96);
       transform: scale(1.03);
+      transition: background-image 0.5s ease;
     }
 
-    /* GTA 風格午后陽光與空氣感遮罩 */
+    /* 台灣午后陽光空氣感遮罩 */
     .sunlight-overlay {
       position: absolute;
       inset: 0;
       z-index: 1;
       pointer-events: none;
       background:
-        radial-gradient(circle at 82% 18%, rgba(255, 244, 214, 0.42) 0%, rgba(255, 244, 214, 0) 48%),
-        linear-gradient(180deg, rgba(15, 23, 42, 0.08) 0%, rgba(15, 23, 42, 0.02) 55%, rgba(10, 14, 20, 0.42) 100%);
+        radial-gradient(circle at 80% 15%, rgba(255, 246, 220, 0.38) 0%, rgba(255, 246, 220, 0) 48%),
+        linear-gradient(180deg, rgba(15, 23, 42, 0.08) 0%, rgba(15, 23, 42, 0.02) 55%, rgba(10, 14, 20, 0.44) 100%);
     }
 
     /* 空中寫實電線 */
@@ -58,10 +59,10 @@
       height: 36%;
       z-index: 2;
       pointer-events: none;
-      opacity: 0.75;
+      opacity: 0.72;
     }
 
-    /* 電線桿落在地面的斜射陽光陰影（GTA 強烈日照感） */
+    /* 電線桿落在地面的斜射陽光陰影 */
     .pole-ground-shadow {
       position: absolute;
       bottom: 6%;
@@ -82,7 +83,7 @@
       left: 50%;
       transform: translateX(-50%);
       z-index: 20;
-      background: rgba(15, 23, 42, 0.72);
+      background: rgba(15, 23, 42, 0.76);
       backdrop-filter: blur(10px);
       border: 1px solid rgba(255, 255, 255, 0.16);
       padding: 8px 20px;
@@ -129,7 +130,6 @@
       transition: none;
     }
 
-    /* 16 面寫實風化水泥柱體 */
     .pole-segment {
       position: absolute;
       top: -8%;
@@ -139,11 +139,9 @@
       backface-visibility: hidden;
       background-color: #8c8f92;
       background-repeat: repeat;
-      /* 模擬水泥柱接縫與歲月水痕 */
       box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.12);
     }
 
-    /* 金屬抱箍環（寫實鍍鋅鋼質感，跟著電線桿一起轉） */
     .pole-segment::before {
       content: "";
       position: absolute;
@@ -157,7 +155,6 @@
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.45);
     }
 
-    /* 底部風化反光警示貼條（帶點磨損感，跟著一起轉） */
     .pole-segment::after {
       content: "";
       position: absolute;
@@ -193,7 +190,6 @@
       height: 100%;
       background: #f8fafc;
       border-radius: 2px;
-      /* 寫實紙張貼在圓柱上的投影 */
       box-shadow: 0 14px 28px rgba(0, 0, 0, 0.42), 0 2px 6px rgba(0, 0, 0, 0.25);
       position: relative;
       overflow: hidden;
@@ -206,7 +202,6 @@
       box-shadow: 0 18px 36px rgba(0, 0, 0, 0.52);
     }
 
-    /* 傳單上方與下方的膠帶（增加街頭真實感） */
     .tape-top {
       position: absolute;
       top: -5px;
@@ -226,7 +221,6 @@
       display: block;
     }
 
-    /* 內建海報範本 */
     .default-poster {
       width: 100%;
       height: 100%;
@@ -271,7 +265,6 @@
       align-items: center;
     }
 
-    /* 轉動時的真實環境光影遮罩 */
     .shade-overlay {
       position: absolute;
       inset: 0;
@@ -292,7 +285,7 @@
       display: flex;
       align-items: center;
       gap: 14px;
-      background: rgba(15, 23, 42, 0.82);
+      background: rgba(15, 23, 42, 0.84);
       backdrop-filter: blur(12px);
       border: 1px solid rgba(255, 255, 255, 0.15);
       padding: 10px 18px;
@@ -410,7 +403,7 @@
 </head>
 <body>
 
-  <!-- 1. 真實攝影街景背景（GTA 午后陽光感） -->
+  <!-- 1. 台灣街景背景 -->
   <div class="street-bg" id="streetBg"></div>
   <div class="sunlight-overlay"></div>
   <svg class="overhead-wires" viewBox="0 0 1440 320" preserveAspectRatio="none">
@@ -452,13 +445,13 @@
   <script>
     /**
      * =================================================================
-     * 【設定區 1：背景街景照片】
-     * 預設使用 Unsplash 真實陽光街景照片（帶有棕櫚樹、柏油路與陽光感）。
-     * 如果你想換成自己拍的台灣街景照，只要把照片上傳到 GitHub（例如 "street.jpg"），
-     * 並把下方改成 const BG_IMAGE_URL = "./street.jpg"; 即可！
+     * 【設定區 1：台灣街道背景照片】
+     * 已預設為「台灣台北真實街道」照片。
+     * 如果你想換成自己用手機拍的台灣巷口照片，只要把照片上傳到 GitHub（例如 "taiwan_street.jpg"），
+     * 並把下方改成 const BG_IMAGE_URL = "./taiwan_street.jpg"; 即可！
      * =================================================================
      */
-    const BG_IMAGE_URL = "https://images.unsplash.com/photo-1514924013411-cbf25faa35bb?auto=format&fit=crop&w=1920&q=80";
+    const BG_IMAGE_URL = "https://images.unsplash.com/photo-1552993873-0dd1110e025f?auto=format&fit=crop&w=1920&q=80";
 
     /**
      * =================================================================
@@ -512,40 +505,34 @@
       }
     ];
 
-    // 套用真實街景背景圖
+    // 套用台灣街景背景圖
     document.getElementById("streetBg").style.backgroundImage = `url('${BG_IMAGE_URL}')`;
 
-    /**
-     * 使用 HTML5 Canvas 即時生成「寫實風化水泥材質貼圖」
-     * 讓電線桿擁有真實石礫顆粒、微細孔洞與歲月斑駁感，旋轉時極具真實感
-     */
+    // 生成寫實風化水泥材質貼圖
     function generateConcreteTexture() {
       const canvas = document.createElement("canvas");
       canvas.width = 256;
       canvas.height = 512;
       const ctx = canvas.getContext("2d");
 
-      // 水泥底色
       ctx.fillStyle = "#8a8d91";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // 隨機細微砂石與氣孔噪點
       for (let i = 0; i < 18000; i++) {
         const x = Math.random() * canvas.width;
         const y = Math.random() * canvas.height;
         const size = Math.random() * 2.2;
         const shade = Math.random();
         if (shade > 0.65) {
-          ctx.fillStyle = "rgba(235, 238, 242, 0.16)"; // 淺色石英砂粒
+          ctx.fillStyle = "rgba(235, 238, 242, 0.16)";
         } else if (shade < 0.35) {
-          ctx.fillStyle = "rgba(35, 38, 42, 0.22)"; // 深色水泥氣孔
+          ctx.fillStyle = "rgba(35, 38, 42, 0.22)";
         } else {
           ctx.fillStyle = "rgba(105, 108, 112, 0.18)";
         }
         ctx.fillRect(x, y, size, size);
       }
 
-      // 垂直雨水風化水痕
       for (let i = 0; i < 35; i++) {
         const x = Math.random() * canvas.width;
         const y = Math.random() * canvas.height;
@@ -566,7 +553,7 @@
     const prevBtn = document.getElementById("prevBtn");
     const nextBtn = document.getElementById("nextBtn");
 
-    // 1. 建立 16 面寫實水泥電線桿（貼上動態生成的水泥紋理）
+    // 1. 建立 16 面寫實水泥電線桿
     const POLE_SIDES = 16;
     const POLE_RADIUS = 138;
     const poleSegments = [];
@@ -576,7 +563,6 @@
       seg.className = "pole-segment";
       const angle = (360 / POLE_SIDES) * i;
       seg.style.backgroundImage = `url('${concreteTextureUrl}')`;
-      // 每一面稍微錯開材質位置，避免重複感
       seg.style.backgroundPosition = `${i * 16}px ${(i % 3) * 45}px`;
       seg.style.transform = `rotateY(${angle}deg) translateZ(${POLE_RADIUS}px)`;
       poleAssembly.appendChild(seg);
@@ -641,7 +627,7 @@
       flyerElements.push({ wrapper, shadeOverlay, baseAngle });
     });
 
-    // 3. 旋轉控制與 GTA 陽光方向性光影計算（右上方來光，左後方背光）
+    // 3. 旋轉控制與陽光光影計算
     let currentRotation = 0;
 
     function updateRotation(angle) {
@@ -652,15 +638,13 @@
       const activeIndex = Math.round(normalized / stepAngle) % totalFlyers;
       pageIndicator.textContent = `${activeIndex + 1} / ${totalFlyers}`;
 
-      // 動態計算水泥柱每一面的受光面與背光面（光源設在右前方 +35 度）
       poleSegments.forEach(({ el, baseAngle }) => {
         const worldAngle = (((baseAngle + currentRotation) % 360) + 360) % 360;
         const rad = ((worldAngle - 35) * Math.PI) / 180;
-        const light = Math.cos(rad); // +1 最亮受光面，-1 最暗背光面
+        const light = Math.cos(rad);
         el.style.filter = `brightness(${(0.76 + light * 0.28).toFixed(2)})`;
       });
 
-      // 動態計算傳單受光與背光
       flyerElements.forEach(({ shadeOverlay, baseAngle }) => {
         const worldAngle = (((baseAngle + currentRotation) % 360) + 360) % 360;
         const rad = ((worldAngle - 25) * Math.PI) / 180;
