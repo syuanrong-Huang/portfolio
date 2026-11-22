@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>台灣街角作品集｜3D 寫實電線桿</title>
+  <title>街角作品集｜斑駁黃黑警示桿</title>
   <style>
     * {
       box-sizing: border-box;
@@ -17,76 +17,47 @@
       height: 100vh;
       overflow: hidden;
       font-family: -apple-system, BlinkMacSystemFont, "Noto Sans TC", "Segoe UI", Roboto, sans-serif;
-      background: #1c1f24;
+      background: #2b2926;
       position: relative;
     }
 
-    /* ================= 1. 真實台灣街景背景（對接你的 bg.jpg） ================= */
-    .street-bg {
-      position: absolute;
-      inset: -12px;
-      z-index: 0;
-      background-image: url('./bg.jpg');
-      background-color: #3a4046;
-      background-size: cover;
-      background-position: center center;
-      background-repeat: no-repeat;
-      /* 輕微景深模糊，讓前景 3D 電線桿與背景自然融合不重影 */
-      filter: blur(2.2px) brightness(0.95) contrast(1.04);
-      transform: scale(1.02);
-    }
-
-    /* 畫面四周微暗角與自然空氣感 */
-    .vignette-overlay {
+    /* ================= 1. 真實背景照片（電線桿位於畫面偏右 72% 處） ================= */
+    .photo-stage {
       position: absolute;
       inset: 0;
-      z-index: 1;
-      pointer-events: none;
-      background: radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 0) 48%, rgba(10, 14, 20, 0.38) 100%);
+      z-index: 0;
+      background-image: url('./bg.jpg');
+      background-size: cover;
+      /* 鎖定右側 72% 處的電線桿為視覺焦點，確保不同螢幕比例下電線桿都在偏右合理位置 */
+      background-position: 72% center;
+      background-repeat: no-repeat;
     }
 
-    /* 空中寫實電線（從中央電線桿兩側延伸出去） */
-    .overhead-wires {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 36%;
-      z-index: 2;
-      pointer-events: none;
-      opacity: 0.85;
-    }
-
-    /* ================= 2. 頂部操作提示 ================= */
+    /* ================= 2. 頂部簡潔操作提示 ================= */
     .header-guide {
       position: absolute;
-      top: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 30;
-      background: rgba(15, 23, 42, 0.78);
+      top: 22px;
+      left: 32px;
+      z-index: 20;
+      background: rgba(24, 22, 20, 0.72);
       backdrop-filter: blur(10px);
       border: 1px solid rgba(255, 255, 255, 0.16);
-      padding: 8px 20px;
+      padding: 9px 18px;
       border-radius: 999px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
       font-size: 13px;
       color: #f8fafc;
+      letter-spacing: 0.3px;
       display: flex;
       align-items: center;
       gap: 8px;
-      white-space: nowrap;
     }
 
-    /* ================= 3. 3D 舞台與寫實台電電線桿 ================= */
+    /* ================= 3. 3D 傳單旋轉舞台（精準對齊照片中的電線桿位置） ================= */
     .scene {
-      width: 100%;
-      height: 100%;
-      perspective: 1450px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
+      position: absolute;
+      inset: 0;
+      perspective: 1300px;
       z-index: 5;
       cursor: grab;
     }
@@ -95,181 +66,41 @@
       cursor: grabbing;
     }
 
-    /* 整個 3D 旋轉群組：包含水泥柱、黃黑警示條、上方鐵架與雙變壓器、以及 4 張傳單 */
-    .pole-assembly {
-      position: relative;
+    /* 旋轉軸心精準對準照片中電線桿的中心線（偏右 72% 處） */
+    .pole-axis {
+      position: absolute;
+      left: 72%;
+      top: 46%;
       width: 0;
-      height: 100%;
+      height: 0;
       transform-style: preserve-3d;
-      transition: transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+      transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
     }
 
-    .pole-assembly.dragging {
+    .pole-axis.dragging {
       transition: none;
     }
 
-    /* 16 面寫實風化水泥柱體 */
-    .pole-segment {
-      position: absolute;
-      top: -4%;
-      width: 56px;
-      height: 108%;
-      left: -28px;
-      backface-visibility: hidden;
-      background-color: #848688;
-      background-repeat: repeat-y;
-    }
-
-    /* 斑駁風化的台電黃黑警示斜紋（貼近參考圖的磨損質感） */
-    .pole-segment::after {
-      content: "";
-      position: absolute;
-      bottom: 6%;
-      left: 0;
-      width: 100%;
-      height: 135px;
-      background: repeating-linear-gradient(
-        -38deg,
-        #d89b14,
-        #d89b14 14px,
-        #1e2226 14px,
-        #1e2226 28px
-      );
-      opacity: 0.9;
-      border-top: 2px solid rgba(25, 28, 32, 0.7);
-      box-shadow: inset 0 0 18px rgba(0, 0, 0, 0.45);
-    }
-
-    /* ================= 4. 電線桿上方：寫實鍍鋅鐵架、礙子與雙變壓器（跟著一起轉） ================= */
-    .pole-hardware {
-      position: absolute;
-      top: 5%;
-      left: 0;
-      width: 0;
-      height: 180px;
-      transform-style: preserve-3d;
-      pointer-events: none;
-    }
-
-    /* 橫向鍍鋅角鋼支架 */
-    .crossarm {
-      position: absolute;
-      top: 38px;
-      left: -195px;
-      width: 390px;
-      height: 16px;
-      background: linear-gradient(180deg, #94a3b8 0%, #475569 50%, #1e293b 100%);
-      border: 1px solid #334155;
-      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.55);
-    }
-
-    .crossarm-lower {
-      top: 145px;
-      left: -175px;
-      width: 350px;
-      height: 14px;
-    }
-
-    /* 斜撐鐵架 */
-    .brace-left {
-      position: absolute;
-      top: 52px;
-      left: -125px;
-      width: 115px;
-      height: 10px;
-      background: linear-gradient(180deg, #78716c, #44403c);
-      transform: rotate(36deg);
-      transform-origin: left center;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.4);
-    }
-
-    .brace-right {
-      position: absolute;
-      top: 52px;
-      left: 10px;
-      width: 115px;
-      height: 10px;
-      background: linear-gradient(180deg, #78716c, #44403c);
-      transform: rotate(-36deg);
-      transform-origin: right center;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.4);
-    }
-
-    /* 灰色圓筒變壓器（左右兩顆，具立體 3D 偏移） */
-    .transformer {
-      position: absolute;
-      border-radius: 6px 6px 10px 10px;
-      background: linear-gradient(90deg, #525860 0%, #9aa1a9 28%, #767d85 65%, #3d4248 100%);
-      border: 1px solid #334155;
-      box-shadow: 0 10px 22px rgba(0, 0, 0, 0.55);
-    }
-
-    .transformer::before {
-      content: "";
-      position: absolute;
-      top: -6px;
-      left: -3px;
-      right: -3px;
-      height: 8px;
-      background: #475569;
-      border-radius: 3px;
-    }
-
-    /* 變壓器上方陶瓷絕緣礙子 */
-    .insulator {
-      position: absolute;
-      top: -24px;
-      width: 12px;
-      height: 18px;
-      background: repeating-linear-gradient(180deg, #cbd5e1 0px, #cbd5e1 3px, #475569 3px, #475569 6px);
-      border-radius: 2px;
-    }
-
-    .tf-left {
-      top: 56px;
-      left: -158px;
-      width: 68px;
-      height: 92px;
-      transform: translateZ(38px);
-    }
-
-    .tf-right {
-      top: 72px;
-      left: 88px;
-      width: 60px;
-      height: 80px;
-      transform: translateZ(-28px);
-    }
-
-    /* 生鏽配電鐵箱 */
-    .rusty-box {
-      position: absolute;
-      top: 62px;
-      left: 132px;
-      width: 34px;
-      height: 76px;
-      background: linear-gradient(135deg, #8c6d53 0%, #6b4c35 55%, #4a3525 100%);
-      border: 1px solid #3e2723;
-      box-shadow: 4px 8px 16px rgba(0, 0, 0, 0.5);
-      transform: translateZ(45px);
-    }
-
-    /* ================= 5. 貼在電線桿上的傳單 ================= */
+    /* 傳單容器（繞著真實電線桿半徑旋轉，不繪製任何假柱體） */
     .flyer-wrapper {
       position: absolute;
-      width: 242px;
-      height: 352px;
-      left: -121px;
-      top: calc(50% - 145px);
+      width: 248px;
+      height: 360px;
+      left: -124px;
+      top: -180px;
       transform-style: preserve-3d;
+      transition: opacity 0.35s ease;
     }
 
     .flyer-card {
       width: 100%;
       height: 100%;
-      background: #f8fafc;
+      background: #fdfbf7;
       border-radius: 2px;
-      box-shadow: 0 14px 28px rgba(0, 0, 0, 0.48), 0 2px 6px rgba(0, 0, 0, 0.3);
+      /* 模擬紙張貼在真實電線桿上的接觸陰影 */
+      box-shadow:
+        -6px 10px 22px rgba(20, 18, 15, 0.42),
+        4px 6px 14px rgba(20, 18, 15, 0.28);
       position: relative;
       overflow: hidden;
       cursor: pointer;
@@ -277,21 +108,23 @@
     }
 
     .flyer-card:hover {
-      transform: scale(1.025);
-      box-shadow: 0 18px 36px rgba(0, 0, 0, 0.58);
+      transform: scale(1.03);
+      box-shadow:
+        -8px 14px 28px rgba(20, 18, 15, 0.52),
+        6px 10px 20px rgba(20, 18, 15, 0.35);
     }
 
-    /* 紅色電火布膠帶（台灣街頭貼傳單標配） */
+    /* 貼在傳單上方的半透明封箱膠帶/紅色電火布，增加與照片融合的真實感 */
     .tape-top {
       position: absolute;
-      top: -5px;
+      top: -6px;
       left: 50%;
       transform: translateX(-50%) rotate(-1.5deg);
-      width: 74px;
-      height: 18px;
-      background: rgba(215, 35, 35, 0.88);
+      width: 76px;
+      height: 19px;
+      background: rgba(210, 42, 42, 0.84);
       z-index: 10;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.35);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.28);
     }
 
     .flyer-img {
@@ -301,10 +134,11 @@
       display: block;
     }
 
+    /* 內建海報範本 */
     .default-poster {
       width: 100%;
       height: 100%;
-      padding: 24px 20px;
+      padding: 26px 22px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -324,72 +158,74 @@
     .poster-title {
       font-size: 22px;
       font-weight: 800;
-      line-height: 1.3;
+      line-height: 1.32;
       margin-top: 10px;
     }
 
     .poster-desc {
-      font-size: 13px;
-      line-height: 1.6;
-      opacity: 0.85;
-      margin-top: 8px;
+      font-size: 13.5px;
+      line-height: 1.65;
+      opacity: 0.86;
+      margin-top: 10px;
     }
 
     .poster-footer {
       border-top: 1px dashed rgba(0, 0, 0, 0.28);
-      padding-top: 10px;
-      font-size: 12px;
-      font-weight: 600;
+      padding-top: 12px;
+      font-size: 12.5px;
+      font-weight: 700;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
 
+    /* 配合照片左側來光的自然明暗遮罩 */
     .shade-overlay {
       position: absolute;
       inset: 0;
-      background: #090d16;
+      background: #1c1915;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.4s ease;
+      transition: opacity 0.35s ease;
       z-index: 8;
     }
 
-    /* ================= 6. 底部控制列 ================= */
+    /* ================= 4. 底部控制按鈕（放在電線桿下方） ================= */
     .controls {
       position: absolute;
-      bottom: 24px;
-      left: 50%;
+      bottom: 26px;
+      left: 72%;
       transform: translateX(-50%);
-      z-index: 30;
+      z-index: 20;
       display: flex;
       align-items: center;
-      gap: 14px;
-      background: rgba(15, 23, 42, 0.86);
+      gap: 12px;
+      background: rgba(24, 22, 20, 0.84);
       backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.16);
-      padding: 10px 18px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      padding: 9px 16px;
       border-radius: 999px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.38);
+      white-space: nowrap;
     }
 
     .btn-rotate {
       border: none;
-      background: #f8fafc;
-      color: #0f172a;
-      padding: 9px 18px;
+      background: #fdfbf7;
+      color: #1c1917;
+      padding: 8px 16px;
       border-radius: 999px;
-      font-size: 14px;
+      font-size: 13.5px;
       font-weight: 700;
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
       transition: background 0.2s, transform 0.15s;
     }
 
     .btn-rotate:hover {
-      background: #e2e8f0;
+      background: #e7e5e4;
       transform: translateY(-1px);
     }
 
@@ -398,18 +234,41 @@
     }
 
     .page-indicator {
-      font-size: 14px;
+      font-size: 13.5px;
       font-weight: 700;
-      color: #f8fafc;
-      min-width: 72px;
+      color: #fafaf9;
+      min-width: 58px;
       text-align: center;
     }
 
-    /* ================= 7. 放大燈箱 ================= */
+    /* 手機版窄螢幕微調 */
+    @media (max-width: 768px) {
+      .header-guide {
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 12px;
+        padding: 7px 14px;
+        white-space: nowrap;
+      }
+      .pole-axis {
+        left: 66%;
+      }
+      .controls {
+        left: 50%;
+      }
+      .flyer-wrapper {
+        width: 210px;
+        height: 306px;
+        left: -105px;
+        top: -153px;
+      }
+    }
+
+    /* ================= 5. 點擊放大閱讀燈箱（Lightbox） ================= */
     .modal-backdrop {
       position: fixed;
       inset: 0;
-      background: rgba(9, 13, 22, 0.86);
+      background: rgba(15, 14, 12, 0.85);
       backdrop-filter: blur(8px);
       z-index: 100;
       display: none;
@@ -424,20 +283,26 @@
 
     .modal-content {
       position: relative;
-      max-width: 480px;
+      max-width: 540px;
       width: 100%;
-      max-height: 88vh;
+      max-height: 90vh;
       background: #ffffff;
       border-radius: 10px;
       overflow: hidden;
       box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
       display: flex;
       flex-direction: column;
+      animation: popIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(0.94); }
+      to { opacity: 1; transform: scale(1); }
     }
 
     .modal-body {
       overflow-y: auto;
-      max-height: 75vh;
+      max-height: 78vh;
     }
 
     .modal-body img {
@@ -454,17 +319,20 @@
       height: 36px;
       border-radius: 50%;
       border: none;
-      background: rgba(15, 23, 42, 0.8);
+      background: rgba(24, 22, 20, 0.8);
       color: #fff;
       font-size: 18px;
       cursor: pointer;
       z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .modal-actions {
       padding: 14px 20px;
-      background: #f8fafc;
-      border-top: 1px solid #e2e8f0;
+      background: #fafaf9;
+      border-top: 1px solid #e7e5e4;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -472,7 +340,7 @@
 
     .modal-link-btn {
       text-decoration: none;
-      background: #0f172a;
+      background: #1c1917;
       color: #fff;
       padding: 8px 16px;
       border-radius: 6px;
@@ -483,59 +351,34 @@
 </head>
 <body>
 
-  <!-- 1. 真實台灣街景背景（請將你的街景照片命名為 bg.jpg 放在同一資料夾） -->
-  <div class="street-bg"></div>
-  <div class="vignette-overlay"></div>
+  <!-- 1. 真實背景照片（斑駁黃黑警示桿旁的城市街景） -->
+  <div class="photo-stage"></div>
 
-  <!-- 空中寫實電線 -->
-  <svg class="overhead-wires" viewBox="0 0 1440 320" preserveAspectRatio="none">
-    <path d="M0,45 Q420,95 720,65 Q1080,105 1440,55" fill="none" stroke="#181c20" stroke-width="2.8" />
-    <path d="M0,78 Q420,130 720,95 Q1080,145 1440,92" fill="none" stroke="#262b30" stroke-width="2" />
-    <path d="M0,115 Q420,165 720,125 Q1080,175 1440,128" fill="none" stroke="#363c42" stroke-width="1.4" />
-  </svg>
-
-  <!-- 2. 頂部提示 -->
+  <!-- 2. 左上角操作提示 -->
   <div class="header-guide">
-    <span>👈👉 拖曳電線桿或點擊按鈕旋轉 ｜ 🔍 點擊傳單放大檢視作品</span>
+    <span>👈👉 拖曳或按按鈕旋轉傳單 ｜ 🔍 點擊傳單放大閱讀</span>
   </div>
 
-  <!-- 3. 3D 寫實台電電線桿 + 雙變壓器 + 傳單 -->
+  <!-- 3. 貼附在真實電線桿上的 3D 旋轉傳單 -->
   <div class="scene" id="scene">
-    <div class="pole-assembly" id="poleAssembly">
-      <!-- 頂部鐵架與雙變壓器（會跟著電線桿一起 3D 旋轉） -->
-      <div class="pole-hardware">
-        <div class="crossarm"></div>
-        <div class="crossarm crossarm-lower"></div>
-        <div class="brace-left"></div>
-        <div class="brace-right"></div>
-        <div class="transformer tf-left">
-          <div class="insulator" style="left: 14px;"></div>
-          <div class="insulator" style="right: 14px;"></div>
-        </div>
-        <div class="transformer tf-right">
-          <div class="insulator" style="left: 12px;"></div>
-          <div class="insulator" style="right: 12px;"></div>
-        </div>
-        <div class="rusty-box"></div>
-      </div>
-    </div>
+    <div class="pole-axis" id="poleAxis"></div>
   </div>
 
-  <!-- 4. 底部旋轉按鈕 -->
+  <!-- 4. 底部旋轉控制列 -->
   <div class="controls">
-    <button class="btn-rotate" id="prevBtn">↺ 往左轉</button>
+    <button class="btn-rotate" id="prevBtn">↺ 上一張</button>
     <div class="page-indicator" id="pageIndicator">1 / 4</div>
-    <button class="btn-rotate" id="nextBtn">往右轉 ↻</button>
+    <button class="btn-rotate" id="nextBtn">下一張 ↻</button>
   </div>
 
-  <!-- 5. 放大燈箱 -->
+  <!-- 5. 點擊放大閱讀燈箱 -->
   <div class="modal-backdrop" id="modalBackdrop">
     <div class="modal-content">
       <button class="modal-close" id="modalClose">✕</button>
       <div class="modal-body" id="modalBody"></div>
       <div class="modal-actions">
-        <span id="modalTitle" style="font-weight:700; font-size:14px; color:#1e293b;">作品詳情</span>
-        <a id="modalLink" href="#" target="_blank" class="modal-link-btn">查看完整作品 / 聯絡方式 ↗</a>
+        <span id="modalTitle" style="font-weight:700; font-size:14px; color:#1c1917;">作品詳情</span>
+        <a id="modalLink" href="#" target="_blank" class="modal-link-btn">開啟完整連結 ↗</a>
       </div>
     </div>
   </div>
@@ -544,6 +387,8 @@
     /**
      * =================================================================
      * 【設定區：替換你朋友的 4 張海報圖片與連結】
+     * 把做好的 4 張海報（建議直式 2:3）上傳到同一個 GitHub 資料夾，
+     * 並將下方的 imageUrl 改成檔名（例如 "./poster1.jpg"）即可！
      * =================================================================
      */
     const FLYERS_DATA = [
@@ -551,8 +396,8 @@
         title: "01. 個人簡介與履歷",
         tag: "ABOUT ME / RESUME",
         heading: "嗨！我是創意設計與行銷企劃",
-        desc: "擅長品牌視覺規劃、社群創意企劃與跨媒介行銷活動。點擊這張傳單可查看完整經歷與履歷！",
-        footerText: "點擊放大查看完整履歷",
+        desc: "擅長品牌視覺規劃、社群創意企劃與跨媒介行銷活動。點擊這張傳單可放大查看完整經歷與履歷！",
+        footerText: "點擊放大閱讀履歷",
         bgColor: "#fef3c7",
         textColor: "#78350f",
         imageUrl: "", // ← 填入圖片檔名，例如 "./poster1.jpg"
@@ -563,7 +408,7 @@
         tag: "CAMPAIGN CASE 01",
         heading: "年度社群話題操作與視覺統籌",
         desc: "從前期市場洞察、主視覺海報設計到線下快閃互動，帶動品牌自然觸及成長 240%。",
-        footerText: "點擊查看專案成果圖",
+        footerText: "點擊放大查看專案",
         bgColor: "#e0f2fe",
         textColor: "#0c4a6e",
         imageUrl: "", // ← 填入圖片檔名，例如 "./poster2.jpg"
@@ -574,7 +419,7 @@
         tag: "VISUAL DESIGN 02",
         heading: "包裝設計與活動主視覺系列",
         desc: "結合街頭文化與極簡排版，打造高辨識度的產品包裝與展覽宣傳物。",
-        footerText: "點擊查看設計細節",
+        footerText: "點擊放大查看設計",
         bgColor: "#fce7f3",
         textColor: "#831843",
         imageUrl: "", // ← 填入圖片檔名，例如 "./poster3.jpg"
@@ -585,7 +430,7 @@
         tag: "CONTACT ME",
         heading: "歡迎找我聊聊設計與行銷！",
         desc: "正在尋找設計或行銷相關職位機會，歡迎隨時透過 Email 或 LinkedIn 與我聯繫面談。",
-        footerText: "點擊取得聯絡資訊",
+        footerText: "點擊放大取得聯絡資訊",
         bgColor: "#dcfce7",
         textColor: "#14532d",
         imageUrl: "", // ← 填入圖片檔名，例如 "./poster4.jpg"
@@ -593,84 +438,14 @@
       }
     ];
 
-    /**
-     * 生成高擬真「台電舊水泥電線桿材質（含垂直風化黑漬＋撕除小廣告的白色殘膠痕跡）」
-     */
-    function generateWeatheredPoleTexture() {
-      const canvas = document.createElement("canvas");
-      canvas.width = 256;
-      canvas.height = 512;
-      const ctx = canvas.getContext("2d");
-
-      // 舊水泥底色
-      ctx.fillStyle = "#86888a";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      // 細膩水泥砂礫與深色氣孔
-      for (let i = 0; i < 22000; i++) {
-        const x = Math.random() * canvas.width;
-        const y = Math.random() * canvas.height;
-        const size = Math.random() * 2.2;
-        const r = Math.random();
-        if (r > 0.68) {
-          ctx.fillStyle = "rgba(235, 238, 240, 0.15)";
-        } else if (r < 0.35) {
-          ctx.fillStyle = "rgba(30, 32, 35, 0.24)";
-        } else {
-          ctx.fillStyle = "rgba(100, 102, 105, 0.2)";
-        }
-        ctx.fillRect(x, y, size, size);
-      }
-
-      // 垂直雨水鏽漬與黑垢
-      for (let i = 0; i < 55; i++) {
-        const x = Math.random() * canvas.width;
-        const y = Math.random() * canvas.height;
-        const w = 1.5 + Math.random() * 5;
-        const h = 60 + Math.random() * 200;
-        ctx.fillStyle = "rgba(25, 28, 30, 0.11)";
-        ctx.fillRect(x, y, w, h);
-      }
-
-      // 台灣電線桿靈魂細節：過去小廣告撕除後留下的白色殘膠與紙屑斑塊
-      for (let i = 0; i < 18; i++) {
-        const x = Math.random() * (canvas.width - 20);
-        const y = 80 + Math.random() * 280;
-        const w = 6 + Math.random() * 18;
-        const h = 8 + Math.random() * 24;
-        ctx.fillStyle = "rgba(240, 242, 245, 0.35)";
-        ctx.fillRect(x, y, w, h);
-      }
-
-      return canvas.toDataURL("image/png");
-    }
-
-    const concreteTextureUrl = generateWeatheredPoleTexture();
-
-    const poleAssembly = document.getElementById("poleAssembly");
+    const poleAxis = document.getElementById("poleAxis");
     const scene = document.getElementById("scene");
     const pageIndicator = document.getElementById("pageIndicator");
     const prevBtn = document.getElementById("prevBtn");
     const nextBtn = document.getElementById("nextBtn");
 
-    // 1. 建立 16 面寫實水泥電線桿（半徑調整為與背景電線桿一致的粗細）
-    const POLE_SIDES = 16;
-    const POLE_RADIUS = 132;
-    const poleSegments = [];
-
-    for (let i = 0; i < POLE_SIDES; i++) {
-      const seg = document.createElement("div");
-      seg.className = "pole-segment";
-      const angle = (360 / POLE_SIDES) * i;
-      seg.style.backgroundImage = `url('${concreteTextureUrl}')`;
-      seg.style.backgroundPosition = `${i * 19}px ${(i % 4) * 35}px`;
-      seg.style.transform = `rotateY(${angle}deg) translateZ(${POLE_RADIUS}px)`;
-      poleAssembly.appendChild(seg);
-      poleSegments.push({ el: seg, baseAngle: angle });
-    }
-
-    // 2. 將傳單貼附在電線桿外圍
-    const FLYER_RADIUS = 137;
+    // 貼附半徑設定為 148px，貼合照片中這根黃黑電線桿的真實表面弧度
+    const FLYER_RADIUS = 148;
     const totalFlyers = FLYERS_DATA.length;
     const stepAngle = 360 / totalFlyers;
     const flyerElements = [];
@@ -717,39 +492,43 @@
         card.appendChild(poster);
       }
 
+      // 點擊傳單開啟放大閱讀視窗
       card.addEventListener("click", () => {
         if (hasDragged) return;
         openModal(item);
       });
 
       wrapper.appendChild(card);
-      poleAssembly.appendChild(wrapper);
+      poleAxis.appendChild(wrapper);
       flyerElements.push({ wrapper, shadeOverlay, baseAngle });
     });
 
-    // 3. 旋轉控制與自然天光陰影計算
     let currentRotation = 0;
 
     function updateRotation(angle) {
       currentRotation = angle;
-      poleAssembly.style.transform = `rotateY(${currentRotation}deg)`;
+      poleAxis.style.transform = `rotateY(${currentRotation}deg)`;
 
       const normalized = (((-currentRotation % 360) + 360) % 360);
       const activeIndex = Math.round(normalized / stepAngle) % totalFlyers;
       pageIndicator.textContent = `${activeIndex + 1} / ${totalFlyers}`;
 
-      poleSegments.forEach(({ el, baseAngle }) => {
+      flyerElements.forEach(({ wrapper, shadeOverlay, baseAngle }) => {
         const worldAngle = (((baseAngle + currentRotation) % 360) + 360) % 360;
-        const rad = ((worldAngle - 30) * Math.PI) / 180;
-        const light = Math.cos(rad);
-        el.style.filter = `brightness(${(0.75 + light * 0.28).toFixed(2)})`;
-      });
-
-      flyerElements.forEach(({ shadeOverlay, baseAngle }) => {
-        const worldAngle = (((baseAngle + currentRotation) % 360) + 360) % 360;
-        const rad = ((worldAngle - 20) * Math.PI) / 180;
+        const rad = ((worldAngle + 25) * Math.PI) / 180; // 配合照片左側自然陽光
         const facing = Math.cos(rad);
-        const darkness = Math.max(0, (1 - facing) * 0.36);
+        const frontFacing = Math.cos((worldAngle * Math.PI) / 180);
+
+        // 轉到電線桿背後時自動淡出，避免穿透實心電線桿看到背面傳單
+        if (frontFacing < -0.15) {
+          wrapper.style.opacity = "0";
+          wrapper.style.pointerEvents = "none";
+        } else {
+          wrapper.style.opacity = "1";
+          wrapper.style.pointerEvents = "auto";
+        }
+
+        const darkness = Math.max(0, (1 - facing) * 0.34);
         shadeOverlay.style.opacity = darkness.toFixed(2);
       });
     }
@@ -763,7 +542,7 @@
       if (e.key === "Escape") closeModal();
     });
 
-    // 4. 滑鼠與觸控拖曳旋轉
+    // 滑鼠與觸控拖曳旋轉
     let isDragging = false;
     let hasDragged = false;
     let startX = 0;
@@ -774,20 +553,20 @@
       hasDragged = false;
       startX = clientX;
       startRotation = currentRotation;
-      poleAssembly.classList.add("dragging");
+      poleAxis.classList.add("dragging");
     }
 
     function onDragMove(clientX) {
       if (!isDragging) return;
       const deltaX = clientX - startX;
       if (Math.abs(deltaX) > 5) hasDragged = true;
-      updateRotation(startRotation + deltaX * 0.45);
+      updateRotation(startRotation + deltaX * 0.48);
     }
 
     function onDragEnd() {
       if (!isDragging) return;
       isDragging = false;
-      poleAssembly.classList.remove("dragging");
+      poleAxis.classList.remove("dragging");
       const snapped = Math.round(currentRotation / stepAngle) * stepAngle;
       updateRotation(snapped);
       setTimeout(() => { hasDragged = false; }, 50);
@@ -801,7 +580,7 @@
     window.addEventListener("touchmove", (e) => onDragMove(e.touches[0].clientX), { passive: true });
     window.addEventListener("touchend", onDragEnd);
 
-    // 5. 燈箱放大預覽
+    // 點擊放大閱讀燈箱邏輯
     const modalBackdrop = document.getElementById("modalBackdrop");
     const modalBody = document.getElementById("modalBody");
     const modalTitle = document.getElementById("modalTitle");
@@ -817,13 +596,13 @@
         modalBody.innerHTML = `<img src="${item.imageUrl}" alt="${item.title}" />`;
       } else {
         modalBody.innerHTML = `
-          <div style="padding: 36px 28px; background:${item.bgColor}; color:${item.textColor}; min-height: 360px; display:flex; flex-direction:column; justify-content:space-between;">
+          <div style="padding: 40px 30px; background:${item.bgColor}; color:${item.textColor}; min-height: 380px; display:flex; flex-direction:column; justify-content:space-between;">
             <div>
               <span style="font-size:12px; font-weight:700; padding:4px 10px; border-radius:4px; background:rgba(0,0,0,0.08);">${item.tag}</span>
-              <h2 style="font-size:26px; font-weight:800; margin-top:16px; line-height:1.35;">${item.heading}</h2>
-              <p style="font-size:15px; line-height:1.75; margin-top:16px;">${item.desc}</p>
+              <h2 style="font-size:28px; font-weight:800; margin-top:16px; line-height:1.35;">${item.heading}</h2>
+              <p style="font-size:16px; line-height:1.8; margin-top:16px;">${item.desc}</p>
             </div>
-            <p style="font-size:12px; opacity:0.75; margin-top:24px;">（提示：將程式碼內的 imageUrl 換成圖片檔名後，這裡就會顯示高清設計海報原圖）</p>
+            <p style="font-size:12.5px; opacity:0.75; margin-top:28px;">（提示：將程式碼內的 imageUrl 換成圖片檔名後，點擊傳單就會在這裡顯示高清設計海報原圖）</p>
           </div>
         `;
       }
