@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>街角作品集</title>
+  <title>街角作品集｜環繞視角體驗</title>
   <style>
     * {
       box-sizing: border-box;
@@ -17,22 +17,66 @@
       height: 100vh;
       overflow: hidden;
       font-family: -apple-system, BlinkMacSystemFont, "Noto Sans TC", "Segoe UI", Roboto, sans-serif;
-      background: #2b2926;
+      background: #1e1c1a;
       position: relative;
     }
 
-    /* ================= 1. 真實街景背景照片 ================= */
+    /* ================= 1. 環繞視差背景層（模擬人繞著電線桿走動時，遠景街道的水平位移） ================= */
     .photo-stage {
       position: absolute;
-      inset: 0;
+      /* 預留左右 18% 寬度空間，讓環繞走動時背景有充足的水平移動餘裕不露黑邊 */
+      top: -4%;
+      bottom: -4%;
+      left: -18%;
+      right: -18%;
       z-index: 0;
       background-image: url('./bg.jpg?v=3');
       background-size: cover;
       background-position: 72% center;
       background-repeat: no-repeat;
+      transition: transform 0.75s cubic-bezier(0.22, 1, 0.36, 1), filter 0.75s ease;
+      will-change: transform, filter;
     }
 
-    /* ================= 2. 頂部操作提示 ================= */
+    .photo-stage.dragging {
+      transition: none;
+    }
+
+    /* ================= 2. 動態環境光影與陽光光暈層（隨視角變化） ================= */
+    .dynamic-lighting {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      pointer-events: none;
+      transition: opacity 0.75s ease, background 0.75s ease;
+      background: radial-gradient(circle at 25% 20%, rgba(255, 244, 210, 0.25) 0%, rgba(255, 244, 210, 0) 60%);
+    }
+
+    .dynamic-lighting.dragging {
+      transition: none;
+    }
+
+    /* 鏡頭光暈（當人走到逆光側時微微浮現的真實日照光斑） */
+    .lens-flare {
+      position: absolute;
+      top: 12%;
+      left: 22%;
+      width: 380px;
+      height: 380px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255, 250, 230, 0.45) 0%, rgba(255, 225, 160, 0.12) 40%, rgba(255, 225, 160, 0) 70%);
+      z-index: 3;
+      pointer-events: none;
+      opacity: 0.2;
+      transition: opacity 0.75s ease, transform 0.75s ease;
+      mix-blend-mode: screen;
+    }
+
+    .lens-flare.dragging {
+      transition: none;
+    }
+
+    /* ================= 3. 頂部操作提示 ================= */
     .header-guide {
       position: absolute;
       top: 22px;
@@ -49,7 +93,7 @@
       letter-spacing: 0.3px;
     }
 
-    /* ================= 3. 3D 旋轉舞台（精準疊合在照片右側電線桿上） ================= */
+    /* ================= 4. 3D 環繞視角舞台 ================= */
     .scene {
       position: absolute;
       inset: 0;
@@ -62,7 +106,6 @@
       cursor: grabbing;
     }
 
-    /* 旋轉軸心精準對齊照片偏右 72% 處的真實電線桿中心 */
     .pole-axis {
       position: absolute;
       left: 72%;
@@ -70,14 +113,13 @@
       width: 0;
       height: 100%;
       transform-style: preserve-3d;
-      transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+      transition: transform 0.75s cubic-bezier(0.22, 1, 0.36, 1), left 0.75s cubic-bezier(0.22, 1, 0.36, 1);
     }
 
     .pole-axis.dragging {
       transition: none;
     }
 
-    /* 採樣原圖電線桿真實紋理的 3D 柱面（與傳單同步旋轉） */
     .real-pole-segment {
       position: absolute;
       top: 0;
@@ -86,7 +128,6 @@
       background-repeat: no-repeat;
     }
 
-    /* 傳單容器 */
     .flyer-wrapper {
       position: absolute;
       width: 246px;
@@ -191,7 +232,7 @@
       z-index: 8;
     }
 
-    /* ================= 4. 底部控制列 ================= */
+    /* ================= 5. 底部控制列（改為「往左走 / 往右走」環繞視角語意） ================= */
     .controls {
       position: absolute;
       bottom: 26px;
@@ -238,7 +279,7 @@
       font-size: 13.5px;
       font-weight: 700;
       color: #fafaf9;
-      min-width: 58px;
+      min-width: 78px;
       text-align: center;
     }
 
@@ -264,7 +305,7 @@
       }
     }
 
-    /* ================= 5. 點擊放大閱讀燈箱 ================= */
+    /* ================= 6. 點擊放大閱讀燈箱 ================= */
     .modal-backdrop {
       position: fixed;
       inset: 0;
@@ -351,27 +392,31 @@
 </head>
 <body>
 
-  <!-- 1. 真實背景照片 -->
-  <div class="photo-stage"></div>
+  <!-- 1. 環繞視差背景層 -->
+  <div class="photo-stage" id="photoStage"></div>
 
-  <!-- 2. 操作提示 -->
+  <!-- 2. 動態環境光影與陽光光暈 -->
+  <div class="dynamic-lighting" id="dynamicLighting"></div>
+  <div class="lens-flare" id="lensFlare"></div>
+
+  <!-- 3. 頂部提示 -->
   <div class="header-guide">
-    <span>👈👉 拖曳電線桿或按按鈕旋轉 ｜ 🔍 點擊傳單放大閱讀</span>
+    <span>🚶‍♂️ 左右滑動或按按鈕「繞著電線桿走一圈」 ｜ 🔍 點擊傳單放大閱讀</span>
   </div>
 
-  <!-- 3. 3D 旋轉舞台（真實電線桿貼圖 + 傳單同步旋轉） -->
+  <!-- 4. 3D 環繞視角舞台 -->
   <div class="scene" id="scene">
     <div class="pole-axis" id="poleAxis"></div>
   </div>
 
-  <!-- 4. 旋轉控制按鈕 -->
+  <!-- 5. 底部控制列 -->
   <div class="controls">
-    <button class="btn-rotate" id="prevBtn">↺ 上一張</button>
-    <div class="page-indicator" id="pageIndicator">1 / 4</div>
-    <button class="btn-rotate" id="nextBtn">下一張 ↻</button>
+    <button class="btn-rotate" id="prevBtn">← 繞到左側</button>
+    <div class="page-indicator" id="pageIndicator">視角 1 / 4</div>
+    <button class="btn-rotate" id="nextBtn">繞到右側 →</button>
   </div>
 
-  <!-- 5. 放大閱讀視窗 -->
+  <!-- 6. 放大閱讀視窗 -->
   <div class="modal-backdrop" id="modalBackdrop">
     <div class="modal-content">
       <button class="modal-close" id="modalClose">✕</button>
@@ -432,28 +477,26 @@
     ];
 
     const poleAxis = document.getElementById("poleAxis");
+    const photoStage = document.getElementById("photoStage");
+    const dynamicLighting = document.getElementById("dynamicLighting");
+    const lensFlare = document.getElementById("lensFlare");
     const scene = document.getElementById("scene");
     const pageIndicator = document.getElementById("pageIndicator");
     const prevBtn = document.getElementById("prevBtn");
     const nextBtn = document.getElementById("nextBtn");
 
     const POLE_SIDES = 20;
-    const POLE_RADIUS = 138; // 精準匹配照片中這根電線桿的視覺寬度（直徑約 276px）
+    const POLE_RADIUS = 138;
     const FLYER_RADIUS = 142;
 
     const poleSegments = [];
     const flyerElements = [];
 
-    /**
-     * 核心技術：直接讀取 bg.jpg 照片裡偏右（72% 處）這根真實黃黑電線桿的像素，
-     * 製作無縫鏡像拼接的真實貼圖，讓照片裡的電線桿本體可以跟著傳單一起 3D 轉動！
-     */
     function buildRealPhotoPole() {
       const img = new Image();
       img.src = "./bg.jpg?v=3";
 
       img.onload = () => {
-        // 計算照片裁切比例（模擬 background-size: cover; background-position: 72% center）
         const vw = window.innerWidth;
         const vh = window.innerHeight;
         const imgRatio = img.width / img.height;
@@ -472,7 +515,6 @@
           offsetY = 0;
         }
 
-        // 離屏畫布重現完整背景畫面，精準擷取電線桿中心（72% 處）左右共 260px 寬的真實電線桿影像
         const fullCanvas = document.createElement("canvas");
         fullCanvas.width = vw;
         fullCanvas.height = vh;
@@ -480,18 +522,15 @@
         fullCtx.drawImage(img, offsetX, offsetY, drawW, drawH);
 
         const poleCenterX = vw * (vw <= 768 ? 0.68 : 0.72);
-        const stripW = 250; // 擷取真實電線桿本體寬度
+        const stripW = 250;
         const srcX = Math.max(0, poleCenterX - stripW / 2);
 
-        // 建立「原圖 + 水平鏡像」無縫循環貼圖（確保轉 360 度時黃黑斜紋與水泥孔洞完全無接縫）
         const seamlessCanvas = document.createElement("canvas");
         seamlessCanvas.width = stripW * 2;
         seamlessCanvas.height = vh;
         const sCtx = seamlessCanvas.getContext("2d");
 
-        // 左半部：原始電線桿表面
         sCtx.drawImage(fullCanvas, srcX, 0, stripW, vh, 0, 0, stripW, vh);
-        // 右半部：鏡像無縫銜接（讓斜線連續繞回背面）
         sCtx.save();
         sCtx.translate(stripW * 2, 0);
         sCtx.scale(-1, 1);
@@ -500,7 +539,6 @@
 
         const seamlessUrl = seamlessCanvas.toDataURL("image/jpeg", 0.92);
 
-        // 清除舊柱面並生成 20 面真實貼圖圓柱
         poleSegments.forEach(s => s.el.remove());
         poleSegments.length = 0;
 
@@ -519,16 +557,14 @@
           seg.style.backgroundPosition = `${-(i * (circumference / POLE_SIDES))}px 0px`;
           seg.style.transform = `rotateY(${angle}deg) translateZ(${POLE_RADIUS}px)`;
 
-          // 插入在傳單圖層之前，確保電線桿在傳單內側
           poleAxis.insertBefore(seg, poleAxis.firstChild);
           poleSegments.push({ el: seg, baseAngle: angle });
         }
 
-        updateRotation(currentRotation);
+        updateCameraOrbit(cameraAngle);
       };
     }
 
-    // 建立 4 張傳單
     const totalFlyers = FLYERS_DATA.length;
     const stepAngle = 360 / totalFlyers;
 
@@ -584,27 +620,64 @@
       flyerElements.push({ wrapper, shadeOverlay, baseAngle });
     });
 
-    let currentRotation = 0;
+    /**
+     * 核心運鏡邏輯：模擬「觀察者（Camera）繞著電線桿走動」
+     * 1. 電線桿與傳單產生相對視角旋轉
+     * 2. 背景街景產生視差水平位移（Parallax）與細微景深起伏
+     * 3. 陽光方向固定在世界座標系（World Space）中，因此隨著人走動，逆光/順光與鏡頭光暈會真實變化
+     */
+    let cameraAngle = 0;
 
-    function updateRotation(angle) {
-      currentRotation = angle;
-      poleAxis.style.transform = `rotateY(${currentRotation}deg)`;
+    function updateCameraOrbit(angle) {
+      cameraAngle = angle;
+      const radCam = (cameraAngle * Math.PI) / 180;
 
-      const normalized = (((-currentRotation % 360) + 360) % 360);
+      // 1. 觀察者繞著電線桿移動，電線桿相對於鏡頭的旋轉
+      poleAxis.style.transform = `rotateY(${cameraAngle}deg)`;
+
+      // 2. 遠景街道視差位移（人往右走時，遠景建築往左滑動，營造真實空間移動感）
+      const parallaxX = Math.sin(radCam) * 110; // 左右最大位移 110px
+      const parallaxScale = 1.02 + Math.cos(radCam) * 0.015; // 走動時的微幅前後距離感
+      photoStage.style.transform = `translate3d(${parallaxX.toFixed(1)}px, 0, 0) scale(${parallaxScale.toFixed(3)})`;
+
+      // 3. 陽光位置固定在世界空間（Sun Angle = 140度方向），人走到不同角度時的光線變化
+      const sunRelativeAngle = ((cameraAngle + 140) * Math.PI) / 180;
+      const facingSun = Math.cos(sunRelativeAngle); // +1 代表正面迎向陽光（逆光暖陽），-1 代表背向陽光（順光清晰）
+
+      // 背景亮度與色溫隨迎光/背光動態變化
+      const bgBrightness = 0.94 + facingSun * 0.12;
+      const bgWarmth = Math.max(0, facingSun * 0.18);
+      photoStage.style.filter = `brightness(${bgBrightness.toFixed(2)}) sepia(${bgWarmth.toFixed(2)}) contrast(1.04)`;
+
+      // 畫面環境光罩與鏡頭光暈隨走動角度滑動與明滅
+      const flareOpacity = Math.max(0.05, (facingSun + 0.4) * 0.48);
+      const flareShiftX = Math.sin(sunRelativeAngle) * 180;
+      lensFlare.style.opacity = flareOpacity.toFixed(2);
+      lensFlare.style.transform = `translate3d(${flareShiftX.toFixed(1)}px, 0, 0)`;
+
+      const shadowTint = Math.max(0, -facingSun * 0.22);
+      dynamicLighting.style.background = `
+        radial-gradient(circle at ${50 + Math.sin(sunRelativeAngle) * 35}% 18%,
+          rgba(255, 240, 195, ${Math.max(0.08, facingSun * 0.35).toFixed(2)}) 0%,
+          rgba(25, 28, 36, ${shadowTint.toFixed(2)}) 85%)
+      `;
+
+      // 4. 更新目前面對的視角編號
+      const normalized = (((-cameraAngle % 360) + 360) % 360);
       const activeIndex = Math.round(normalized / stepAngle) % totalFlyers;
-      pageIndicator.textContent = `${activeIndex + 1} / ${totalFlyers}`;
+      pageIndicator.textContent = `視角 ${activeIndex + 1} / ${totalFlyers}`;
 
-      // 柱面受光方向與原圖一致（左側陽光較亮、右側微背光）
+      // 5. 電線桿柱面受光（陽光固定在世界座標，所以人繞著走時，電線桿的明暗交界線會真實移動！）
       poleSegments.forEach(({ el, baseAngle }) => {
-        const worldAngle = (((baseAngle + currentRotation) % 360) + 360) % 360;
+        const worldAngle = (((baseAngle + cameraAngle) % 360) + 360) % 360;
         const rad = ((worldAngle + 28) * Math.PI) / 180;
         const light = Math.cos(rad);
-        el.style.filter = `brightness(${(0.84 + light * 0.22).toFixed(2)})`;
+        el.style.filter = `brightness(${(0.82 + light * 0.24).toFixed(2)})`;
       });
 
-      // 傳單受光與遮蔽
+      // 6. 傳單受光與遮蔽
       flyerElements.forEach(({ wrapper, shadeOverlay, baseAngle }) => {
-        const worldAngle = (((baseAngle + currentRotation) % 360) + 360) % 360;
+        const worldAngle = (((baseAngle + cameraAngle) % 360) + 360) % 360;
         const rad = ((worldAngle + 25) * Math.PI) / 180;
         const facing = Math.cos(rad);
         const frontFacing = Math.cos((worldAngle * Math.PI) / 180);
@@ -617,46 +690,53 @@
           wrapper.style.pointerEvents = "auto";
         }
 
-        const darkness = Math.max(0, (1 - facing) * 0.32);
+        const darkness = Math.max(0, (1 - facing) * 0.34);
         shadeOverlay.style.opacity = darkness.toFixed(2);
       });
     }
 
-    prevBtn.addEventListener("click", () => updateRotation(currentRotation + stepAngle));
-    nextBtn.addEventListener("click", () => updateRotation(currentRotation - stepAngle));
+    prevBtn.addEventListener("click", () => updateCameraOrbit(cameraAngle + stepAngle));
+    nextBtn.addEventListener("click", () => updateCameraOrbit(cameraAngle - stepAngle));
 
     window.addEventListener("keydown", (e) => {
-      if (e.key === "ArrowLeft") updateRotation(currentRotation + stepAngle);
-      if (e.key === "ArrowRight") updateRotation(currentRotation - stepAngle);
+      if (e.key === "ArrowLeft") updateCameraOrbit(cameraAngle + stepAngle);
+      if (e.key === "ArrowRight") updateCameraOrbit(cameraAngle - stepAngle);
       if (e.key === "Escape") closeModal();
     });
 
     let isDragging = false;
     let hasDragged = false;
     let startX = 0;
-    let startRotation = 0;
+    let startAngle = 0;
+
+    function setDraggingState(active) {
+      [poleAxis, photoStage, dynamicLighting, lensFlare].forEach(el => {
+        if (active) el.classList.add("dragging");
+        else el.classList.remove("dragging");
+      });
+    }
 
     function onDragStart(clientX) {
       isDragging = true;
       hasDragged = false;
       startX = clientX;
-      startRotation = currentRotation;
-      poleAxis.classList.add("dragging");
+      startAngle = cameraAngle;
+      setDraggingState(true);
     }
 
     function onDragMove(clientX) {
       if (!isDragging) return;
       const deltaX = clientX - startX;
       if (Math.abs(deltaX) > 5) hasDragged = true;
-      updateRotation(startRotation + deltaX * 0.48);
+      updateCameraOrbit(startAngle + deltaX * 0.48);
     }
 
     function onDragEnd() {
       if (!isDragging) return;
       isDragging = false;
-      poleAxis.classList.remove("dragging");
-      const snapped = Math.round(currentRotation / stepAngle) * stepAngle;
-      updateRotation(snapped);
+      setDraggingState(false);
+      const snapped = Math.round(cameraAngle / stepAngle) * stepAngle;
+      updateCameraOrbit(snapped);
       setTimeout(() => { hasDragged = false; }, 50);
     }
 
@@ -705,10 +785,9 @@
       if (e.target === modalBackdrop) closeModal();
     });
 
-    // 初始化：擷取照片中的真實電線桿紋理並建立 3D 連動
     buildRealPhotoPole();
     window.addEventListener("resize", buildRealPhotoPole);
-    updateRotation(0);
+    updateCameraOrbit(0);
   </script>
 </body>
 </html>
