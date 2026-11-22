@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>台灣街角作品集｜3D 寫實電線桿</title>
+  <title>台灣街角作品集｜路邊電線桿</title>
   <style>
     * {
       box-sizing: border-box;
@@ -18,72 +18,127 @@
       overflow: hidden;
       font-family: -apple-system, BlinkMacSystemFont, "Noto Sans TC", "Segoe UI", Roboto, sans-serif;
       background: #1e293b;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
       position: relative;
     }
 
-    /* ================= 1. 台灣寫實街景背景 ================= */
+    /* ================= 1. 台灣公園旁街景背景 ================= */
     .street-bg {
       position: absolute;
       inset: -20px;
       z-index: 0;
       background-size: cover;
-      background-position: center center;
+      background-position: 65% center; /* 讓街道與公園綠樹在右側自然延伸 */
       background-repeat: no-repeat;
-      /* 模擬相機大光圈景深與台灣午后陽光對比 */
-      filter: blur(2.2px) contrast(1.06) saturate(1.15) brightness(0.96);
+      filter: blur(2px) contrast(1.05) saturate(1.12) brightness(0.96);
       transform: scale(1.03);
-      transition: background-image 0.5s ease;
     }
 
-    /* 台灣午后陽光空氣感遮罩 */
+    /* 午后陽光與空氣感濾鏡 */
     .sunlight-overlay {
       position: absolute;
       inset: 0;
       z-index: 1;
       pointer-events: none;
       background:
-        radial-gradient(circle at 80% 15%, rgba(255, 246, 220, 0.38) 0%, rgba(255, 246, 220, 0) 48%),
-        linear-gradient(180deg, rgba(15, 23, 42, 0.08) 0%, rgba(15, 23, 42, 0.02) 55%, rgba(10, 14, 20, 0.44) 100%);
+        radial-gradient(circle at 82% 16%, rgba(255, 248, 225, 0.42) 0%, rgba(255, 248, 225, 0) 50%),
+        linear-gradient(180deg, rgba(15, 23, 42, 0.06) 0%, rgba(15, 23, 42, 0) 65%, rgba(10, 14, 20, 0.35) 100%);
     }
 
-    /* 空中寫實電線 */
+    /* 空中寫實電線（從左側電線桿頂端向右側街道延伸，符合透視） */
     .overhead-wires {
       position: absolute;
       top: 0;
       left: 0;
       width: 100%;
-      height: 36%;
+      height: 35%;
       z-index: 2;
       pointer-events: none;
       opacity: 0.72;
     }
 
-    /* 電線桿落在地面的斜射陽光陰影 */
+    /* ================= 2. 地面空間層（人行道 + 紅白路緣石 + 柏油路） ================= */
+    .ground-plane {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 14%;
+      z-index: 3;
+      pointer-events: none;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* 台灣人行道水泥磚地（電線桿立在這裡） */
+    .sidewalk-surface {
+      width: 100%;
+      height: 58%;
+      background: linear-gradient(180deg, #9ca3af 0%, #868d96 100%);
+      border-top: 2px solid rgba(255, 255, 255, 0.25);
+      box-shadow: inset 0 6px 14px rgba(0, 0, 0, 0.18);
+      position: relative;
+    }
+
+    /* 台灣路邊標配：紅白相間路緣石 */
+    .taiwan-curb {
+      width: 100%;
+      height: 14%;
+      background: repeating-linear-gradient(
+        90deg,
+        #c83e3e 0px,
+        #c83e3e 110px,
+        #e5e7eb 110px,
+        #e5e7eb 220px
+      );
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.35);
+    }
+
+    /* 最前景柏油路面邊緣 */
+    .road-edge {
+      width: 100%;
+      height: 28%;
+      background: #373b40;
+      background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 0);
+      background-size: 12px 12px;
+    }
+
+    /* 電線桿在人行道上的陽光投影 */
     .pole-ground-shadow {
       position: absolute;
-      bottom: 6%;
-      left: 50%;
-      transform: translateX(-22%) skewX(-48deg);
-      width: 420px;
-      height: 44px;
-      background: radial-gradient(ellipse at center, rgba(10, 12, 16, 0.68) 0%, rgba(10, 12, 16, 0) 75%);
+      bottom: 6.5%;
+      left: 38%; /* 對齊電線桿位置 */
+      transform: translateX(-10%) skewX(-52deg);
+      width: 440px;
+      height: 36px;
+      background: radial-gradient(ellipse at center, rgba(15, 18, 24, 0.65) 0%, rgba(15, 18, 24, 0) 75%);
       border-radius: 50%;
-      z-index: 2;
+      z-index: 4;
       pointer-events: none;
     }
 
-    /* ================= 2. 頂部提示標題 ================= */
+    /* 電線桿水泥底座（讓電線桿合理地「種」在人行道上） */
+    .pole-base-collar {
+      position: absolute;
+      bottom: 6.2%;
+      left: 38%;
+      transform: translateX(-50%);
+      width: 310px;
+      height: 28px;
+      background: linear-gradient(180deg, #7f848a 0%, #5c6166 100%);
+      border-radius: 50% / 35%;
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.45), inset 0 2px 4px rgba(255, 255, 255, 0.2);
+      z-index: 4;
+      pointer-events: none;
+    }
+
+    /* ================= 3. 頂部操作提示 ================= */
     .header-guide {
       position: absolute;
       top: 22px;
       left: 50%;
       transform: translateX(-50%);
       z-index: 20;
-      background: rgba(15, 23, 42, 0.76);
+      background: rgba(15, 23, 42, 0.78);
       backdrop-filter: blur(10px);
       border: 1px solid rgba(255, 255, 255, 0.16);
       padding: 8px 20px;
@@ -91,23 +146,19 @@
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
       font-size: 13px;
       color: #f8fafc;
-      letter-spacing: 0.3px;
       display: flex;
       align-items: center;
       gap: 8px;
       white-space: nowrap;
     }
 
-    /* ================= 3. 3D 舞台與寫實水泥電線桿 ================= */
+    /* ================= 4. 3D 舞台（電線桿位於畫面偏左路邊 38% 處） ================= */
     .scene {
       width: 100%;
       height: 100%;
-      perspective: 1350px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      perspective: 1400px;
       position: relative;
-      z-index: 5;
+      z-index: 6;
       cursor: grab;
     }
 
@@ -116,25 +167,34 @@
     }
 
     .pole-assembly {
-      position: relative;
+      position: absolute;
+      left: 38%; /* 合理路邊構圖位置，手機版會自動置中 */
+      top: 0;
       width: 0;
-      height: 100%;
+      height: 92.5%; /* 底部精準落在人行道水泥基座上 */
       transform-style: preserve-3d;
       transition: transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
-      display: flex;
-      align-items: center;
-      justify-content: center;
     }
 
     .pole-assembly.dragging {
       transition: none;
     }
 
+    /* 手機窄螢幕自動將電線桿置中，確保傳單完整可讀 */
+    @media (max-width: 768px) {
+      .pole-assembly,
+      .pole-base-collar,
+      .pole-ground-shadow {
+        left: 50%;
+      }
+    }
+
+    /* 16 面寫實水泥柱體 */
     .pole-segment {
       position: absolute;
-      top: -8%;
+      top: -6%;
       width: 56px;
-      height: 104%;
+      height: 106%;
       left: -28px;
       backface-visibility: hidden;
       background-color: #8c8f92;
@@ -142,10 +202,11 @@
       box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.12);
     }
 
+    /* 金屬抱箍環 */
     .pole-segment::before {
       content: "";
       position: absolute;
-      top: 21%;
+      top: 19%;
       left: 0;
       width: 100%;
       height: 18px;
@@ -155,13 +216,14 @@
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.45);
     }
 
+    /* 底部台電風格黃黑警示貼條（位置貼近人行道基座上方，符合真實規範） */
     .pole-segment::after {
       content: "";
       position: absolute;
-      bottom: 12%;
+      bottom: 4%;
       left: 0;
       width: 100%;
-      height: 64px;
+      height: 62px;
       background: repeating-linear-gradient(
         -45deg,
         #d99b06,
@@ -169,19 +231,19 @@
         #1c2127 10px,
         #1c2127 20px
       );
-      opacity: 0.85;
+      opacity: 0.86;
       border-top: 2px solid rgba(30, 41, 59, 0.8);
       border-bottom: 2px solid rgba(30, 41, 59, 0.8);
       box-shadow: inset 0 0 14px rgba(0, 0, 0, 0.45);
     }
 
-    /* ================= 4. 貼在電線桿上的傳單 ================= */
+    /* ================= 5. 貼在電線桿上的傳單 ================= */
     .flyer-wrapper {
       position: absolute;
       width: 242px;
       height: 352px;
       left: -121px;
-      top: calc(50% - 196px);
+      top: calc(50% - 185px);
       transform-style: preserve-3d;
     }
 
@@ -275,22 +337,22 @@
       z-index: 8;
     }
 
-    /* ================= 5. 底部控制列 ================= */
+    /* ================= 6. 底部控制列 ================= */
     .controls {
       position: absolute;
-      bottom: 26px;
+      bottom: 24px;
       left: 50%;
       transform: translateX(-50%);
       z-index: 20;
       display: flex;
       align-items: center;
       gap: 14px;
-      background: rgba(15, 23, 42, 0.84);
+      background: rgba(15, 23, 42, 0.86);
       backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.16);
       padding: 10px 18px;
       border-radius: 999px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
     }
 
     .btn-rotate {
@@ -325,7 +387,7 @@
       text-align: center;
     }
 
-    /* ================= 6. 放大燈箱（Lightbox） ================= */
+    /* ================= 7. 放大燈箱（Lightbox） ================= */
     .modal-backdrop {
       position: fixed;
       inset: 0;
@@ -403,34 +465,44 @@
 </head>
 <body>
 
-  <!-- 1. 台灣街景背景 -->
+  <!-- 1. 台灣公園旁林蔭街景背景 -->
   <div class="street-bg" id="streetBg"></div>
   <div class="sunlight-overlay"></div>
-  <svg class="overhead-wires" viewBox="0 0 1440 320" preserveAspectRatio="none">
-    <path d="M0,38 Q720,165 1440,22" fill="none" stroke="#1e293b" stroke-width="2.6" />
-    <path d="M0,74 Q720,215 1440,58" fill="none" stroke="#334155" stroke-width="1.8" />
-    <path d="M0,112 Q720,248 1440,94" fill="none" stroke="#475569" stroke-width="1.2" />
-  </svg>
-  <div class="pole-ground-shadow"></div>
 
-  <!-- 2. 頂部提示 -->
+  <!-- 空中電線（從左側電線桿向外延伸的透視感） -->
+  <svg class="overhead-wires" viewBox="0 0 1440 320" preserveAspectRatio="none">
+    <path d="M0,18 Q540,95 1440,145" fill="none" stroke="#1e293b" stroke-width="2.5" />
+    <path d="M0,45 Q540,130 1440,185" fill="none" stroke="#334155" stroke-width="1.8" />
+    <path d="M0,78 Q540,165 1440,225" fill="none" stroke="#475569" stroke-width="1.2" />
+  </svg>
+
+  <!-- 2. 地面空間層（人行道 + 紅白路緣石 + 柏油路 + 水泥基座） -->
+  <div class="ground-plane">
+    <div class="sidewalk-surface"></div>
+    <div class="taiwan-curb"></div>
+    <div class="road-edge"></div>
+  </div>
+  <div class="pole-ground-shadow"></div>
+  <div class="pole-base-collar"></div>
+
+  <!-- 3. 頂部提示 -->
   <div class="header-guide">
-    <span>👈👉 拖曳水泥電線桿或點擊按鈕旋轉 ｜ 🔍 點擊傳單放大看作品</span>
+    <span>👈👉 拖曳路邊電線桿或點擊按鈕旋轉 ｜ 🔍 點擊傳單放大看作品</span>
   </div>
 
-  <!-- 3. 3D 寫實電線桿 + 傳單 -->
+  <!-- 4. 3D 寫實電線桿 + 傳單 -->
   <div class="scene" id="scene">
     <div class="pole-assembly" id="poleAssembly"></div>
   </div>
 
-  <!-- 4. 底部旋轉按鈕 -->
+  <!-- 5. 底部旋轉按鈕 -->
   <div class="controls">
     <button class="btn-rotate" id="prevBtn">↺ 往左轉</button>
     <div class="page-indicator" id="pageIndicator">1 / 4</div>
     <button class="btn-rotate" id="nextBtn">往右轉 ↻</button>
   </div>
 
-  <!-- 5. 放大燈箱 -->
+  <!-- 6. 放大燈箱 -->
   <div class="modal-backdrop" id="modalBackdrop">
     <div class="modal-content">
       <button class="modal-close" id="modalClose">✕</button>
@@ -445,13 +517,12 @@
   <script>
     /**
      * =================================================================
-     * 【設定區 1：台灣街道背景照片】
-     * 已預設為「台灣台北真實街道」照片。
-     * 如果你想換成自己用手機拍的台灣巷口照片，只要把照片上傳到 GitHub（例如 "taiwan_street.jpg"），
-     * 並把下方改成 const BG_IMAGE_URL = "./taiwan_street.jpg"; 即可！
+     * 【設定區 1：台灣公園旁街景照片】
+     * 預設使用台灣林蔭大道/公園旁街景照片。
+     * 若想換成自己拍的台灣公園旁或巷口照片，上傳到 GitHub 後改成 "./你的照片.jpg" 即可！
      * =================================================================
      */
-    const BG_IMAGE_URL = "https://images.unsplash.com/photo-1552993873-0dd1110e025f?auto=format&fit=crop&w=1920&q=80";
+    const BG_IMAGE_URL = "https://images.unsplash.com/photo-1571407970349-bc81e7e96d47?auto=format&fit=crop&w=1920&q=80";
 
     /**
      * =================================================================
@@ -505,7 +576,6 @@
       }
     ];
 
-    // 套用台灣街景背景圖
     document.getElementById("streetBg").style.backgroundImage = `url('${BG_IMAGE_URL}')`;
 
     // 生成寫實風化水泥材質貼圖
