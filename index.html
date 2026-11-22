@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>街角作品集｜斑駁黃黑警示桿</title>
+  <title>街角作品集</title>
   <style>
     * {
       box-sizing: border-box;
@@ -21,14 +21,13 @@
       position: relative;
     }
 
-    /* ================= 1. 真實背景照片（電線桿位於畫面偏右 72% 處） ================= */
+    /* ================= 1. 直接使用你的真實背景照片（無任何假物件遮擋） ================= */
     .photo-stage {
       position: absolute;
       inset: 0;
       z-index: 0;
-      background-image: url('./bg.jpg');
+      background-image: url('./bg.jpg?v=3');
       background-size: cover;
-      /* 鎖定右側 72% 處的電線桿為視覺焦點，確保不同螢幕比例下電線桿都在偏右合理位置 */
       background-position: 72% center;
       background-repeat: no-repeat;
     }
@@ -48,12 +47,9 @@
       font-size: 13px;
       color: #f8fafc;
       letter-spacing: 0.3px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
     }
 
-    /* ================= 3. 3D 傳單旋轉舞台（精準對齊照片中的電線桿位置） ================= */
+    /* ================= 3. 傳單旋轉舞台（精準對齊照片右側真實電線桿） ================= */
     .scene {
       position: absolute;
       inset: 0;
@@ -66,7 +62,7 @@
       cursor: grabbing;
     }
 
-    /* 旋轉軸心精準對準照片中電線桿的中心線（偏右 72% 處） */
+    /* 旋轉軸心對齊照片偏右 72% 處的真實電線桿中心 */
     .pole-axis {
       position: absolute;
       left: 72%;
@@ -81,15 +77,15 @@
       transition: none;
     }
 
-    /* 傳單容器（繞著真實電線桿半徑旋轉，不繪製任何假柱體） */
+    /* 傳單本身（完全不生成任何電線桿柱體） */
     .flyer-wrapper {
       position: absolute;
-      width: 248px;
-      height: 360px;
-      left: -124px;
-      top: -180px;
+      width: 246px;
+      height: 356px;
+      left: -123px;
+      top: -178px;
       transform-style: preserve-3d;
-      transition: opacity 0.35s ease;
+      transition: opacity 0.3s ease;
     }
 
     .flyer-card {
@@ -97,7 +93,6 @@
       height: 100%;
       background: #fdfbf7;
       border-radius: 2px;
-      /* 模擬紙張貼在真實電線桿上的接觸陰影 */
       box-shadow:
         -6px 10px 22px rgba(20, 18, 15, 0.42),
         4px 6px 14px rgba(20, 18, 15, 0.28);
@@ -114,7 +109,6 @@
         6px 10px 20px rgba(20, 18, 15, 0.35);
     }
 
-    /* 貼在傳單上方的半透明封箱膠帶/紅色電火布，增加與照片融合的真實感 */
     .tape-top {
       position: absolute;
       top: -6px;
@@ -134,7 +128,6 @@
       display: block;
     }
 
-    /* 內建海報範本 */
     .default-poster {
       width: 100%;
       height: 100%;
@@ -179,7 +172,6 @@
       align-items: center;
     }
 
-    /* 配合照片左側來光的自然明暗遮罩 */
     .shade-overlay {
       position: absolute;
       inset: 0;
@@ -190,7 +182,7 @@
       z-index: 8;
     }
 
-    /* ================= 4. 底部控制按鈕（放在電線桿下方） ================= */
+    /* ================= 4. 底部控制列（位於右側電線桿下方） ================= */
     .controls {
       position: absolute;
       bottom: 26px;
@@ -241,7 +233,6 @@
       text-align: center;
     }
 
-    /* 手機版窄螢幕微調 */
     @media (max-width: 768px) {
       .header-guide {
         left: 50%;
@@ -251,7 +242,7 @@
         white-space: nowrap;
       }
       .pole-axis {
-        left: 66%;
+        left: 68%;
       }
       .controls {
         left: 50%;
@@ -264,7 +255,7 @@
       }
     }
 
-    /* ================= 5. 點擊放大閱讀燈箱（Lightbox） ================= */
+    /* ================= 5. 點擊放大閱讀燈箱 ================= */
     .modal-backdrop {
       position: fixed;
       inset: 0;
@@ -351,27 +342,27 @@
 </head>
 <body>
 
-  <!-- 1. 真實背景照片（斑駁黃黑警示桿旁的城市街景） -->
+  <!-- 1. 直接顯示你的照片 -->
   <div class="photo-stage"></div>
 
-  <!-- 2. 左上角操作提示 -->
+  <!-- 2. 操作提示 -->
   <div class="header-guide">
     <span>👈👉 拖曳或按按鈕旋轉傳單 ｜ 🔍 點擊傳單放大閱讀</span>
   </div>
 
-  <!-- 3. 貼附在真實電線桿上的 3D 旋轉傳單 -->
+  <!-- 3. 貼在照片電線桿上的傳單 -->
   <div class="scene" id="scene">
     <div class="pole-axis" id="poleAxis"></div>
   </div>
 
-  <!-- 4. 底部旋轉控制列 -->
+  <!-- 4. 旋轉控制按鈕 -->
   <div class="controls">
     <button class="btn-rotate" id="prevBtn">↺ 上一張</button>
     <div class="page-indicator" id="pageIndicator">1 / 4</div>
     <button class="btn-rotate" id="nextBtn">下一張 ↻</button>
   </div>
 
-  <!-- 5. 點擊放大閱讀燈箱 -->
+  <!-- 5. 放大閱讀視窗 -->
   <div class="modal-backdrop" id="modalBackdrop">
     <div class="modal-content">
       <button class="modal-close" id="modalClose">✕</button>
@@ -384,13 +375,6 @@
   </div>
 
   <script>
-    /**
-     * =================================================================
-     * 【設定區：替換你朋友的 4 張海報圖片與連結】
-     * 把做好的 4 張海報（建議直式 2:3）上傳到同一個 GitHub 資料夾，
-     * 並將下方的 imageUrl 改成檔名（例如 "./poster1.jpg"）即可！
-     * =================================================================
-     */
     const FLYERS_DATA = [
       {
         title: "01. 個人簡介與履歷",
@@ -444,7 +428,6 @@
     const prevBtn = document.getElementById("prevBtn");
     const nextBtn = document.getElementById("nextBtn");
 
-    // 貼附半徑設定為 148px，貼合照片中這根黃黑電線桿的真實表面弧度
     const FLYER_RADIUS = 148;
     const totalFlyers = FLYERS_DATA.length;
     const stepAngle = 360 / totalFlyers;
@@ -492,7 +475,6 @@
         card.appendChild(poster);
       }
 
-      // 點擊傳單開啟放大閱讀視窗
       card.addEventListener("click", () => {
         if (hasDragged) return;
         openModal(item);
@@ -515,11 +497,10 @@
 
       flyerElements.forEach(({ wrapper, shadeOverlay, baseAngle }) => {
         const worldAngle = (((baseAngle + currentRotation) % 360) + 360) % 360;
-        const rad = ((worldAngle + 25) * Math.PI) / 180; // 配合照片左側自然陽光
+        const rad = ((worldAngle + 25) * Math.PI) / 180;
         const facing = Math.cos(rad);
         const frontFacing = Math.cos((worldAngle * Math.PI) / 180);
 
-        // 轉到電線桿背後時自動淡出，避免穿透實心電線桿看到背面傳單
         if (frontFacing < -0.15) {
           wrapper.style.opacity = "0";
           wrapper.style.pointerEvents = "none";
@@ -542,7 +523,6 @@
       if (e.key === "Escape") closeModal();
     });
 
-    // 滑鼠與觸控拖曳旋轉
     let isDragging = false;
     let hasDragged = false;
     let startX = 0;
@@ -580,7 +560,6 @@
     window.addEventListener("touchmove", (e) => onDragMove(e.touches[0].clientX), { passive: true });
     window.addEventListener("touchend", onDragEnd);
 
-    // 點擊放大閱讀燈箱邏輯
     const modalBackdrop = document.getElementById("modalBackdrop");
     const modalBody = document.getElementById("modalBody");
     const modalTitle = document.getElementById("modalTitle");
