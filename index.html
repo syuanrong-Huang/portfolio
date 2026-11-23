@@ -46,19 +46,19 @@
       pointer-events: none;
     }
 
-    /* ================= 2. 保留原本照片中的電線桿 ================= */
+    /* ================= 2. 僅裁切原本照片中的「電線桿本體」（左右邊緣柔和羽化，不遮擋兩側動態街景） ================= */
     .pole-cutout {
       position: absolute;
       left: 69.5%;
       top: 50%;
       transform: translate(-50%, -50%);
-      background-image: url('./bg.jpg?v=35');
-      background-size: cover;
+      background-image: url('./bg.jpg?v=36');
       background-position: 69.5% center;
       background-repeat: no-repeat;
       z-index: 2;
       pointer-events: none;
-      box-shadow: -3px 0 10px rgba(24, 22, 20, 0.22), 4px 0 12px rgba(24, 22, 20, 0.28);
+      -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 12%, #000 88%, transparent 100%);
+      mask-image: linear-gradient(90deg, transparent 0%, #000 12%, #000 88%, transparent 100%);
     }
 
     /* ================= 3. 電線桿上的 9 張傳單容器 ================= */
@@ -366,9 +366,9 @@
 </head>
 <body>
 
-  <!-- 1. 動態街景背景（無電線桿影片 + 保留原本照片中的電線桿） -->
+  <!-- 1. 動態街景背景（無電線桿影片 + 僅裁切原本照片中的電線桿本體） -->
   <div class="scene-wrapper" id="sceneWrapper">
-    <video class="bg-video" id="bgVideo" src="./bg.mp4?v=35" poster="./bg.jpg?v=35" autoplay loop muted playsinline></video>
+    <video class="bg-video" id="bgVideo" src="./bg.mp4?v=36" poster="./bg.jpg?v=36" autoplay loop muted playsinline></video>
     <div class="pole-cutout" id="poleCutout"></div>
   </div>
 
@@ -437,9 +437,12 @@
       const flyerWidth = zoneWidth * 0.43;
       const flyerHeight = flyerWidth * 1.414;
 
-      poleCutout.style.width = `${(zoneWidth * 1.02).toFixed(1)}px`;
+      // 僅涵蓋電線桿柱身寬度（約 0.62 倍 zoneWidth），左右兩側留白交給動態影片呈現
+      const poleBodyWidth = zoneWidth * 0.62;
+      poleCutout.style.width = `${poleBodyWidth.toFixed(1)}px`;
       poleCutout.style.height = `${vh}px`;
       poleCutout.style.backgroundSize = `${renderedBgWidth.toFixed(1)}px ${renderedBgHeight.toFixed(1)}px`;
+      poleCutout.style.backgroundPosition = `${(poleBodyWidth / 2 - renderedBgWidth * 0.695).toFixed(1)}px center`;
 
       poleFlyersZone.style.width = `${zoneWidth.toFixed(1)}px`;
       poleFlyersZone.style.height = `${(vh * 0.96).toFixed(1)}px`;
