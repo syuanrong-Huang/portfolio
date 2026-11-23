@@ -26,7 +26,7 @@
       position: absolute;
       inset: 0;
       z-index: 0;
-      background-image: url('./bg.jpg?v=21');
+      background-image: url('./bg.jpg?v=22');
       background-size: cover;
       background-position: 69.5% center;
       background-repeat: no-repeat;
@@ -65,7 +65,7 @@
       pointer-events: none;
     }
 
-    /* ================= 3. 電線桿上的 9 張傳單容器（拉寬至 190px 給 A4 放大版充足呼吸感） ================= */
+    /* ================= 3. 電線桿上的 9 張傳單容器 ================= */
     .pole-flyers-zone {
       position: absolute;
       left: 69.5%;
@@ -83,7 +83,6 @@
       pointer-events: none;
     }
 
-    /* 單張傳單（標準 A4 比例 1:1.414，放大至 94x133px） */
     .mini-flyer {
       position: absolute;
       width: 94px;
@@ -351,7 +350,7 @@
       }
     }
 
-    /* ================= 6. Zoom-in 放大閱讀視窗 ================= */
+    /* ================= 6. Zoom-in 放大閱讀視窗（全幅自適應高度，免上下捲動一次看整張） ================= */
     .reader-overlay {
       position: fixed;
       inset: 0;
@@ -360,7 +359,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 24px;
+      padding: 14px 20px;
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.35s ease;
@@ -371,14 +370,15 @@
       pointer-events: auto;
     }
 
+    /* 關鍵優化：寬度改為 auto，讓圖片依照螢幕高度 86vh 等比例最大化完整呈現，完全不需要捲動 */
     .reader-card {
       position: relative;
-      width: 100%;
-      max-width: 520px;
-      max-height: 84vh;
+      width: auto;
+      max-width: 94vw;
+      max-height: 91vh;
       background: #ffffff;
       border-radius: 10px;
-      box-shadow: 0 28px 70px rgba(0, 0, 0, 0.58);
+      box-shadow: 0 28px 75px rgba(0, 0, 0, 0.65);
       overflow: hidden;
       display: flex;
       flex-direction: column;
@@ -392,13 +392,13 @@
 
     .btn-close {
       position: fixed;
-      top: 24px;
-      right: 28px;
+      top: 20px;
+      right: 24px;
       width: 42px;
       height: 42px;
       border-radius: 50%;
-      border: 1px solid rgba(255, 255, 255, 0.22);
-      background: rgba(24, 22, 20, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.24);
+      background: rgba(24, 22, 20, 0.82);
       backdrop-filter: blur(8px);
       color: #ffffff;
       font-size: 18px;
@@ -416,19 +416,25 @@
     }
 
     .reader-viewport {
-      width: 100%;
-      overflow-y: auto;
-      max-height: 76vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #18181b;
+      overflow: hidden;
     }
 
+    /* 圖片自動依螢幕高度最大化等比例縮放，免上下滑動一次看完整張海報 */
     .reader-viewport img {
-      width: 100%;
+      width: auto;
       height: auto;
+      max-width: 92vw;
+      max-height: 85vh;
+      object-fit: contain;
       display: block;
     }
 
     .reader-footer {
-      padding: 14px 20px;
+      padding: 9px 16px;
       background: #fafaf9;
       border-top: 1px solid #e7e5e4;
       display: flex;
@@ -438,7 +444,7 @@
     }
 
     .page-title {
-      font-size: 14px;
+      font-size: 13.5px;
       font-weight: 700;
       color: #1c1917;
     }
@@ -447,9 +453,9 @@
       text-decoration: none;
       background: #1c1917;
       color: #ffffff;
-      padding: 7px 14px;
+      padding: 5px 12px;
       border-radius: 6px;
-      font-size: 12.5px;
+      font-size: 12px;
       font-weight: 600;
       white-space: nowrap;
     }
@@ -459,9 +465,9 @@
     }
 
     .back-hint {
-      margin-top: 14px;
-      font-size: 12.5px;
-      color: rgba(255, 255, 255, 0.78);
+      margin-top: 10px;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.8);
       letter-spacing: 0.4px;
       cursor: pointer;
     }
@@ -512,11 +518,6 @@
       { title: "09. 作品集 09", tag: "PAGE 09", heading: "作品集 09", desc: "", bgColor: "#fbcfe8", textColor: "#831843", imageUrl: "./9.png", externalLink: "" }
     ];
 
-    /**
-     * 配合 94x133px A4 放大版傳單的「拉寬錯落座標」：
-     * - 水平左右拉寬至 -16% ~ +16%，在 190px 寬度內剛好順著電線桿弧度往兩側延展且穩固伏貼
-     * - 垂直間距拉開至 8.5% ~ 91.5%，讓 9 張放大版海報互不遮擋標題
-     */
     const POLE_LAYOUT = [
       { x: -15, y:  9.0, rot: -4, doubleTape: false },
       { x:  16, y: 18.5, rot:  5, doubleTape: true  },
@@ -724,7 +725,6 @@
         `;
       }
 
-      readerViewport.scrollTop = 0;
       document.body.classList.add("zoomed");
     }
 
