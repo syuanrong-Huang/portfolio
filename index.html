@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>街角作品集｜環繞視角體驗</title>
+  <title>街角作品集｜15張傳單互動牆</title>
   <style>
     * {
       box-sizing: border-box;
@@ -21,766 +21,658 @@
       position: relative;
     }
 
-    /* ================= 1. 獨立裁切的純淨背景層（100% 不含原圖電線桿） ================= */
-    .bg-layer {
-      position: absolute;
-      inset: -24px;
-      z-index: 0;
-      background-size: cover;
-      background-position: center center;
-      background-repeat: no-repeat;
-      transition: opacity 0.75s ease, transform 0.85s cubic-bezier(0.22, 1, 0.36, 1), filter 0.75s ease;
-      will-change: opacity, transform, filter;
-    }
-
-    /* 背景 A：純淨馬路與行道樹側 */
-    .bg-road {
-      opacity: 1;
-      filter: blur(2px) brightness(0.95);
-    }
-
-    /* 背景 B：純淨磁磚牆壁與盆栽側 */
-    .bg-wall {
-      opacity: 0;
-      filter: blur(2px) brightness(0.92) sepia(0.06);
-    }
-
-    /* ================= 2. 動態陽光與環境光暈 ================= */
-    .dynamic-lighting {
+    /* ================= 1. 滿版清晰街景背景 ================= */
+    .street-scene {
       position: absolute;
       inset: 0;
-      z-index: 2;
-      pointer-events: none;
-      transition: background 0.85s ease;
+      z-index: 0;
+      background-image: url('./bg.jpg?v=12');
+      background-size: cover;
+      background-position: 72% center;
+      background-repeat: no-repeat;
+      transition: filter 0.45s cubic-bezier(0.22, 1, 0.36, 1), transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+      will-change: filter, transform;
     }
 
-    .lens-flare {
-      position: absolute;
-      top: 8%;
-      left: 20%;
-      width: 440px;
-      height: 440px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(255, 248, 220, 0.45) 0%, rgba(255, 220, 150, 0.14) 42%, rgba(255, 220, 150, 0) 70%);
-      z-index: 3;
-      pointer-events: none;
-      opacity: 0.2;
-      mix-blend-mode: screen;
-      transition: opacity 0.85s ease, transform 0.85s ease;
+    /* Zoom-in 閱讀時背景模糊暗化 */
+    body.zoomed .street-scene {
+      filter: blur(12px) brightness(0.62);
+      transform: scale(1.04);
     }
 
-    /* ================= 3. 頂部提示 ================= */
+    /* ================= 2. 頂部引導與進度提示 ================= */
     .header-guide {
       position: absolute;
-      top: 22px;
-      left: 32px;
+      top: 20px;
+      left: 28px;
       z-index: 20;
-      background: rgba(24, 22, 20, 0.76);
+      background: rgba(24, 22, 20, 0.8);
       backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.16);
+      border: 1px solid rgba(255, 255, 255, 0.18);
       padding: 9px 18px;
       border-radius: 999px;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.28);
       font-size: 13px;
       color: #f8fafc;
       letter-spacing: 0.3px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: opacity 0.3s ease;
     }
 
-    /* ================= 4. 唯一一根 3D 電線桿與傳單舞台 ================= */
-    .scene {
+    .progress-pill {
+      background: #ef4444;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 999px;
+    }
+
+    body.zoomed .header-guide {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* ================= 3. 電線桿上的 15 張傳單容器 ================= */
+    .pole-flyers-zone {
       position: absolute;
-      inset: 0;
-      perspective: 1400px;
-      z-index: 5;
-      cursor: grab;
+      left: 72%;
+      top: 50%;
+      width: 280px;
+      height: 95vh;
+      transform: translate(-50%, -50%);
+      perspective: 950px;
+      z-index: 10;
+      transition: opacity 0.3s ease;
     }
 
-    .scene:active {
-      cursor: grabbing;
+    body.zoomed .pole-flyers-zone {
+      opacity: 0;
+      pointer-events: none;
     }
 
-    .pole-axis {
+    /* 單張傳單外層定位容器 */
+    .mini-flyer {
       position: absolute;
-      left: 65%;
-      top: 0;
-      width: 0;
-      height: 100%;
-      transform-style: preserve-3d;
+      width: 76px;
+      height: 106px;
+      cursor: pointer;
       transition:
-        left 0.85s cubic-bezier(0.22, 1, 0.36, 1),
-        transform 0.85s cubic-bezier(0.22, 1, 0.36, 1);
-    }
-
-    .pole-axis.dragging {
-      transition: none;
-    }
-
-    .real-pole-segment {
-      position: absolute;
-      top: 0;
-      height: 100%;
-      backface-visibility: hidden;
-      background-repeat: no-repeat;
-    }
-
-    .flyer-wrapper {
-      position: absolute;
-      width: 244px;
-      height: 354px;
-      left: -122px;
-      top: calc(46% - 177px);
+        transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+        filter 0.25s ease;
       transform-style: preserve-3d;
-      transition: opacity 0.35s ease;
     }
 
-    .flyer-card {
+    .mini-flyer:hover {
+      transform: translate(-50%, -50%) scale(1.28) rotate(0deg) !important;
+      z-index: 99 !important;
+      filter: brightness(1.04) !important;
+    }
+
+    /* ================= 4. 微風吹拂紙張飄動動畫（上方膠帶固定，下方角落掀起） ================= */
+    @keyframes paperFlutterA {
+      0%, 42%, 100% {
+        transform: rotateX(0deg) rotateY(0deg) skewX(0deg);
+        box-shadow: -2px 4px 10px rgba(15, 14, 12, 0.45);
+      }
+      52% {
+        /* 一陣微風吹來，紙張下擺向外掀起、角落微微扭轉 */
+        transform: rotateX(22deg) rotateY(-8deg) skewX(-2.5deg);
+        box-shadow: -5px 12px 18px rgba(15, 14, 12, 0.36);
+      }
+      60% {
+        /* 風勢稍緩，紙張回落一半再輕顫 */
+        transform: rotateX(9deg) rotateY(4deg) skewX(1.2deg);
+        box-shadow: -3px 7px 13px rgba(15, 14, 12, 0.42);
+      }
+      68% {
+        /* 餘風再輕掀一下下擺 */
+        transform: rotateX(17deg) rotateY(-5deg) skewX(-1.8deg);
+        box-shadow: -4px 10px 16px rgba(15, 14, 12, 0.38);
+      }
+      78% {
+        transform: rotateX(3deg) rotateY(1deg) skewX(0.5deg);
+        box-shadow: -2px 5px 11px rgba(15, 14, 12, 0.44);
+      }
+    }
+
+    @keyframes paperFlutterB {
+      0%, 38%, 100% {
+        transform: rotateX(0deg) rotateY(0deg) skewX(0deg);
+        box-shadow: -2px 4px 10px rgba(15, 14, 12, 0.45);
+      }
+      49% {
+        transform: rotateX(25deg) rotateY(9deg) skewX(2.8deg);
+        box-shadow: -6px 13px 19px rgba(15, 14, 12, 0.35);
+      }
+      58% {
+        transform: rotateX(10deg) rotateY(-3deg) skewX(-1deg);
+        box-shadow: -3px 7px 13px rgba(15, 14, 12, 0.42);
+      }
+      67% {
+        transform: rotateX(19deg) rotateY(6deg) skewX(2deg);
+        box-shadow: -5px 11px 17px rgba(15, 14, 12, 0.37);
+      }
+      76% {
+        transform: rotateX(4deg) rotateY(-1deg) skewX(-0.4deg);
+        box-shadow: -2px 5px 11px rgba(15, 14, 12, 0.44);
+      }
+    }
+
+    /* 紙張本體：錨點鎖在頂部膠帶處 (50% 4px)，讓下方自由飄動 */
+    .paper-sheet {
       width: 100%;
       height: 100%;
       background: #fdfbf7;
       border-radius: 2px;
-      box-shadow:
-        -6px 10px 22px rgba(20, 18, 15, 0.42),
-        4px 6px 14px rgba(20, 18, 15, 0.28);
       position: relative;
-      overflow: hidden;
-      cursor: pointer;
-      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      transform-origin: 50% 4px;
+      transform-style: preserve-3d;
+      animation-duration: 6.5s;
+      animation-timing-function: ease-in-out;
+      animation-iteration-count: infinite;
+      will-change: transform, box-shadow;
     }
 
-    .flyer-card:hover {
-      transform: scale(1.03);
-      box-shadow:
-        -8px 14px 28px rgba(20, 18, 15, 0.52),
-        6px 10px 20px rgba(20, 18, 15, 0.35);
+    /* 滑鼠移上去看的時候，暫停飄動並撫平紙張方便閱讀 */
+    .mini-flyer:hover .paper-sheet {
+      animation-play-state: paused;
+      transform: rotateX(0deg) rotateY(0deg) skewX(0deg) !important;
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.65) !important;
     }
 
-    .tape-top {
+    /* 引導光暈動畫 */
+    @keyframes pulseBeacon {
+      0% {
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.85);
+      }
+      70% {
+        box-shadow: 0 0 0 12px rgba(239, 68, 68, 0);
+      }
+      100% {
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+      }
+    }
+
+    .mini-flyer.is-next .paper-sheet {
+      animation-name: paperFlutterA, pulseBeacon;
+      animation-duration: 6.5s, 1.8s;
+      outline: 2px solid #ef4444;
+    }
+
+    .mini-flyer.is-next {
+      z-index: 50 !important;
+    }
+
+    .guide-badge {
       position: absolute;
-      top: -6px;
+      top: -19px;
       left: 50%;
-      transform: translateX(-50%) rotate(-1.5deg);
-      width: 76px;
-      height: 19px;
-      background: rgba(210, 42, 42, 0.84);
-      z-index: 10;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.28);
+      transform: translateX(-50%);
+      background: #ef4444;
+      color: #ffffff;
+      font-size: 9.5px;
+      font-weight: 800;
+      padding: 2px 6px;
+      border-radius: 4px;
+      white-space: nowrap;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+      pointer-events: none;
+      letter-spacing: 0.4px;
+      z-index: 15;
     }
 
-    .flyer-img {
+    .guide-badge::after {
+      content: "";
+      position: absolute;
+      bottom: -3px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-width: 3px 3px 0;
+      border-style: solid;
+      border-color: #ef4444 transparent transparent;
+    }
+
+    .mini-flyer.is-read .mini-flyer-inner::after {
+      content: "✓";
+      position: absolute;
+      bottom: 4px;
+      left: 5px;
+      font-size: 10px;
+      font-weight: 900;
+      color: rgba(15, 23, 42, 0.55);
+    }
+
+    .mini-flyer-inner {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      border-radius: 2px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 8px 7px;
+      /* 紙張角落微捲高光質感 */
+      background-image: linear-gradient(135deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0) 45%, rgba(0,0,0,0.06) 100%);
+    }
+
+    .mini-flyer-inner img {
+      position: absolute;
+      inset: 0;
       width: 100%;
       height: 100%;
       object-fit: cover;
       display: block;
     }
 
-    .default-poster {
-      width: 100%;
-      height: 100%;
-      padding: 26px 22px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-
-    .poster-tag {
-      display: inline-block;
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 1px;
-      padding: 4px 8px;
-      border-radius: 4px;
-      background: rgba(0, 0, 0, 0.08);
-      width: fit-content;
-    }
-
-    .poster-title {
-      font-size: 22px;
-      font-weight: 800;
-      line-height: 1.32;
-      margin-top: 10px;
-    }
-
-    .poster-desc {
-      font-size: 13.5px;
-      line-height: 1.65;
-      opacity: 0.86;
-      margin-top: 10px;
-    }
-
-    .poster-footer {
-      border-top: 1px dashed rgba(0, 0, 0, 0.28);
-      padding-top: 12px;
-      font-size: 12.5px;
-      font-weight: 700;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .shade-overlay {
+    /* 黏在頂部的膠帶（不會跟著紙張下擺飄起，牢牢固定在電線桿上） */
+    .mini-tape {
       position: absolute;
-      inset: 0;
-      background: #1c1915;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.35s ease;
-      z-index: 8;
-    }
-
-    /* ================= 5. 底部控制列 ================= */
-    .controls {
-      position: absolute;
-      bottom: 26px;
+      top: -4px;
       left: 50%;
       transform: translateX(-50%);
-      z-index: 20;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      background: rgba(24, 22, 20, 0.84);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.18);
-      padding: 9px 18px;
-      border-radius: 999px;
-      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.38);
-      white-space: nowrap;
+      width: 26px;
+      height: 7px;
+      z-index: 10;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
     }
 
-    .btn-rotate {
-      border: none;
-      background: #fdfbf7;
-      color: #1c1917;
-      padding: 8px 16px;
-      border-radius: 999px;
-      font-size: 13.5px;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      transition: background 0.2s, transform 0.15s;
+    .mini-tag {
+      font-size: 6.5px;
+      font-weight: 800;
+      opacity: 0.75;
+      letter-spacing: 0.2px;
     }
 
-    .btn-rotate:hover {
-      background: #e7e5e4;
-      transform: translateY(-1px);
+    .mini-title {
+      font-size: 9.5px;
+      font-weight: 800;
+      line-height: 1.24;
+      margin-top: 3px;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
     }
 
-    .btn-rotate:active {
-      transform: translateY(1px);
-    }
-
-    .page-indicator {
-      font-size: 13px;
-      font-weight: 700;
-      color: #fafaf9;
-      min-width: 112px;
-      text-align: center;
+    .mini-num {
+      font-size: 8px;
+      font-weight: 800;
+      opacity: 0.75;
+      border-top: 1px dashed rgba(0, 0, 0, 0.25);
+      padding-top: 3px;
+      text-align: right;
     }
 
     @media (max-width: 768px) {
       .header-guide {
         left: 50%;
         transform: translateX(-50%);
-        font-size: 12px;
+        font-size: 11.5px;
         padding: 7px 14px;
+        white-space: nowrap;
       }
-      .flyer-wrapper {
-        width: 206px;
-        height: 300px;
-        left: -103px;
-        top: calc(46% - 150px);
+      .pole-flyers-zone {
+        left: 68%;
+        width: 220px;
+      }
+      .mini-flyer {
+        width: 62px;
+        height: 86px;
       }
     }
 
-    /* ================= 6. 點擊放大閱讀燈箱 ================= */
-    .modal-backdrop {
+    /* ================= 5. Zoom-in 放大閱讀視窗 ================= */
+    .reader-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(15, 14, 12, 0.85);
-      backdrop-filter: blur(8px);
-      z-index: 100;
-      display: none;
+      z-index: 50;
+      display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
       padding: 24px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.35s ease;
     }
 
-    .modal-backdrop.active {
-      display: flex;
+    body.zoomed .reader-overlay {
+      opacity: 1;
+      pointer-events: auto;
     }
 
-    .modal-content {
+    .reader-card {
       position: relative;
-      max-width: 540px;
       width: 100%;
-      max-height: 90vh;
+      max-width: 520px;
+      max-height: 84vh;
       background: #ffffff;
       border-radius: 10px;
+      box-shadow: 0 28px 70px rgba(0, 0, 0, 0.58);
       overflow: hidden;
-      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
       display: flex;
       flex-direction: column;
-      animation: popIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      transform: scale(0.84) translateY(16px);
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    @keyframes popIn {
-      from { opacity: 0; transform: scale(0.94); }
-      to { opacity: 1; transform: scale(1); }
+    body.zoomed .reader-card {
+      transform: scale(1) translateY(0);
     }
 
-    .modal-body {
+    .btn-close {
+      position: fixed;
+      top: 24px;
+      right: 28px;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      background: rgba(24, 22, 20, 0.8);
+      backdrop-filter: blur(8px);
+      color: #ffffff;
+      font-size: 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s, transform 0.15s;
+      z-index: 60;
+    }
+
+    .btn-close:hover {
+      background: rgba(24, 22, 20, 0.96);
+      transform: scale(1.06);
+    }
+
+    .reader-viewport {
+      width: 100%;
       overflow-y: auto;
-      max-height: 78vh;
+      max-height: 76vh;
     }
 
-    .modal-body img {
+    .reader-viewport img {
       width: 100%;
       height: auto;
       display: block;
     }
 
-    .modal-close {
-      position: absolute;
-      top: 12px;
-      right: 12px;
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      border: none;
-      background: rgba(24, 22, 20, 0.8);
-      color: #fff;
-      font-size: 18px;
-      cursor: pointer;
-      z-index: 10;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .modal-actions {
+    .reader-footer {
       padding: 14px 20px;
       background: #fafaf9;
       border-top: 1px solid #e7e5e4;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 12px;
     }
 
-    .modal-link-btn {
+    .page-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #1c1917;
+    }
+
+    .ext-link {
       text-decoration: none;
       background: #1c1917;
-      color: #fff;
-      padding: 8px 16px;
+      color: #ffffff;
+      padding: 7px 14px;
       border-radius: 6px;
-      font-size: 13px;
+      font-size: 12.5px;
       font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .ext-link:hover {
+      background: #44403c;
+    }
+
+    .back-hint {
+      margin-top: 14px;
+      font-size: 12.5px;
+      color: rgba(255, 255, 255, 0.78);
+      letter-spacing: 0.4px;
+      cursor: pointer;
+    }
+
+    .back-hint:hover {
+      color: #ffffff;
     }
   </style>
 </head>
 <body>
 
-  <!-- 1. 純淨雙背景層（Canvas 自動剔除原圖電線桿，只保留「馬路側」與「磚牆側」） -->
-  <div class="bg-layer bg-road" id="bgRoad"></div>
-  <div class="bg-layer bg-wall" id="bgWall"></div>
+  <!-- 1. 滿版清晰街景背景 -->
+  <div class="street-scene" id="streetScene"></div>
 
-  <!-- 2. 動態陽光與環境光暈 -->
-  <div class="dynamic-lighting" id="dynamicLighting"></div>
-  <div class="lens-flare" id="lensFlare"></div>
-
-  <!-- 3. 頂部提示 -->
-  <div class="header-guide">
-    <span>🚶‍♂️ 左右滑動或按按鈕「繞著電線桿走一圈」 ｜ 🔍 點擊傳單放大閱讀</span>
+  <!-- 2. 頂部順序閱讀引導列 -->
+  <div class="header-guide" id="headerGuide">
+    <span class="progress-pill" id="progressPill">START #01</span>
+    <span id="guideText">請從第 1 張傳單開始依序點擊閱讀（已閱 0 / 15）</span>
   </div>
 
-  <!-- 4. 唯一一根 3D 電線桿 + 傳單 -->
-  <div class="scene" id="scene">
-    <div class="pole-axis" id="poleAxis"></div>
-  </div>
+  <!-- 3. 電線桿上的 15 張傳單區 -->
+  <div class="pole-flyers-zone" id="poleFlyersZone"></div>
 
-  <!-- 5. 底部控制列 -->
-  <div class="controls">
-    <button class="btn-rotate" id="prevBtn">← 往左走</button>
-    <div class="page-indicator" id="pageIndicator">正面街角 (1/4)</div>
-    <button class="btn-rotate" id="nextBtn">往右走 →</button>
-  </div>
+  <!-- 4. Zoom-in 放大閱讀視窗 -->
+  <div class="reader-overlay" id="readerOverlay">
+    <button class="btn-close" id="closeBtn" title="返回電線桿 (ESC)">✕</button>
 
-  <!-- 6. 放大閱讀視窗 -->
-  <div class="modal-backdrop" id="modalBackdrop">
-    <div class="modal-content">
-      <button class="modal-close" id="modalClose">✕</button>
-      <div class="modal-body" id="modalBody"></div>
-      <div class="modal-actions">
-        <span id="modalTitle" style="font-weight:700; font-size:14px; color:#1c1917;">作品詳情</span>
-        <a id="modalLink" href="#" target="_blank" class="modal-link-btn">開啟完整連結 ↗</a>
+    <div class="reader-card">
+      <div class="reader-viewport" id="readerViewport"></div>
+      <div class="reader-footer">
+        <span class="page-title" id="pageTitle">01. 作品名稱</span>
+        <a class="ext-link" id="extLink" href="#" target="_blank">開啟完整連結 ↗</a>
       </div>
     </div>
+
+    <div class="back-hint" id="backHint">點擊空白處或按 ESC 返回電線桿挑選下一張</div>
   </div>
 
   <script>
-    const FLYERS_DATA = [
-      {
-        viewLabel: "正面街角",
-        title: "01. 個人簡介與履歷",
-        tag: "ABOUT ME / RESUME",
-        heading: "嗨！我是創意設計與行銷企劃",
-        desc: "擅長品牌視覺規劃、社群創意企劃與跨媒介行銷活動。點擊這張傳單可放大查看完整經歷與履歷！",
-        footerText: "點擊放大閱讀履歷",
-        bgColor: "#fef3c7",
-        textColor: "#78350f",
-        imageUrl: "", // ← 填入圖片檔名，例如 "./poster1.jpg"
-        externalLink: "https://www.linkedin.com"
-      },
-      {
-        viewLabel: "右側磚牆側",
-        title: "02. 品牌行銷專案 A",
-        tag: "CAMPAIGN CASE 01",
-        heading: "年度社群話題操作與視覺統籌",
-        desc: "從前期市場洞察、主視覺海報設計到線下快閃互動，帶動品牌自然觸及成長 240%。",
-        footerText: "點擊放大查看專案",
-        bgColor: "#e0f2fe",
-        textColor: "#0c4a6e",
-        imageUrl: "", // ← 填入圖片檔名，例如 "./poster2.jpg"
-        externalLink: "https://www.behance.net"
-      },
-      {
-        viewLabel: "巷弄背面側",
-        title: "03. 視覺設計作品集 B",
-        tag: "VISUAL DESIGN 02",
-        heading: "包裝設計與活動主視覺系列",
-        desc: "結合街頭文化與極簡排版，打造高辨識度的產品包裝與展覽宣傳物。",
-        footerText: "點擊放大查看設計",
-        bgColor: "#fce7f3",
-        textColor: "#831843",
-        imageUrl: "", // ← 填入圖片檔名，例如 "./poster3.jpg"
-        externalLink: "https://www.behance.net"
-      },
-      {
-        viewLabel: "左側馬路側",
-        title: "04. 聯絡我 / 撕紙條彩蛋",
-        tag: "CONTACT ME",
-        heading: "歡迎找我聊聊設計與行銷！",
-        desc: "正在尋找設計或行銷相關職位機會，歡迎隨時透過 Email 或 LinkedIn 與我聯繫面談。",
-        footerText: "點擊放大取得聯絡資訊",
-        bgColor: "#dcfce7",
-        textColor: "#14532d",
-        imageUrl: "", // ← 填入圖片檔名，例如 "./poster4.jpg"
-        externalLink: "mailto:example@email.com"
-      }
+    const FLYERS_15 = [
+      { title: "01. 個人簡介與履歷總覽", tag: "RESUME", heading: "個人簡介與求職履歷", desc: "創意設計與行銷企劃背景，擅長品牌視覺規劃與跨媒介整合行銷。", bgColor: "#fef3c7", textColor: "#78350f", imageUrl: "", externalLink: "https://www.linkedin.com" },
+      { title: "02. 品牌識別重塑專案", tag: "BRANDING", heading: "新創咖啡品牌 CIS 識別設計", desc: "從 Logo 造型、字體規範到外帶杯包裝系統，建立溫暖且具記憶點的品牌形象。", bgColor: "#e0f2fe", textColor: "#0c4a6e", imageUrl: "", externalLink: "https://www.behance.net" },
+      { title: "03. 年度社群話題操作", tag: "SOCIAL", heading: "IG 互動濾鏡與迷因企劃", desc: "結合時事話題與高共鳴圖文，單月自然觸及突破 45 萬人次。", bgColor: "#fce7f3", textColor: "#831843", imageUrl: "", externalLink: "https://www.behance.net" },
+      { title: "04. 音樂祭主視覺海報", tag: "POSTER", heading: "城市獨立音樂節主視覺", desc: "運用高對比拼貼與實驗排版，呈現街頭文化與現場音樂的爆發力。", bgColor: "#dcfce7", textColor: "#14532d", imageUrl: "", externalLink: "https://www.behance.net" },
+      { title: "05. 快閃店空間與動線企劃", tag: "EVENT", heading: "信義區週末快閃體驗店", desc: "負責現場打卡裝置視覺、現場體驗動線設計與 KOL 邀請合作。", bgColor: "#ffedd5", textColor: "#7c2d12", imageUrl: "", externalLink: "https://www.behance.net" },
+      { title: "06. 食品包裝插畫系列", tag: "PACKAGING", heading: "手工果醬與茶飲禮盒包裝", desc: "以手繪植物插畫搭配燙金工藝，提升節慶禮盒客單價與送禮質感。", bgColor: "#f3e8ff", textColor: "#581c87", imageUrl: "", externalLink: "https://www.behance.net" },
+      { title: "07. 短影音腳本與視覺指導", tag: "VIDEO", heading: "Reels / TikTok 品牌系列短片", desc: "規劃前 3 秒吸睛鉤子與分鏡視覺，平均完播率提升 38%。", bgColor: "#fef9c3", textColor: "#713f12", imageUrl: "", externalLink: "https://www.behance.net" },
+      { title: "08. 展覽主視覺與導覽手冊", tag: "EXHIBITION", heading: "當代插畫聯展視覺統籌", desc: "包含主視覺海報、展場指標系統、票券與限量周邊商品設計。", bgColor: "#cffafe", textColor: "#164e63", imageUrl: "", externalLink: "https://www.behance.net" },
+      { title: "09. 電商大檔視覺設計", tag: "E-COMMERCE", heading: "雙 11 購物節全站視覺規範", desc: "設計高轉換率商品首圖模板、活動頁 Banner 與社群倒數素材。", bgColor: "#ffe4e6", textColor: "#881337", imageUrl: "", externalLink: "https://www.behance.net" },
+      { title: "10. 聯名周邊商品開發", tag: "MERCH", heading: "街頭潮牌聯名帆布袋與貼紙組", desc: "從插畫創作、材質打樣到社群限量抽獎預熱，開賣 2 小時全數完售。", bgColor: "#d1fae5", textColor: "#064e3b", imageUrl: "", externalLink: "https://www.behance.net" },
+      { title: "11. 永續公益行銷專案", tag: "CSR / ESG", heading: "舊衣回收再造計畫宣傳企劃", desc: "以溫潤再生紙質感為視覺核心，號召超過 3,000 名消費者參與門市回收。", bgColor: "#e0e7ff", textColor: "#312e81", imageUrl: "", externalLink: "https://www.behance.net" },
+      { title: "12. 書籍裝幀與排版設計", tag: "EDITORIAL", heading: "獨立生活風格誌刊物編排", desc: "負責專題攝影藝術指導、網格系統建立與內頁字體排印設計。", bgColor: "#fae8ff", textColor: "#701a75", imageUrl: "", externalLink: "https://www.behance.net" },
+      { title: "13. 產品攝影與美術指導", tag: "ART DIR.", heading: "香氛系列自然光影情境攝影", desc: "設定拍攝腳本、道具陳列與色調規範，打造一致的品牌社群美學。", bgColor: "#f1f5f9", textColor: "#1e293b", imageUrl: "", externalLink: "https://www.behance.net" },
+      { title: "14. 數位廣告素材 A/B 測試", tag: "ADS", heading: "Meta 廣告高點擊率視覺優化", desc: "透過多版本視覺與文案測試，將單次獲客成本（CPA）降低 27%。", bgColor: "#fef3c7", textColor: "#92400e", imageUrl: "", externalLink: "https://www.behance.net" },
+      { title: "15. 聯絡資訊與面試邀約", tag: "CONTACT", heading: "歡迎與我聯繫聊聊！", desc: "期待有機會加入貴團隊，一起打造兼具美感與影響力的作品。", bgColor: "#dcfce7", textColor: "#166534", imageUrl: "", externalLink: "mailto:example@email.com" }
     ];
 
-    const poleAxis = document.getElementById("poleAxis");
-    const bgRoad = document.getElementById("bgRoad");
-    const bgWall = document.getElementById("bgWall");
-    const dynamicLighting = document.getElementById("dynamicLighting");
-    const lensFlare = document.getElementById("lensFlare");
-    const scene = document.getElementById("scene");
-    const pageIndicator = document.getElementById("pageIndicator");
-    const prevBtn = document.getElementById("prevBtn");
-    const nextBtn = document.getElementById("nextBtn");
+    const POLE_LAYOUT = [
+      { x: -21, y:  6.5, rot: -4 },
+      { x:  22, y:  9.5, rot:  5 },
+      { x:  -2, y: 18.0, rot:  2 },
+      { x: -25, y: 25.5, rot: -5 },
+      { x:  24, y: 28.5, rot:  4 },
+      { x:   1, y: 37.0, rot: -2 },
+      { x: -23, y: 44.5, rot:  5 },
+      { x:  22, y: 47.5, rot: -4 },
+      { x:  -1, y: 56.0, rot:  3 },
+      { x: -24, y: 63.5, rot: -5 },
+      { x:  23, y: 66.0, rot:  5 },
+      { x:   0, y: 74.5, rot: -2 },
+      { x: -22, y: 82.0, rot:  4 },
+      { x:  21, y: 84.5, rot: -4 },
+      { x:  -1, y: 92.5, rot:  2 }
+    ];
 
-    const POLE_SIDES = 24;
-    const POLE_RADIUS = 136;
-    const FLYER_RADIUS = 141;
+    const TAPE_COLORS = [
+      "rgba(215, 42, 42, 0.85)",
+      "rgba(234, 179, 8, 0.82)",
+      "rgba(214, 195, 165, 0.88)",
+      "rgba(59, 130, 246, 0.78)"
+    ];
 
-    const poleSegments = [];
-    const flyerElements = [];
+    const poleFlyersZone = document.getElementById("poleFlyersZone");
+    const progressPill = document.getElementById("progressPill");
+    const guideText = document.getElementById("guideText");
+    const readerOverlay = document.getElementById("readerOverlay");
+    const readerViewport = document.getElementById("readerViewport");
+    const pageTitle = document.getElementById("pageTitle");
+    const extLink = document.getElementById("extLink");
+    const closeBtn = document.getElementById("closeBtn");
+    const backHint = document.getElementById("backHint");
 
-    /**
-     * 徹底拆解 bg.jpg 為三個乾淨獨立圖層（杜絕任何雙電線桿穿幫）：
-     * 1. pureRoadUrl：只取原圖 0% ~ 56% 的「柏油馬路 + 行道樹」，完全不含電線桿
-     * 2. pureWallUrl：只取原圖 86% ~ 100% 的「磁磚牆壁 + 綠色盆栽」，完全不含電線桿
-     * 3. poleUrl：只取原圖 63.5% ~ 80.5% 的「黃黑警示電線桿本體」
-     */
-    function buildCleanLayers() {
-      const img = new Image();
-      img.src = "./bg.jpg?v=6";
+    const visitedSet = new Set();
 
-      img.onload = () => {
-        const iw = img.width;
-        const ih = img.height;
-
-        // 1. 生成純淨馬路背景（0% ~ 56%）
-        const roadW = Math.floor(iw * 0.56);
-        const roadCanvas = document.createElement("canvas");
-        roadCanvas.width = roadW;
-        roadCanvas.height = ih;
-        roadCanvas.getContext("2d").drawImage(img, 0, 0, roadW, ih, 0, 0, roadW, ih);
-        bgRoad.style.backgroundImage = `url('${roadCanvas.toDataURL("image/jpeg", 0.9)}')`;
-
-        // 2. 生成純淨磁磚牆壁與盆栽背景（86% ~ 100%）
-        const wallStart = Math.floor(iw * 0.86);
-        const wallW = iw - wallStart;
-        const wallCanvas = document.createElement("canvas");
-        wallCanvas.width = wallW;
-        wallCanvas.height = ih;
-        wallCanvas.getContext("2d").drawImage(img, wallStart, 0, wallW, ih, 0, 0, wallW, ih);
-        bgWall.style.backgroundImage = `url('${wallCanvas.toDataURL("image/jpeg", 0.9)}')`;
-
-        // 3. 生成唯一一根 3D 黃黑警示電線桿貼圖（63.5% ~ 80.5%）
-        const poleSrcX = iw * 0.635;
-        const poleSrcW = iw * 0.17;
-        const texCanvas = document.createElement("canvas");
-        texCanvas.width = poleSrcW * 2;
-        texCanvas.height = ih;
-        const ctx = texCanvas.getContext("2d");
-
-        ctx.drawImage(img, poleSrcX, 0, poleSrcW, ih, 0, 0, poleSrcW, ih);
-        ctx.drawImage(img, poleSrcX, 0, poleSrcW, ih, poleSrcW, 0, poleSrcW, ih);
-
-        const seamGrad = ctx.createLinearGradient(poleSrcW - 24, 0, poleSrcW + 24, 0);
-        seamGrad.addColorStop(0, "rgba(110, 108, 104, 0)");
-        seamGrad.addColorStop(0.5, "rgba(110, 108, 104, 0.55)");
-        seamGrad.addColorStop(1, "rgba(110, 108, 104, 0)");
-        ctx.fillStyle = seamGrad;
-        ctx.fillRect(poleSrcW - 24, 0, 48, ih);
-
-        const poleUrl = texCanvas.toDataURL("image/jpeg", 0.92);
-
-        poleSegments.forEach(s => s.el.remove());
-        poleSegments.length = 0;
-
-        const circumference = 2 * Math.PI * POLE_RADIUS;
-        const segWidth = Math.ceil(circumference / POLE_SIDES) + 2;
-
-        for (let i = 0; i < POLE_SIDES; i++) {
-          const seg = document.createElement("div");
-          seg.className = "real-pole-segment";
-          const angle = (360 / POLE_SIDES) * i;
-
-          seg.style.width = `${segWidth}px`;
-          seg.style.left = `${-segWidth / 2}px`;
-          seg.style.backgroundImage = `url('${poleUrl}')`;
-          seg.style.backgroundSize = `${circumference}px ${window.innerHeight}px`;
-          seg.style.backgroundPosition = `${-(i * (circumference / POLE_SIDES))}px 0px`;
-          seg.style.transform = `rotateY(${angle}deg) translateZ(${POLE_RADIUS}px)`;
-
-          poleAxis.insertBefore(seg, poleAxis.firstChild);
-          poleSegments.push({ el: seg, baseAngle: angle });
-        }
-
-        updateWalkPerspective(walkAngle);
-      };
+    function getNextUnreadIndex() {
+      for (let i = 0; i < FLYERS_15.length; i++) {
+        if (!visitedSet.has(i)) return i;
+      }
+      return -1;
     }
 
-    const totalFlyers = FLYERS_DATA.length;
-    const stepAngle = 360 / totalFlyers;
+    function renderAllPoleFlyers() {
+      poleFlyersZone.innerHTML = "";
+      const nextIdx = getNextUnreadIndex();
 
-    FLYERS_DATA.forEach((item, index) => {
-      const wrapper = document.createElement("div");
-      wrapper.className = "flyer-wrapper";
-      const baseAngle = index * stepAngle;
-      wrapper.style.transform = `rotateY(${baseAngle}deg) translateZ(${FLYER_RADIUS}px)`;
-
-      const card = document.createElement("div");
-      card.className = "flyer-card";
-
-      const tape = document.createElement("div");
-      tape.className = "tape-top";
-      card.appendChild(tape);
-
-      const shadeOverlay = document.createElement("div");
-      shadeOverlay.className = "shade-overlay";
-      card.appendChild(shadeOverlay);
-
-      if (item.imageUrl && item.imageUrl.trim() !== "") {
-        const img = document.createElement("img");
-        img.className = "flyer-img";
-        img.src = item.imageUrl;
-        img.alt = item.title;
-        card.appendChild(img);
+      if (visitedSet.size === 0) {
+        progressPill.textContent = "START #01";
+        guideText.textContent = "請從第 1 張傳單開始依序點擊閱讀（已閱 0 / 15）";
+      } else if (nextIdx !== -1) {
+        const nextNum = String(nextIdx + 1).padStart(2, "0");
+        progressPill.textContent = `NEXT #${nextNum}`;
+        guideText.textContent = `請繼續點擊第 ${nextIdx + 1} 張傳單（已閱 ${visitedSet.size} / 15）`;
       } else {
-        const poster = document.createElement("div");
-        poster.className = "default-poster";
-        poster.style.backgroundColor = item.bgColor;
-        poster.style.color = item.textColor;
-        poster.innerHTML = `
-          <div>
-            <span class="poster-tag">${item.tag}</span>
-            <h2 class="poster-title">${item.heading}</h2>
-            <p class="poster-desc">${item.desc}</p>
-          </div>
-          <div class="poster-footer">
-            <span>${item.footerText}</span>
-            <span>🔍</span>
-          </div>
-        `;
-        card.appendChild(poster);
+        progressPill.textContent = "DONE 15/15";
+        guideText.textContent = "已瀏覽全部 15 張作品！可隨時點擊任一張重看";
       }
 
-      card.addEventListener("click", () => {
-        if (hasDragged) return;
-        openModal(item);
-      });
+      FLYERS_15.forEach((item, index) => {
+        const pos = POLE_LAYOUT[index] || { x: 0, y: 50, rot: 0 };
+        const flyer = document.createElement("div");
+        flyer.className = "mini-flyer";
 
-      wrapper.appendChild(card);
-      poleAxis.appendChild(wrapper);
-      flyerElements.push({ wrapper, shadeOverlay, baseAngle });
-    });
+        const isNext = index === nextIdx;
+        const isRead = visitedSet.has(index);
 
-    let walkAngle = 0;
+        if (isNext) flyer.classList.add("is-next");
+        if (isRead) flyer.classList.add("is-read");
 
-    function updateWalkPerspective(angle) {
-      walkAngle = angle;
-      const rad = (walkAngle * Math.PI) / 180;
-      const isMobile = window.innerWidth <= 768;
+        const leftPercent = 50 + pos.x;
+        const curveRotateY = pos.x * 0.65;
+        const shadeBrightness = (isRead ? 0.92 : 1) - Math.max(0, pos.x * 0.004);
 
-      // 1. 電線桿在畫面上的透視位移（人往右走，電線桿相對往左移到 34% 處，讓出右側整片牆壁；人往左走，電線桿相對往右移到 68% 處，讓出左側整片馬路）
-      const baseLeft = 51;
-      const shiftAmp = isMobile ? 15 : 17;
-      const poleScreenLeft = baseLeft + Math.sin(rad + 0.85) * shiftAmp;
-      poleAxis.style.left = `${poleScreenLeft.toFixed(1)}%`;
-      poleAxis.style.transform = `rotateY(${walkAngle}deg)`;
+        flyer.style.left = `${leftPercent}%`;
+        flyer.style.top = `${pos.y}%`;
+        flyer.style.zIndex = isNext ? 50 : 10 + (index % 4);
+        flyer.style.transform = `translate(-50%, -50%) rotateY(${curveRotateY}deg) rotate(${pos.rot}deg)`;
+        flyer.style.filter = `brightness(${shadeBrightness.toFixed(2)})`;
+        flyer.title = `${item.title}（點擊放大閱讀）`;
 
-      // 2. 背景在「馬路側」與「磚牆側」之間平滑切換
-      const sideFactor = Math.sin(rad); // -1 = 往右走看磚牆側, +1 = 往左走看馬路側
-      const wallOpacity = Math.max(0, Math.min(1, (-sideFactor + 0.15) * 0.95));
-
-      bgWall.style.opacity = wallOpacity.toFixed(2);
-      const roadPanX = Math.cos(rad) * 24 - sideFactor * 30;
-      const wallPanX = -sideFactor * 24;
-      bgRoad.style.transform = `scale(1.1) translate3d(${roadPanX.toFixed(1)}px, 0, 0)`;
-      bgWall.style.transform = `scale(1.1) translate3d(${wallPanX.toFixed(1)}px, 0, 0)`;
-
-      // 3. 陽光方向固定在馬路一側，隨走動角度改變光影與暖陽色溫
-      const sunFacing = Math.cos(((walkAngle - 60) * Math.PI) / 180);
-      const flareOpacity = Math.max(0.04, (sunFacing + 0.4) * 0.44);
-      const flareShiftX = Math.sin(((walkAngle - 60) * Math.PI) / 180) * 160;
-      lensFlare.style.opacity = flareOpacity.toFixed(2);
-      lensFlare.style.transform = `translate3d(${flareShiftX.toFixed(1)}px, 0, 0)`;
-
-      const coolShade = Math.max(0, -sunFacing * 0.22);
-      dynamicLighting.style.background = `
-        radial-gradient(circle at ${45 + Math.sin(rad) * 30}% 16%,
-          rgba(255, 240, 195, ${Math.max(0.05, sunFacing * 0.32).toFixed(2)}) 0%,
-          rgba(20, 24, 32, ${coolShade.toFixed(2)}) 85%)
-      `;
-
-      // 4. 更新視角標籤
-      const normalized = (((-walkAngle % 360) + 360) % 360);
-      const activeIndex = Math.round(normalized / stepAngle) % totalFlyers;
-      pageIndicator.textContent = `${FLYERS_DATA[activeIndex].viewLabel} (${activeIndex + 1}/${totalFlyers})`;
-
-      // 5. 電線桿與傳單受光
-      poleSegments.forEach(({ el, baseAngle }) => {
-        const worldAngle = (((baseAngle + walkAngle) % 360) + 360) % 360;
-        const light = Math.cos(((worldAngle + 28) * Math.PI) / 180);
-        el.style.filter = `brightness(${(0.82 + light * 0.24).toFixed(2)})`;
-      });
-
-      flyerElements.forEach(({ wrapper, shadeOverlay, baseAngle }) => {
-        const worldAngle = (((baseAngle + walkAngle) % 360) + 360) % 360;
-        const facing = Math.cos(((worldAngle + 25) * Math.PI) / 180);
-        const frontFacing = Math.cos((worldAngle * Math.PI) / 180);
-
-        if (frontFacing < -0.25) {
-          wrapper.style.opacity = "0";
-          wrapper.style.pointerEvents = "none";
-        } else {
-          wrapper.style.opacity = "1";
-          wrapper.style.pointerEvents = "auto";
+        if (isNext) {
+          const badge = document.createElement("div");
+          badge.className = "guide-badge";
+          badge.textContent = index === 0 ? "START #01" : `NEXT #${String(index + 1).padStart(2, "0")}`;
+          flyer.appendChild(badge);
         }
 
-        const darkness = Math.max(0, (1 - facing) * 0.34);
-        shadeOverlay.style.opacity = darkness.toFixed(2);
+        // 膠帶固定在最外層，不隨紙張下擺飄動
+        const tape = document.createElement("div");
+        tape.className = "mini-tape";
+        tape.style.background = TAPE_COLORS[index % TAPE_COLORS.length];
+        flyer.appendChild(tape);
+
+        // 會隨風飄動的紙張本體（上方膠帶處為軸心，下半部被風吹起）
+        const paperSheet = document.createElement("div");
+        paperSheet.className = "paper-sheet";
+        // 交錯分配兩種飄動節奏，並依據高度設定波浪時間差（模擬一陣風由上往下吹過）
+        const animName = index % 2 === 0 ? "paperFlutterA" : "paperFlutterB";
+        const waveDelay = (pos.y * 0.028 + (index % 3) * 0.35).toFixed(2);
+        if (!isNext) {
+          paperSheet.style.animationName = animName;
+        }
+        paperSheet.style.animationDelay = `${waveDelay}s`;
+
+        const inner = document.createElement("div");
+        inner.className = "mini-flyer-inner";
+        inner.style.backgroundColor = item.bgColor;
+        inner.style.color = item.textColor;
+
+        if (item.imageUrl && item.imageUrl.trim() !== "") {
+          inner.innerHTML = `<img src="${item.imageUrl}" alt="${item.title}" />`;
+        } else {
+          inner.innerHTML = `
+            <div>
+              <div class="mini-tag">${item.tag}</div>
+              <div class="mini-title">${item.heading}</div>
+            </div>
+            <div class="mini-num">#${String(index + 1).padStart(2, "0")}</div>
+          `;
+        }
+
+        paperSheet.appendChild(inner);
+        flyer.appendChild(paperSheet);
+        flyer.addEventListener("click", () => openZoomReader(index));
+        poleFlyersZone.appendChild(flyer);
       });
     }
 
-    prevBtn.addEventListener("click", () => updateWalkPerspective(walkAngle + stepAngle));
-    nextBtn.addEventListener("click", () => updateWalkPerspective(walkAngle - stepAngle));
+    function openZoomReader(index) {
+      visitedSet.add(index);
+      const item = FLYERS_15[index];
 
-    window.addEventListener("keydown", (e) => {
-      if (e.key === "ArrowLeft") updateWalkPerspective(walkAngle + stepAngle);
-      if (e.key === "ArrowRight") updateWalkPerspective(walkAngle - stepAngle);
-      if (e.key === "Escape") closeModal();
-    });
+      pageTitle.textContent = item.title;
 
-    let isDragging = false;
-    let hasDragged = false;
-    let startX = 0;
-    let startAngle = 0;
-
-    function setDraggingState(active) {
-      [poleAxis, bgRoad, bgWall, dynamicLighting, lensFlare].forEach(el => {
-        if (active) el.classList.add("dragging");
-        else el.classList.remove("dragging");
-      });
-    }
-
-    function onDragStart(clientX) {
-      isDragging = true;
-      hasDragged = false;
-      startX = clientX;
-      startAngle = walkAngle;
-      setDraggingState(true);
-    }
-
-    function onDragMove(clientX) {
-      if (!isDragging) return;
-      const deltaX = clientX - startX;
-      if (Math.abs(deltaX) > 5) hasDragged = true;
-      updateWalkPerspective(startAngle + deltaX * 0.48);
-    }
-
-    function onDragEnd() {
-      if (!isDragging) return;
-      isDragging = false;
-      setDraggingState(false);
-      const snapped = Math.round(walkAngle / stepAngle) * stepAngle;
-      updateWalkPerspective(snapped);
-      setTimeout(() => { hasDragged = false; }, 50);
-    }
-
-    scene.addEventListener("mousedown", (e) => onDragStart(e.clientX));
-    window.addEventListener("mousemove", (e) => onDragMove(e.clientX));
-    window.addEventListener("mouseup", onDragEnd);
-
-    scene.addEventListener("touchstart", (e) => onDragStart(e.touches[0].clientX), { passive: true });
-    window.addEventListener("touchmove", (e) => onDragMove(e.touches[0].clientX), { passive: true });
-    window.addEventListener("touchend", onDragEnd);
-
-    const modalBackdrop = document.getElementById("modalBackdrop");
-    const modalBody = document.getElementById("modalBody");
-    const modalTitle = document.getElementById("modalTitle");
-    const modalLink = document.getElementById("modalLink");
-    const modalClose = document.getElementById("modalClose");
-
-    function openModal(item) {
-      modalTitle.textContent = item.title;
-      modalLink.href = item.externalLink || "#";
-      modalLink.style.display = item.externalLink ? "inline-block" : "none";
+      if (item.externalLink && item.externalLink.trim() !== "") {
+        extLink.href = item.externalLink;
+        extLink.style.display = "inline-block";
+      } else {
+        extLink.style.display = "none";
+      }
 
       if (item.imageUrl && item.imageUrl.trim() !== "") {
-        modalBody.innerHTML = `<img src="${item.imageUrl}" alt="${item.title}" />`;
+        readerViewport.innerHTML = `<img src="${item.imageUrl}" alt="${item.title}" />`;
       } else {
-        modalBody.innerHTML = `
-          <div style="padding: 40px 30px; background:${item.bgColor}; color:${item.textColor}; min-height: 380px; display:flex; flex-direction:column; justify-content:space-between;">
+        readerViewport.innerHTML = `
+          <div style="padding: 44px 32px; background:${item.bgColor}; color:${item.textColor}; min-height: 400px; display:flex; flex-direction:column; justify-content:space-between;">
             <div>
               <span style="font-size:12px; font-weight:700; padding:4px 10px; border-radius:4px; background:rgba(0,0,0,0.08);">${item.tag}</span>
               <h2 style="font-size:28px; font-weight:800; margin-top:16px; line-height:1.35;">${item.heading}</h2>
               <p style="font-size:16px; line-height:1.8; margin-top:16px;">${item.desc}</p>
             </div>
-            <p style="font-size:12.5px; opacity:0.75; margin-top:28px;">（提示：將程式碼內的 imageUrl 換成圖片檔名後，點擊傳單就會在這裡顯示高清設計海報原圖）</p>
+            <p style="font-size:12.5px; opacity:0.72; margin-top:32px;">（提示：將程式碼內第 ${index + 1} 項的 imageUrl 換成圖片檔名後，這裡就會顯示高清設計原圖）</p>
           </div>
         `;
       }
-      modalBackdrop.classList.add("active");
+
+      readerViewport.scrollTop = 0;
+      document.body.classList.add("zoomed");
     }
 
-    function closeModal() {
-      modalBackdrop.classList.remove("active");
+    function closeZoomReader() {
+      document.body.classList.remove("zoomed");
+      renderAllPoleFlyers();
     }
 
-    modalClose.addEventListener("click", closeModal);
-    modalBackdrop.addEventListener("click", (e) => {
-      if (e.target === modalBackdrop) closeModal();
+    closeBtn.addEventListener("click", closeZoomReader);
+    backHint.addEventListener("click", closeZoomReader);
+    readerOverlay.addEventListener("click", (e) => {
+      if (e.target === readerOverlay) closeZoomReader();
     });
 
-    buildCleanLayers();
-    window.addEventListener("resize", () => {
-      buildCleanLayers();
-      updateWalkPerspective(walkAngle);
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && document.body.classList.contains("zoomed")) {
+        closeZoomReader();
+      }
     });
+
+    renderAllPoleFlyers();
   </script>
 </body>
 </html>
