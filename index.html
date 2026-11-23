@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>街角作品集｜互動展示牆</title>
+  <title>黃舒筵的作品集</title>
   <style>
     * {
       box-sizing: border-box;
@@ -21,25 +21,49 @@
       position: relative;
     }
 
-    /* ================= 1. 滿版清晰街景背景 ================= */
-    .street-scene {
+    /* ================= 1. 動態街景影片背景（底層） ================= */
+    .scene-wrapper {
       position: absolute;
       inset: 0;
       z-index: 0;
-      background-image: url('./bg.jpg?v=31');
-      background-size: cover;
-      background-position: 69.5% center;
-      background-repeat: no-repeat;
+      overflow: hidden;
       transition: filter 0.45s cubic-bezier(0.22, 1, 0.36, 1), transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
       will-change: filter, transform;
     }
 
-    body.zoomed .street-scene {
+    body.zoomed .scene-wrapper {
       filter: blur(12px) brightness(0.62);
       transform: scale(1.04);
     }
 
-    /* ================= 2. 電線桿上的 9 張傳單容器（寬高由 JS 依據背景圖真實渲染比例精準鎖定） ================= */
+    .bg-video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: 69.5% center;
+      pointer-events: none;
+    }
+
+    /* ================= 2. 原本 bg.jpg 的修長電線桿遮罩層（精準覆蓋影片中的粗電線桿） ================= */
+    /* 透過同步計算 bg.jpg 的真實渲染區域，只裁切出電線桿本體疊在影片上方 */
+    .pole-cutout {
+      position: absolute;
+      left: 69.5%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      background-image: url('./bg.jpg?v=33');
+      background-size: cover;
+      background-position: 69.5% center;
+      background-repeat: no-repeat;
+      z-index: 2;
+      pointer-events: none;
+      /* 柔和陰影讓修長電線桿邊緣自然融入動態街景影片 */
+      box-shadow: -4px 0 12px rgba(24, 22, 20, 0.28), 6px 0 14px rgba(24, 22, 20, 0.35);
+    }
+
+    /* ================= 3. 電線桿上的 9 張傳單容器（寬高由 JS 依據背景圖真實渲染比例精準鎖定） ================= */
     .pole-flyers-zone {
       position: absolute;
       left: 69.5%;
@@ -55,7 +79,6 @@
       pointer-events: none;
     }
 
-    /* 單張傳單（寬高由 JS 同步背景圖縮放倍率設定，確保在任何電腦上都精準貼合電線桿寬度） */
     .mini-flyer {
       position: absolute;
       cursor: pointer;
@@ -71,7 +94,7 @@
       filter: brightness(1.04) !important;
     }
 
-    /* ================= 3. 微風吹拂紙張飄動動畫（5秒週期，單段膠帶款專用） ================= */
+    /* ================= 4. 微風吹拂紙張飄動動畫（5秒週期，單段膠帶款專用） ================= */
     @keyframes paperFlutterA {
       0%, 42%, 100% {
         transform: rotateX(0deg) rotateY(0deg) skewX(0deg);
@@ -122,7 +145,7 @@
       width: 100%;
       height: 100%;
       background: #fdfbf7;
-      border-radius: 2px;
+      border-radius: 0px;
       position: relative;
       transform-origin: 50% 4px;
       transform-style: preserve-3d;
@@ -154,7 +177,7 @@
       width: 100%;
       height: 100%;
       overflow: hidden;
-      border-radius: 2px;
+      border-radius: 0px;
       position: relative;
     }
 
@@ -167,7 +190,6 @@
       display: block;
     }
 
-    /* 由左往右的單向光影遮罩（左側受陽光照射明亮、右側自然轉入背光陰影） */
     .cylinder-shade {
       position: absolute;
       inset: 0;
@@ -202,7 +224,7 @@
       box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
     }
 
-    /* ================= 4. 動態引導滑鼠鼠標 ================= */
+    /* ================= 5. 動態引導滑鼠鼠標 ================= */
     .guide-cursor {
       position: absolute;
       width: 44px;
@@ -261,7 +283,7 @@
       animation: cursorTap 1.6s infinite ease-in-out;
     }
 
-    /* ================= 5. Zoom-in 放大閱讀視窗 ================= */
+    /* ================= 6. Zoom-in 放大閱讀視窗（維持真實紙張直角） ================= */
     .reader-overlay {
       position: fixed;
       inset: 0;
@@ -283,7 +305,7 @@
 
     .reader-card {
       position: relative;
-      border-radius: 8px;
+      border-radius: 0px;
       box-shadow: 0 28px 80px rgba(0, 0, 0, 0.68);
       overflow: hidden;
       display: flex;
@@ -346,8 +368,11 @@
 </head>
 <body>
 
-  <!-- 1. 滿版清晰街景背景 -->
-  <div class="street-scene" id="streetScene"></div>
+  <!-- 1. 動態街景背景（底層循環播放影片 + 中層保留原本 bg.jpg 的修長電線桿） -->
+  <div class="scene-wrapper" id="sceneWrapper">
+    <video class="bg-video" id="bgVideo" src="./bg.mp4?v=33" poster="./bg.jpg?v=33" autoplay loop muted playsinline></video>
+    <div class="pole-cutout" id="poleCutout"></div>
+  </div>
 
   <!-- 2. 電線桿上的 9 張傳單區 -->
   <div class="pole-flyers-zone" id="poleFlyersZone"></div>
@@ -391,6 +416,7 @@
       "rgba(59, 130, 246, 0.78)"
     ];
 
+    const poleCutout = document.getElementById("poleCutout");
     const poleFlyersZone = document.getElementById("poleFlyersZone");
     const readerOverlay = document.getElementById("readerOverlay");
     const readerCard = document.getElementById("readerCard");
@@ -400,25 +426,23 @@
     const visitedSet = new Set();
     let guideCursorEl = null;
 
-    /**
-     * 核心跨螢幕同步演算法：
-     * 因為 bg.jpg 是 16:9 (1.7778) 的滿版 cover 背景圖，當朋友的螢幕比較寬扁或視窗較矮時，
-     * 背景圖會以「寬度」為主放大並裁切上下；當螢幕較高時，則以「高度」為主放大。
-     * 這裡直接計算 bg.jpg 在當前視窗中的「真實渲染像素尺寸」，讓電線桿互動區與傳單寬度永遠與電線桿同步縮放！
-     */
     function syncPoleMetrics() {
       const vw = window.innerWidth;
       const vh = window.innerHeight;
-      const imgAspect = 16 / 9; // bg.jpg 原始長寬比
+      const imgAspect = 16 / 9;
       const winAspect = vw / vh;
 
-      // 背景圖實際渲染出來的寬度（px）
       const renderedBgWidth = winAspect > imgAspect ? vw : vh * imgAspect;
+      const renderedBgHeight = winAspect > imgAspect ? vw / imgAspect : vh;
 
-      // 電線桿在原圖中佔約 14.2% 寬度，傳單佔電線桿寬度的 43%（標準 A4 比例 1:1.414）
+      // 精準算出原本 bg.jpg 電線桿在當前視窗的寬度，把 bg.jpg 的修長電線桿完美覆蓋在影片粗電線桿上
       const zoneWidth = renderedBgWidth * 0.142;
       const flyerWidth = zoneWidth * 0.43;
       const flyerHeight = flyerWidth * 1.414;
+
+      poleCutout.style.width = `${(zoneWidth * 1.04).toFixed(1)}px`;
+      poleCutout.style.height = `${vh}px`;
+      poleCutout.style.backgroundSize = `${renderedBgWidth.toFixed(1)}px ${renderedBgHeight.toFixed(1)}px`;
 
       poleFlyersZone.style.width = `${zoneWidth.toFixed(1)}px`;
       poleFlyersZone.style.height = `${(vh * 0.96).toFixed(1)}px`;
@@ -525,7 +549,6 @@
         img.alt = "";
         inner.appendChild(img);
 
-        // 單向光影漸層：模擬陽光從左往右照射（左側受光亮面、右側轉入圓柱背光陰影）
         const shade = document.createElement("div");
         shade.className = "cylinder-shade";
         if (pos.x < -8) {
