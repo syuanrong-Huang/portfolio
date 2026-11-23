@@ -26,7 +26,7 @@
       position: absolute;
       inset: 0;
       z-index: 0;
-      background-image: url('./bg.jpg?v=26');
+      background-image: url('./bg.jpg?v=27');
       background-size: cover;
       background-position: 69.5% center;
       background-repeat: no-repeat;
@@ -65,7 +65,7 @@
       pointer-events: none;
     }
 
-    /* ================= 3. 電線桿上的 9 張傳單容器（放寬至 204px，善用左右兩側柱身空間） ================= */
+    /* ================= 3. 電線桿上的 9 張傳單容器（柔和自然視距 1400px，消除梯形硬邊扭曲） ================= */
     .pole-flyers-zone {
       position: absolute;
       left: 69.5%;
@@ -73,7 +73,7 @@
       width: 204px;
       height: 96vh;
       transform: translate(-50%, -50%);
-      perspective: 540px;
+      perspective: 1400px;
       z-index: 10;
       transition: opacity 0.3s ease;
     }
@@ -83,20 +83,20 @@
       pointer-events: none;
     }
 
-    /* 單張傳單（標準 A4 比例 88x124px，伏貼於電線桿圓柱上） */
+    /* 單張傳單（88x124px，由 7 條圓柱曲面切片組成真實弧度） */
     .mini-flyer {
       position: absolute;
       width: 88px;
       height: 124px;
       cursor: pointer;
       transition:
-        transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+        transform 0.28s cubic-bezier(0.16, 1, 0.3, 1),
         filter 0.25s ease;
       transform-style: preserve-3d;
     }
 
     .mini-flyer:hover {
-      transform: translate(-50%, -50%) scale(1.26) rotateY(0deg) rotate(0deg) !important;
+      transform: translate(-50%, -50%) scale(1.26) rotate(0deg) !important;
       z-index: 99 !important;
       filter: brightness(1.04) !important;
     }
@@ -104,60 +104,47 @@
     /* ================= 4. 微風吹拂紙張飄動動畫 ================= */
     @keyframes paperFlutterA {
       0%, 42%, 100% {
-        transform: rotateX(0deg) rotateY(0deg) skewX(0deg);
-        box-shadow: -2px 4px 9px rgba(15, 14, 12, 0.45);
+        transform: rotateX(0deg) skewX(0deg);
       }
       52% {
-        transform: rotateX(17deg) rotateY(-5deg) skewX(-1.6deg);
-        box-shadow: -5px 12px 17px rgba(15, 14, 12, 0.36);
+        transform: rotateX(15deg) skewX(-1.4deg);
       }
       60% {
-        transform: rotateX(7deg) rotateY(2.5deg) skewX(0.8deg);
-        box-shadow: -3px 7px 12px rgba(15, 14, 12, 0.42);
+        transform: rotateX(6deg) skewX(0.7deg);
       }
       68% {
-        transform: rotateX(13deg) rotateY(-3.5deg) skewX(-1.2deg);
-        box-shadow: -4px 10px 15px rgba(15, 14, 12, 0.38);
+        transform: rotateX(11deg) skewX(-1deg);
       }
       78% {
-        transform: rotateX(2.5deg) rotateY(1deg) skewX(0.3deg);
-        box-shadow: -2px 5px 10px rgba(15, 14, 12, 0.44);
+        transform: rotateX(2deg) skewX(0.3deg);
       }
     }
 
     @keyframes paperFlutterB {
       0%, 38%, 100% {
-        transform: rotateX(0deg) rotateY(0deg) skewX(0deg);
-        box-shadow: -2px 4px 9px rgba(15, 14, 12, 0.45);
+        transform: rotateX(0deg) skewX(0deg);
       }
       49% {
-        transform: rotateX(19deg) rotateY(5.5deg) skewX(1.8deg);
-        box-shadow: -6px 13px 18px rgba(15, 14, 12, 0.36);
+        transform: rotateX(17deg) skewX(1.5deg);
       }
       58% {
-        transform: rotateX(8deg) rotateY(-2deg) skewX(-0.7deg);
-        box-shadow: -3px 7px 12px rgba(15, 14, 12, 0.42);
+        transform: rotateX(7deg) skewX(-0.6deg);
       }
       67% {
-        transform: rotateX(14deg) rotateY(4deg) skewX(1.3deg);
-        box-shadow: -4px 10px 16px rgba(15, 14, 12, 0.38);
+        transform: rotateX(12deg) skewX(1.1deg);
       }
       76% {
-        transform: rotateX(2.5deg) rotateY(-1deg) skewX(-0.3deg);
-        box-shadow: -2px 5px 10px rgba(15, 14, 12, 0.44);
+        transform: rotateX(2deg) skewX(-0.2deg);
       }
     }
 
     .paper-sheet {
       width: 100%;
       height: 100%;
-      background: #fdfbf7;
-      border-radius: 2px;
       position: relative;
       transform-origin: 50% 4px;
       transform-style: preserve-3d;
-      box-shadow: -2px 3px 8px rgba(15, 14, 12, 0.48);
-      will-change: transform, box-shadow;
+      will-change: transform;
     }
 
     .mini-flyer.can-flutter .paper-sheet {
@@ -166,73 +153,66 @@
       animation-iteration-count: infinite;
     }
 
-    .mini-flyer.double-taped .paper-sheet {
-      box-shadow: -1.5px 2.5px 6px rgba(15, 14, 12, 0.5);
-    }
-
     .mini-flyer:hover .paper-sheet {
       animation-play-state: paused;
-      transform: rotateX(0deg) rotateY(0deg) skewX(0deg) !important;
-      box-shadow: 0 18px 36px rgba(0, 0, 0, 0.65) !important;
+      transform: rotateX(0deg) skewX(0deg) !important;
+    }
+
+    /* 圓柱曲面切片容器（將傳單彎曲成真實圓柱弧面） */
+    .curved-surface {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      filter: drop-shadow(-2px 4px 7px rgba(15, 14, 12, 0.44));
+    }
+
+    .curve-slice {
+      position: absolute;
+      top: 0;
+      height: 100%;
+      background-repeat: no-repeat;
+      backface-visibility: hidden;
+      transform-style: preserve-3d;
+      transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* 滑鼠懸停放大閱讀時，曲面自動攤平方便看清楚細節 */
+    .mini-flyer:hover .curve-slice {
+      transform: translate3d(0, 0, 0) rotateY(0deg) !important;
     }
 
     .mini-flyer.is-next {
       z-index: 50 !important;
     }
 
-    .mini-flyer.is-read .mini-flyer-inner::after {
-      content: "✓";
+    .read-check {
       position: absolute;
       bottom: 5px;
       left: 6px;
       font-size: 11px;
       font-weight: 900;
       color: #ffffff;
-      background: rgba(24, 22, 20, 0.68);
+      background: rgba(24, 22, 20, 0.72);
       width: 18px;
       height: 18px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-    }
-
-    .mini-flyer-inner {
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      border-radius: 2px;
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      padding: 8px 7px;
-    }
-
-    .cylinder-shade {
-      position: absolute;
-      inset: 0;
+      z-index: 12;
       pointer-events: none;
-      z-index: 4;
     }
 
-    .mini-flyer-inner img {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-
+    /* 膠帶順應曲面微微貼合 */
     .mini-tape-top {
       position: absolute;
       top: -4px;
       left: 50%;
-      transform: translateX(-50%) rotate(-1deg);
+      transform: translateX(-50%) rotate(-1deg) translateZ(1px);
       width: 28px;
       height: 7px;
-      z-index: 10;
+      z-index: 15;
       box-shadow: 0 1px 2px rgba(0, 0, 0, 0.32);
     }
 
@@ -240,38 +220,11 @@
       position: absolute;
       bottom: -4px;
       left: 50%;
-      transform: translateX(-50%) rotate(1.5deg);
+      transform: translateX(-50%) rotate(1.5deg) translateZ(1px);
       width: 28px;
       height: 7px;
-      z-index: 10;
+      z-index: 15;
       box-shadow: 0 1px 2px rgba(0, 0, 0, 0.32);
-    }
-
-    .mini-tag {
-      font-size: 7px;
-      font-weight: 800;
-      opacity: 0.75;
-      letter-spacing: 0.2px;
-    }
-
-    .mini-title {
-      font-size: 10px;
-      font-weight: 800;
-      line-height: 1.24;
-      margin-top: 3px;
-      display: -webkit-box;
-      -webkit-line-clamp: 3;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-
-    .mini-num {
-      font-size: 8.5px;
-      font-weight: 800;
-      opacity: 0.75;
-      border-top: 1px dashed rgba(0, 0, 0, 0.25);
-      padding-top: 2px;
-      text-align: right;
     }
 
     /* ================= 5. 動態引導滑鼠鼠標 ================= */
@@ -351,7 +304,7 @@
       }
     }
 
-    /* ================= 6. Zoom-in 放大閱讀視窗（純粹海報全圖，完整呈現不裁切） ================= */
+    /* ================= 6. Zoom-in 放大閱讀視窗 ================= */
     .reader-overlay {
       position: fixed;
       inset: 0;
@@ -456,32 +409,30 @@
 
   <script>
     const FLYERS_DATA = [
-      { tag: "PAGE 01", heading: "作品集 01", bgColor: "#fbcfe8", textColor: "#831843", imageUrl: "./1.png" },
-      { tag: "PAGE 02", heading: "作品集 02", bgColor: "#fbcfe8", textColor: "#831843", imageUrl: "./2.png" },
-      { tag: "PAGE 03", heading: "作品集 03", bgColor: "#fbcfe8", textColor: "#831843", imageUrl: "./3.png" },
-      { tag: "PAGE 04", heading: "作品集 04", bgColor: "#fbcfe8", textColor: "#831843", imageUrl: "./4.png" },
-      { tag: "PAGE 05", heading: "作品集 05", bgColor: "#fbcfe8", textColor: "#831843", imageUrl: "./5.png" },
-      { tag: "PAGE 06", heading: "作品集 06", bgColor: "#fbcfe8", textColor: "#831843", imageUrl: "./6.png" },
-      { tag: "PAGE 07", heading: "作品集 07", bgColor: "#fbcfe8", textColor: "#831843", imageUrl: "./7.png" },
-      { tag: "PAGE 08", heading: "作品集 08", bgColor: "#fbcfe8", textColor: "#831843", imageUrl: "./8.png" },
-      { tag: "PAGE 09", heading: "作品集 09", bgColor: "#fbcfe8", textColor: "#831843", imageUrl: "./9.png" }
+      { imageUrl: "./1.png" },
+      { imageUrl: "./2.png" },
+      { imageUrl: "./3.png" },
+      { imageUrl: "./4.png" },
+      { imageUrl: "./5.png" },
+      { imageUrl: "./6.png" },
+      { imageUrl: "./7.png" },
+      { imageUrl: "./8.png" },
+      { imageUrl: "./9.png" }
     ];
 
     /**
-     * 往左右兩側擴張拉開的 9 張座標（在 204px 容器內，x 推開至 -21% ~ +22%）：
-     * - #01 獨立置頂（y: 8%）且層級最高，整頁完整露出不被壓住
-     * - #02 ~ #09 善用電線桿左右兩側空間拉開橫向間距，減少重疊並露出更多電線桿底色
+     * 9 張傳單在電線桿上的位置（控制在電線桿左右柱寬範圍內，搭配真實圓柱多切片彎曲）
      */
     const POLE_LAYOUT = [
-      { x: -12, y:  8.0, rot: -2, doubleTape: true  }, // #01：獨立置頂，整頁完整露出不被壓住
-      { x:  21, y: 19.0, rot:  4, doubleTape: true  }, // #02：往右側圓柱邊緣拉開
-      { x: -21, y: 29.5, rot: -3, doubleTape: false }, // #03：往左側圓柱邊緣拉開
-      { x:  20, y: 40.0, rot:  3, doubleTape: true  }, // #04：往右側圓柱邊緣拉開
+      { x: -10, y:  8.0, rot: -2, doubleTape: true  }, // #01：獨立置頂，整頁完整露出
+      { x:  18, y: 19.0, rot:  4, doubleTape: true  }, // #02：貼合右側圓柱弧面
+      { x: -18, y: 29.5, rot: -3, doubleTape: false }, // #03：貼合左側圓柱弧面
+      { x:  17, y: 40.0, rot:  3, doubleTape: true  }, // #04：貼合右側圓柱弧面
       { x:  -2, y: 50.0, rot: -2, doubleTape: false }, // #05：居中微偏左
-      { x: -21, y: 60.5, rot:  4, doubleTape: true  }, // #06：往左側圓柱邊緣拉開
-      { x:  22, y: 70.5, rot: -3, doubleTape: false }, // #07：往右側圓柱邊緣拉開
-      { x: -19, y: 81.0, rot: -3, doubleTape: true  }, // #08：貼合左側下方警示區
-      { x:  18, y: 91.5, rot:  3, doubleTape: false }  // #09：貼合右側下方警示區
+      { x: -18, y: 60.5, rot:  4, doubleTape: true  }, // #06：貼合左側圓柱弧面
+      { x:  18, y: 70.5, rot: -3, doubleTape: false }, // #07：貼合右側圓柱弧面
+      { x: -16, y: 81.0, rot: -3, doubleTape: true  }, // #08：貼合左側下方警示區
+      { x:  15, y: 91.5, rot:  3, doubleTape: false }  // #09：貼合右側下方警示區
     ];
 
     const TAPE_COLORS = [
@@ -538,6 +489,64 @@
       guideCursorEl.style.top = `${cursorTop}%`;
     }
 
+    /**
+     * 核心物理曲面建構器：
+     * 將一張平面傳單切成 7 條垂直微切片，根據傳單在電線桿上的水平位置（pos.x），
+     * 計算每個切片貼合在真實圓柱半徑（R = 96px）上的圓弧角度（theta）與 Z 軸深度，
+     * 產生真正平滑彎曲的圓柱貼合質感，徹底告別硬紙板梯形變形！
+     */
+    function buildCurvedPaperSurface(item, pos, isRead) {
+      const container = document.createElement("div");
+      container.className = "curved-surface";
+
+      const isMobile = window.innerWidth <= 768;
+      const cardW = isMobile ? 70 : 88;
+      const cardH = isMobile ? 99 : 124;
+      const poleRadius = isMobile ? 76 : 96; // 對應電線桿真實圓柱半徑（px）
+      const slices = 7;
+      const sliceW = cardW / slices;
+
+      // 傳單中心相對於電線桿中軸線的水平位移（px）
+      const zoneW = isMobile ? 164 : 204;
+      const centerOffsetPx = (pos.x / 100) * zoneW;
+      const centerTheta = Math.asin(Math.max(-0.85, Math.min(0.85, centerOffsetPx / poleRadius)));
+      const centerZ = poleRadius * Math.cos(centerTheta);
+
+      for (let s = 0; s < slices; s++) {
+        const slice = document.createElement("div");
+        slice.className = "curve-slice";
+
+        // 每個切片相對於傳單中心的水平距離
+        const localX = (s + 0.5) * sliceW - cardW / 2;
+        const worldX = centerOffsetPx + localX;
+
+        // 限制在圓柱半徑內計算真實圓弧切線角度
+        const clampedX = Math.max(-poleRadius * 0.92, Math.min(poleRadius * 0.92, worldX));
+        const theta = Math.asin(clampedX / poleRadius);
+        const degY = (theta * 180) / Math.PI;
+        const deltaZ = poleRadius * Math.cos(theta) - centerZ;
+
+        // 隨圓弧轉角產生自然水平透視收窄（cos(theta)），讓左右邊緣優雅收進圓柱弧線
+        const projectedX = (clampedX - centerOffsetPx);
+
+        slice.style.width = `${sliceW + 0.8}px`; // +0.8px 消除切片間微縫
+        slice.style.left = `${cardW / 2 - sliceW / 2}px`;
+        slice.style.backgroundImage = `url('${item.imageUrl}')`;
+        slice.style.backgroundSize = `${cardW}px ${cardH}px`;
+        slice.style.backgroundPosition = `${-s * sliceW}px 0px`;
+
+        // 依據圓柱角度計算真實環境受光（左側陽光亮面、右側轉入背光漸暗）
+        const lightAngle = theta + 0.35; // 陽光從左前方照射
+        const brightness = (isRead ? 0.94 : 1.0) * (0.76 + 0.28 * Math.cos(lightAngle));
+        slice.style.filter = `brightness(${brightness.toFixed(3)})`;
+
+        slice.style.transform = `translate3d(${projectedX.toFixed(2)}px, 0, ${deltaZ.toFixed(2)}px) rotateY(${degY.toFixed(1)}deg)`;
+        container.appendChild(slice);
+      }
+
+      return container;
+    }
+
     function renderAllPoleFlyers() {
       const flyersOnly = poleFlyersZone.querySelectorAll(".mini-flyer");
       flyersOnly.forEach(el => el.remove());
@@ -563,18 +572,13 @@
         const isRead = visitedSet.has(index);
 
         if (isNext) flyer.classList.add("is-next");
-        if (isRead) flyer.classList.add("is-read");
 
         const leftPercent = 50 + pos.x;
-        // 順著圓柱左右邊緣的曲率透視傾角，讓拉開後的兩側傳單依然伏貼在柱身上
-        const curveRotateY = pos.x * 1.65;
-        const shadeBrightness = (isRead ? 0.94 : 1) - Math.max(0, pos.x * 0.006);
-
         flyer.style.left = `${leftPercent}%`;
         flyer.style.top = `${pos.y}%`;
         flyer.style.zIndex = index === 0 ? 60 : (isNext ? 50 : 30 - index);
-        flyer.style.transform = `translate(-50%, -50%) rotateY(${curveRotateY}deg) rotate(${pos.rot}deg)`;
-        flyer.style.filter = `brightness(${shadeBrightness.toFixed(2)})`;
+        // 外層只保留自然的微幅歪斜（rot），圓柱彎曲交由內部的 7 切片真實弧面處理
+        flyer.style.transform = `translate(-50%, -50%) rotate(${pos.rot}deg)`;
 
         const tapeColor = TAPE_COLORS[index % TAPE_COLORS.length];
 
@@ -600,40 +604,17 @@
           paperSheet.style.animationDelay = `${waveDelay}s`;
         }
 
-        const inner = document.createElement("div");
-        inner.className = "mini-flyer-inner";
-        inner.style.backgroundColor = item.bgColor;
-        inner.style.color = item.textColor;
+        // 建立 7 切片真實圓柱彎曲表面
+        const curvedSurface = buildCurvedPaperSurface(item, pos, isRead);
+        paperSheet.appendChild(curvedSurface);
 
-        const shade = document.createElement("div");
-        shade.className = "cylinder-shade";
-        if (pos.x < -8) {
-          shade.style.background = "linear-gradient(90deg, rgba(0,0,0,0.18) 0%, rgba(255,255,255,0.16) 35%, rgba(0,0,0,0.03) 100%)";
-        } else if (pos.x > 8) {
-          shade.style.background = "linear-gradient(90deg, rgba(255,255,255,0.04) 0%, rgba(0,0,0,0.1) 55%, rgba(0,0,0,0.3) 100%)";
-        } else {
-          shade.style.background = "linear-gradient(90deg, rgba(0,0,0,0.07) 0%, rgba(255,255,255,0.1) 45%, rgba(0,0,0,0.13) 100%)";
+        if (isRead) {
+          const check = document.createElement("div");
+          check.className = "read-check";
+          check.textContent = "✓";
+          paperSheet.appendChild(check);
         }
 
-        if (item.imageUrl && item.imageUrl.trim() !== "") {
-          const img = document.createElement("img");
-          img.src = item.imageUrl;
-          img.alt = "";
-          img.onerror = () => {
-            img.remove();
-            inner.insertAdjacentHTML("afterbegin", `
-              <div>
-                <div class="mini-tag">${item.tag}</div>
-                <div class="mini-title">${item.heading}</div>
-              </div>
-              <div class="mini-num">#${String(index + 1).padStart(2, "0")}</div>
-            `);
-          };
-          inner.appendChild(img);
-        }
-
-        inner.appendChild(shade);
-        paperSheet.appendChild(inner);
         flyer.appendChild(paperSheet);
         flyer.addEventListener("click", () => openZoomReader(index));
         poleFlyersZone.appendChild(flyer);
@@ -666,6 +647,7 @@
       }
     });
 
+    window.addEventListener("resize", renderAllPoleFlyers);
     renderAllPoleFlyers();
   </script>
 </body>
