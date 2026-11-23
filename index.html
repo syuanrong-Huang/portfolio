@@ -26,7 +26,7 @@
       position: absolute;
       inset: 0;
       z-index: 0;
-      background-image: url('./bg.jpg?v=12');
+      background-image: url('./bg.jpg?v=13');
       background-size: cover;
       background-position: 72% center;
       background-repeat: no-repeat;
@@ -34,19 +34,18 @@
       will-change: filter, transform;
     }
 
-    /* Zoom-in 閱讀時背景模糊暗化 */
     body.zoomed .street-scene {
       filter: blur(12px) brightness(0.62);
       transform: scale(1.04);
     }
 
-    /* ================= 2. 頂部引導與進度提示 ================= */
+    /* ================= 2. 頂部簡潔進度提示 ================= */
     .header-guide {
       position: absolute;
       top: 20px;
       left: 28px;
       z-index: 20;
-      background: rgba(24, 22, 20, 0.8);
+      background: rgba(24, 22, 20, 0.78);
       backdrop-filter: blur(10px);
       border: 1px solid rgba(255, 255, 255, 0.18);
       padding: 9px 18px;
@@ -57,17 +56,8 @@
       letter-spacing: 0.3px;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
       transition: opacity 0.3s ease;
-    }
-
-    .progress-pill {
-      background: #ef4444;
-      color: #fff;
-      font-size: 11px;
-      font-weight: 800;
-      padding: 2px 8px;
-      border-radius: 999px;
     }
 
     body.zoomed .header-guide {
@@ -75,15 +65,15 @@
       pointer-events: none;
     }
 
-    /* ================= 3. 電線桿上的 15 張傳單容器 ================= */
+    /* ================= 3. 電線桿上的 15 張傳單容器（配合真實街頭傳單比例） ================= */
     .pole-flyers-zone {
       position: absolute;
       left: 72%;
       top: 50%;
-      width: 280px;
+      width: 310px;
       height: 95vh;
       transform: translate(-50%, -50%);
-      perspective: 950px;
+      perspective: 1000px;
       z-index: 10;
       transition: opacity 0.3s ease;
     }
@@ -93,11 +83,11 @@
       pointer-events: none;
     }
 
-    /* 單張傳單外層定位容器 */
+    /* 單張傳單（放大至 94x132px，模擬街頭真實 A4 傳單比例） */
     .mini-flyer {
       position: absolute;
-      width: 76px;
-      height: 106px;
+      width: 94px;
+      height: 132px;
       cursor: pointer;
       transition:
         transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
@@ -106,62 +96,58 @@
     }
 
     .mini-flyer:hover {
-      transform: translate(-50%, -50%) scale(1.28) rotate(0deg) !important;
+      transform: translate(-50%, -50%) scale(1.24) rotate(0deg) !important;
       z-index: 99 !important;
       filter: brightness(1.04) !important;
     }
 
-    /* ================= 4. 微風吹拂紙張飄動動畫（上方膠帶固定，下方角落掀起） ================= */
+    /* ================= 4. 微風吹拂紙張飄動動畫 ================= */
     @keyframes paperFlutterA {
       0%, 42%, 100% {
         transform: rotateX(0deg) rotateY(0deg) skewX(0deg);
-        box-shadow: -2px 4px 10px rgba(15, 14, 12, 0.45);
+        box-shadow: -3px 5px 12px rgba(15, 14, 12, 0.45);
       }
       52% {
-        /* 一陣微風吹來，紙張下擺向外掀起、角落微微扭轉 */
         transform: rotateX(22deg) rotateY(-8deg) skewX(-2.5deg);
-        box-shadow: -5px 12px 18px rgba(15, 14, 12, 0.36);
+        box-shadow: -6px 14px 20px rgba(15, 14, 12, 0.36);
       }
       60% {
-        /* 風勢稍緩，紙張回落一半再輕顫 */
         transform: rotateX(9deg) rotateY(4deg) skewX(1.2deg);
-        box-shadow: -3px 7px 13px rgba(15, 14, 12, 0.42);
+        box-shadow: -4px 8px 14px rgba(15, 14, 12, 0.42);
       }
       68% {
-        /* 餘風再輕掀一下下擺 */
         transform: rotateX(17deg) rotateY(-5deg) skewX(-1.8deg);
-        box-shadow: -4px 10px 16px rgba(15, 14, 12, 0.38);
+        box-shadow: -5px 11px 18px rgba(15, 14, 12, 0.38);
       }
       78% {
         transform: rotateX(3deg) rotateY(1deg) skewX(0.5deg);
-        box-shadow: -2px 5px 11px rgba(15, 14, 12, 0.44);
+        box-shadow: -3px 6px 12px rgba(15, 14, 12, 0.44);
       }
     }
 
     @keyframes paperFlutterB {
       0%, 38%, 100% {
         transform: rotateX(0deg) rotateY(0deg) skewX(0deg);
-        box-shadow: -2px 4px 10px rgba(15, 14, 12, 0.45);
+        box-shadow: -3px 5px 12px rgba(15, 14, 12, 0.45);
       }
       49% {
         transform: rotateX(25deg) rotateY(9deg) skewX(2.8deg);
-        box-shadow: -6px 13px 19px rgba(15, 14, 12, 0.35);
+        box-shadow: -7px 15px 21px rgba(15, 14, 12, 0.35);
       }
       58% {
         transform: rotateX(10deg) rotateY(-3deg) skewX(-1deg);
-        box-shadow: -3px 7px 13px rgba(15, 14, 12, 0.42);
+        box-shadow: -4px 8px 14px rgba(15, 14, 12, 0.42);
       }
       67% {
         transform: rotateX(19deg) rotateY(6deg) skewX(2deg);
-        box-shadow: -5px 11px 17px rgba(15, 14, 12, 0.37);
+        box-shadow: -5px 12px 18px rgba(15, 14, 12, 0.37);
       }
       76% {
         transform: rotateX(4deg) rotateY(-1deg) skewX(-0.4deg);
-        box-shadow: -2px 5px 11px rgba(15, 14, 12, 0.44);
+        box-shadow: -3px 6px 12px rgba(15, 14, 12, 0.44);
       }
     }
 
-    /* 紙張本體：錨點鎖在頂部膠帶處 (50% 4px)，讓下方自由飄動 */
     .paper-sheet {
       width: 100%;
       height: 100%;
@@ -176,71 +162,22 @@
       will-change: transform, box-shadow;
     }
 
-    /* 滑鼠移上去看的時候，暫停飄動並撫平紙張方便閱讀 */
     .mini-flyer:hover .paper-sheet {
       animation-play-state: paused;
       transform: rotateX(0deg) rotateY(0deg) skewX(0deg) !important;
-      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.65) !important;
-    }
-
-    /* 引導光暈動畫 */
-    @keyframes pulseBeacon {
-      0% {
-        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.85);
-      }
-      70% {
-        box-shadow: 0 0 0 12px rgba(239, 68, 68, 0);
-      }
-      100% {
-        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
-      }
-    }
-
-    .mini-flyer.is-next .paper-sheet {
-      animation-name: paperFlutterA, pulseBeacon;
-      animation-duration: 6.5s, 1.8s;
-      outline: 2px solid #ef4444;
+      box-shadow: 0 16px 34px rgba(0, 0, 0, 0.65) !important;
     }
 
     .mini-flyer.is-next {
-      z-index: 50 !important;
-    }
-
-    .guide-badge {
-      position: absolute;
-      top: -19px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #ef4444;
-      color: #ffffff;
-      font-size: 9.5px;
-      font-weight: 800;
-      padding: 2px 6px;
-      border-radius: 4px;
-      white-space: nowrap;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
-      pointer-events: none;
-      letter-spacing: 0.4px;
-      z-index: 15;
-    }
-
-    .guide-badge::after {
-      content: "";
-      position: absolute;
-      bottom: -3px;
-      left: 50%;
-      transform: translateX(-50%);
-      border-width: 3px 3px 0;
-      border-style: solid;
-      border-color: #ef4444 transparent transparent;
+      z-index: 45 !important;
     }
 
     .mini-flyer.is-read .mini-flyer-inner::after {
       content: "✓";
       position: absolute;
-      bottom: 4px;
-      left: 5px;
-      font-size: 10px;
+      bottom: 5px;
+      left: 6px;
+      font-size: 11px;
       font-weight: 900;
       color: rgba(15, 23, 42, 0.55);
     }
@@ -254,8 +191,7 @@
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      padding: 8px 7px;
-      /* 紙張角落微捲高光質感 */
+      padding: 10px 9px;
       background-image: linear-gradient(135deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0) 45%, rgba(0,0,0,0.06) 100%);
     }
 
@@ -268,30 +204,29 @@
       display: block;
     }
 
-    /* 黏在頂部的膠帶（不會跟著紙張下擺飄起，牢牢固定在電線桿上） */
     .mini-tape {
       position: absolute;
-      top: -4px;
+      top: -4.5px;
       left: 50%;
       transform: translateX(-50%);
-      width: 26px;
-      height: 7px;
+      width: 30px;
+      height: 8px;
       z-index: 10;
       box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
     }
 
     .mini-tag {
-      font-size: 6.5px;
+      font-size: 7.5px;
       font-weight: 800;
       opacity: 0.75;
-      letter-spacing: 0.2px;
+      letter-spacing: 0.3px;
     }
 
     .mini-title {
-      font-size: 9.5px;
+      font-size: 11px;
       font-weight: 800;
-      line-height: 1.24;
-      margin-top: 3px;
+      line-height: 1.26;
+      margin-top: 4px;
       display: -webkit-box;
       -webkit-line-clamp: 3;
       -webkit-box-orient: vertical;
@@ -299,12 +234,74 @@
     }
 
     .mini-num {
-      font-size: 8px;
+      font-size: 9px;
       font-weight: 800;
       opacity: 0.75;
       border-top: 1px dashed rgba(0, 0, 0, 0.25);
       padding-top: 3px;
       text-align: right;
+    }
+
+    /* ================= 5. 動態引導滑鼠鼠標（平滑移動指向下一張傳單） ================= */
+    .guide-cursor {
+      position: absolute;
+      width: 44px;
+      height: 44px;
+      z-index: 80;
+      pointer-events: none;
+      /* 平滑移動到下一張傳單的位置 */
+      transition:
+        left 0.65s cubic-bezier(0.22, 1, 0.36, 1),
+        top 0.65s cubic-bezier(0.22, 1, 0.36, 1),
+        opacity 0.3s ease;
+    }
+
+    /* 點擊波紋擴散圈 */
+    @keyframes cursorRipple {
+      0% {
+        transform: translate(-50%, -50%) scale(0.3);
+        opacity: 0.85;
+      }
+      75% {
+        transform: translate(-50%, -50%) scale(1.45);
+        opacity: 0;
+      }
+      100% {
+        transform: translate(-50%, -50%) scale(1.45);
+        opacity: 0;
+      }
+    }
+
+    .cursor-ripple {
+      position: absolute;
+      top: 4px;
+      left: 4px;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: 2.5px solid #ffffff;
+      background: rgba(255, 255, 255, 0.25);
+      animation: cursorRipple 1.6s infinite ease-out;
+    }
+
+    /* 鼠標輕輕點擊的彈跳動畫 */
+    @keyframes cursorTap {
+      0%, 100% {
+        transform: translate(0, 0) scale(1);
+      }
+      45% {
+        transform: translate(-3px, -4px) scale(0.92);
+      }
+      65% {
+        transform: translate(0, 0) scale(1);
+      }
+    }
+
+    .cursor-hand {
+      width: 36px;
+      height: 36px;
+      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.55));
+      animation: cursorTap 1.6s infinite ease-in-out;
     }
 
     @media (max-width: 768px) {
@@ -317,15 +314,15 @@
       }
       .pole-flyers-zone {
         left: 68%;
-        width: 220px;
+        width: 245px;
       }
       .mini-flyer {
-        width: 62px;
-        height: 86px;
+        width: 74px;
+        height: 104px;
       }
     }
 
-    /* ================= 5. Zoom-in 放大閱讀視窗 ================= */
+    /* ================= 6. Zoom-in 放大閱讀視窗 ================= */
     .reader-overlay {
       position: fixed;
       inset: 0;
@@ -450,13 +447,12 @@
   <!-- 1. 滿版清晰街景背景 -->
   <div class="street-scene" id="streetScene"></div>
 
-  <!-- 2. 頂部順序閱讀引導列 -->
+  <!-- 2. 頂部進度提示 -->
   <div class="header-guide" id="headerGuide">
-    <span class="progress-pill" id="progressPill">START #01</span>
-    <span id="guideText">請從第 1 張傳單開始依序點擊閱讀（已閱 0 / 15）</span>
+    <span id="guideText">跟著鼠標指引，從第 1 張傳單開始依序點擊閱讀（0 / 15）</span>
   </div>
 
-  <!-- 3. 電線桿上的 15 張傳單區 -->
+  <!-- 3. 電線桿上的 15 張傳單區（含動態引導鼠標） -->
   <div class="pole-flyers-zone" id="poleFlyersZone"></div>
 
   <!-- 4. Zoom-in 放大閱讀視窗 -->
@@ -493,21 +489,25 @@
       { title: "15. 聯絡資訊與面試邀約", tag: "CONTACT", heading: "歡迎與我聯繫聊聊！", desc: "期待有機會加入貴團隊，一起打造兼具美感與影響力的作品。", bgColor: "#dcfce7", textColor: "#166534", imageUrl: "", externalLink: "mailto:example@email.com" }
     ];
 
+    /**
+     * 配合 94x132px 放大版傳單的寬敞錯落座標：
+     * 利用電線桿左右兩側與上下全長自然交錯排列，兼具街頭層次感與清晰可視性
+     */
     const POLE_LAYOUT = [
-      { x: -21, y:  6.5, rot: -4 },
-      { x:  22, y:  9.5, rot:  5 },
-      { x:  -2, y: 18.0, rot:  2 },
-      { x: -25, y: 25.5, rot: -5 },
-      { x:  24, y: 28.5, rot:  4 },
-      { x:   1, y: 37.0, rot: -2 },
-      { x: -23, y: 44.5, rot:  5 },
-      { x:  22, y: 47.5, rot: -4 },
-      { x:  -1, y: 56.0, rot:  3 },
-      { x: -24, y: 63.5, rot: -5 },
-      { x:  23, y: 66.0, rot:  5 },
-      { x:   0, y: 74.5, rot: -2 },
-      { x: -22, y: 82.0, rot:  4 },
-      { x:  21, y: 84.5, rot: -4 },
+      { x: -20, y:  7.5, rot: -4 },
+      { x:  21, y: 10.5, rot:  5 },
+      { x:  -2, y: 19.0, rot:  2 },
+      { x: -24, y: 26.5, rot: -5 },
+      { x:  23, y: 29.5, rot:  4 },
+      { x:   1, y: 38.0, rot: -2 },
+      { x: -22, y: 45.5, rot:  5 },
+      { x:  21, y: 48.5, rot: -4 },
+      { x:  -1, y: 57.0, rot:  3 },
+      { x: -23, y: 64.5, rot: -5 },
+      { x:  22, y: 67.0, rot:  5 },
+      { x:   0, y: 75.5, rot: -2 },
+      { x: -21, y: 83.0, rot:  4 },
+      { x:  20, y: 85.5, rot: -4 },
       { x:  -1, y: 92.5, rot:  2 }
     ];
 
@@ -519,7 +519,6 @@
     ];
 
     const poleFlyersZone = document.getElementById("poleFlyersZone");
-    const progressPill = document.getElementById("progressPill");
     const guideText = document.getElementById("guideText");
     const readerOverlay = document.getElementById("readerOverlay");
     const readerViewport = document.getElementById("readerViewport");
@@ -529,6 +528,7 @@
     const backHint = document.getElementById("backHint");
 
     const visitedSet = new Set();
+    let guideCursorEl = null;
 
     function getNextUnreadIndex() {
       for (let i = 0; i < FLYERS_15.length; i++) {
@@ -537,20 +537,51 @@
       return -1;
     }
 
+    // 建立只建構一次的「虛擬小手鼠標」，讓它可以平滑滑動到下一張傳單
+    function ensureGuideCursor() {
+      if (!guideCursorEl) {
+        guideCursorEl = document.createElement("div");
+        guideCursorEl.className = "guide-cursor";
+        guideCursorEl.innerHTML = `
+          <div class="cursor-ripple"></div>
+          <svg class="cursor-hand" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M11.5 5.5C11.5 4.11929 12.6193 3 14 3C15.3807 3 16.5 4.11929 16.5 5.5V13.5H17.5C18.6046 13.5 19.5 14.3954 19.5 15.5V16.2H20.5C21.6046 16.2 22.5 17.0954 22.5 18.2V19C23.6046 19 24.5 19.8954 24.5 21V24.5C24.5 27.5376 22.0376 30 19 30H14.5C11.8 30 9.8 28.4 8.4 26.2L5.3 21.3C4.5 20.1 4.9 18.5 6.1 17.7C7.2 17 8.7 17.3 9.5 18.4L11.5 21V5.5Z" fill="#FFFFFF" stroke="#18181B" stroke-width="2" stroke-linejoin="round"/>
+          </svg>
+        `;
+      }
+      if (!poleFlyersZone.contains(guideCursorEl)) {
+        poleFlyersZone.appendChild(guideCursorEl);
+      }
+    }
+
+    function updateCursorPosition(nextIdx) {
+      ensureGuideCursor();
+      if (nextIdx === -1) {
+        guideCursorEl.style.opacity = "0";
+        return;
+      }
+      const pos = POLE_LAYOUT[nextIdx] || { x: 0, y: 50 };
+      // 將鼠標指尖精準對準該張傳單的中央偏右下處，不遮擋標題
+      const cursorLeft = 50 + pos.x + 4;
+      const cursorTop = pos.y + 3;
+      guideCursorEl.style.opacity = "1";
+      guideCursorEl.style.left = `${cursorLeft}%`;
+      guideCursorEl.style.top = `${cursorTop}%`;
+    }
+
     function renderAllPoleFlyers() {
-      poleFlyersZone.innerHTML = "";
+      // 保留鼠標元素，重新渲染 15 張傳單
+      const flyersOnly = poleFlyersZone.querySelectorAll(".mini-flyer");
+      flyersOnly.forEach(el => el.remove());
+
       const nextIdx = getNextUnreadIndex();
 
       if (visitedSet.size === 0) {
-        progressPill.textContent = "START #01";
-        guideText.textContent = "請從第 1 張傳單開始依序點擊閱讀（已閱 0 / 15）";
+        guideText.textContent = "👆 跟著小手鼠標，從第 1 張傳單開始依序點擊閱讀（0 / 15）";
       } else if (nextIdx !== -1) {
-        const nextNum = String(nextIdx + 1).padStart(2, "0");
-        progressPill.textContent = `NEXT #${nextNum}`;
-        guideText.textContent = `請繼續點擊第 ${nextIdx + 1} 張傳單（已閱 ${visitedSet.size} / 15）`;
+        guideText.textContent = `👆 請繼續點擊小手鼠標指著的第 ${nextIdx + 1} 張傳單（已閱 ${visitedSet.size} / 15）`;
       } else {
-        progressPill.textContent = "DONE 15/15";
-        guideText.textContent = "已瀏覽全部 15 張作品！可隨時點擊任一張重看";
+        guideText.textContent = "🎉 已瀏覽全部 15 張作品！可隨時點擊任一張重看";
       }
 
       FLYERS_15.forEach((item, index) => {
@@ -570,33 +601,21 @@
 
         flyer.style.left = `${leftPercent}%`;
         flyer.style.top = `${pos.y}%`;
-        flyer.style.zIndex = isNext ? 50 : 10 + (index % 4);
+        flyer.style.zIndex = isNext ? 45 : 10 + (index % 4);
         flyer.style.transform = `translate(-50%, -50%) rotateY(${curveRotateY}deg) rotate(${pos.rot}deg)`;
         flyer.style.filter = `brightness(${shadeBrightness.toFixed(2)})`;
         flyer.title = `${item.title}（點擊放大閱讀）`;
 
-        if (isNext) {
-          const badge = document.createElement("div");
-          badge.className = "guide-badge";
-          badge.textContent = index === 0 ? "START #01" : `NEXT #${String(index + 1).padStart(2, "0")}`;
-          flyer.appendChild(badge);
-        }
-
-        // 膠帶固定在最外層，不隨紙張下擺飄動
         const tape = document.createElement("div");
         tape.className = "mini-tape";
         tape.style.background = TAPE_COLORS[index % TAPE_COLORS.length];
         flyer.appendChild(tape);
 
-        // 會隨風飄動的紙張本體（上方膠帶處為軸心，下半部被風吹起）
         const paperSheet = document.createElement("div");
         paperSheet.className = "paper-sheet";
-        // 交錯分配兩種飄動節奏，並依據高度設定波浪時間差（模擬一陣風由上往下吹過）
         const animName = index % 2 === 0 ? "paperFlutterA" : "paperFlutterB";
         const waveDelay = (pos.y * 0.028 + (index % 3) * 0.35).toFixed(2);
-        if (!isNext) {
-          paperSheet.style.animationName = animName;
-        }
+        paperSheet.style.animationName = animName;
         paperSheet.style.animationDelay = `${waveDelay}s`;
 
         const inner = document.createElement("div");
@@ -621,6 +640,9 @@
         flyer.addEventListener("click", () => openZoomReader(index));
         poleFlyersZone.appendChild(flyer);
       });
+
+      // 將小手鼠標平滑移動到下一張要看的傳單上方
+      updateCursorPosition(nextIdx);
     }
 
     function openZoomReader(index) {
