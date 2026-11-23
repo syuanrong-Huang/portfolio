@@ -21,12 +21,12 @@
       position: relative;
     }
 
-    /* ================= 1. 滿版清晰街景背景（對接柱子加粗版 bg.jpg） ================= */
+    /* ================= 1. 滿版清晰街景背景 ================= */
     .street-scene {
       position: absolute;
       inset: 0;
       z-index: 0;
-      background-image: url('./bg.jpg?v=17');
+      background-image: url('./bg.jpg?v=18');
       background-size: cover;
       background-position: 69.5% center;
       background-repeat: no-repeat;
@@ -65,15 +65,15 @@
       pointer-events: none;
     }
 
-    /* ================= 3. 電線桿上的 15 張傳單容器（配合加粗後的柱身調整為 234px） ================= */
+    /* ================= 3. 電線桿上的 15 張傳單容器（精準鎖定電線桿真實柱寬 148px） ================= */
     .pole-flyers-zone {
       position: absolute;
       left: 69.5%;
       top: 50%;
-      width: 234px;
+      width: 148px;
       height: 96vh;
       transform: translate(-50%, -50%);
-      perspective: 700px;
+      perspective: 520px;
       z-index: 10;
       transition: opacity 0.3s ease;
     }
@@ -83,11 +83,11 @@
       pointer-events: none;
     }
 
-    /* 單張傳單（配合加粗後的電線桿比例放大至 90x126px） */
+    /* 單張傳單（68x96px，所有邊角都穩穩包覆在電線桿柱身之內，絕不懸空） */
     .mini-flyer {
       position: absolute;
-      width: 90px;
-      height: 126px;
+      width: 68px;
+      height: 96px;
       cursor: pointer;
       transition:
         transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
@@ -96,7 +96,7 @@
     }
 
     .mini-flyer:hover {
-      transform: translate(-50%, -50%) scale(1.25) rotateY(0deg) rotate(0deg) !important;
+      transform: translate(-50%, -50%) scale(1.32) rotateY(0deg) rotate(0deg) !important;
       z-index: 99 !important;
       filter: brightness(1.04) !important;
     }
@@ -105,46 +105,46 @@
     @keyframes paperFlutterA {
       0%, 42%, 100% {
         transform: rotateX(0deg) rotateY(0deg) skewX(0deg);
-        box-shadow: -2px 4px 10px rgba(15, 14, 12, 0.42);
+        box-shadow: -1.5px 3px 7px rgba(15, 14, 12, 0.45);
       }
       52% {
-        transform: rotateX(20deg) rotateY(-6deg) skewX(-2deg);
-        box-shadow: -5px 14px 20px rgba(15, 14, 12, 0.34);
+        transform: rotateX(18deg) rotateY(-5deg) skewX(-1.8deg);
+        box-shadow: -4px 11px 16px rgba(15, 14, 12, 0.36);
       }
       60% {
-        transform: rotateX(8deg) rotateY(3deg) skewX(1deg);
-        box-shadow: -3px 8px 14px rgba(15, 14, 12, 0.4);
+        transform: rotateX(7deg) rotateY(2.5deg) skewX(0.8deg);
+        box-shadow: -2.5px 6px 11px rgba(15, 14, 12, 0.42);
       }
       68% {
-        transform: rotateX(15deg) rotateY(-4deg) skewX(-1.5deg);
-        box-shadow: -4px 11px 18px rgba(15, 14, 12, 0.36);
+        transform: rotateX(14deg) rotateY(-3.5deg) skewX(-1.2deg);
+        box-shadow: -3.5px 9px 14px rgba(15, 14, 12, 0.38);
       }
       78% {
-        transform: rotateX(3deg) rotateY(1deg) skewX(0.4deg);
-        box-shadow: -2px 5px 11px rgba(15, 14, 12, 0.42);
+        transform: rotateX(2.5deg) rotateY(1deg) skewX(0.3deg);
+        box-shadow: -2px 4px 8px rgba(15, 14, 12, 0.44);
       }
     }
 
     @keyframes paperFlutterB {
       0%, 38%, 100% {
         transform: rotateX(0deg) rotateY(0deg) skewX(0deg);
-        box-shadow: -2px 4px 10px rgba(15, 14, 12, 0.42);
+        box-shadow: -1.5px 3px 7px rgba(15, 14, 12, 0.45);
       }
       49% {
-        transform: rotateX(22deg) rotateY(7deg) skewX(2.2deg);
-        box-shadow: -6px 15px 22px rgba(15, 14, 12, 0.34);
+        transform: rotateX(20deg) rotateY(6deg) skewX(2deg);
+        box-shadow: -5px 12px 17px rgba(15, 14, 12, 0.36);
       }
       58% {
-        transform: rotateX(9deg) rotateY(-2deg) skewX(-0.8deg);
-        box-shadow: -3px 8px 14px rgba(15, 14, 12, 0.4);
+        transform: rotateX(8deg) rotateY(-2deg) skewX(-0.7deg);
+        box-shadow: -2.5px 6px 11px rgba(15, 14, 12, 0.42);
       }
       67% {
-        transform: rotateX(17deg) rotateY(5deg) skewX(1.6deg);
-        box-shadow: -5px 12px 18px rgba(15, 14, 12, 0.36);
+        transform: rotateX(15deg) rotateY(4deg) skewX(1.4deg);
+        box-shadow: -4px 10px 15px rgba(15, 14, 12, 0.38);
       }
       76% {
-        transform: rotateX(3deg) rotateY(-1deg) skewX(-0.3deg);
-        box-shadow: -2px 5px 11px rgba(15, 14, 12, 0.42);
+        transform: rotateX(2.5deg) rotateY(-1deg) skewX(-0.3deg);
+        box-shadow: -2px 4px 8px rgba(15, 14, 12, 0.44);
       }
     }
 
@@ -152,11 +152,11 @@
       width: 100%;
       height: 100%;
       background: #fdfbf7;
-      border-radius: 2px;
+      border-radius: 1.5px;
       position: relative;
       transform-origin: 50% 4px;
       transform-style: preserve-3d;
-      box-shadow: -2px 3px 8px rgba(15, 14, 12, 0.45);
+      box-shadow: -1.5px 2.5px 6px rgba(15, 14, 12, 0.48);
       will-change: transform, box-shadow;
     }
 
@@ -167,13 +167,13 @@
     }
 
     .mini-flyer.double-taped .paper-sheet {
-      box-shadow: -1px 2px 6px rgba(15, 14, 12, 0.48);
+      box-shadow: -1px 2px 5px rgba(15, 14, 12, 0.5);
     }
 
     .mini-flyer:hover .paper-sheet {
       animation-play-state: paused;
       transform: rotateX(0deg) rotateY(0deg) skewX(0deg) !important;
-      box-shadow: 0 18px 38px rgba(0, 0, 0, 0.65) !important;
+      box-shadow: 0 16px 32px rgba(0, 0, 0, 0.65) !important;
     }
 
     .mini-flyer.is-next {
@@ -183,9 +183,9 @@
     .mini-flyer.is-read .mini-flyer-inner::after {
       content: "✓";
       position: absolute;
-      bottom: 5px;
-      left: 6px;
-      font-size: 10.5px;
+      bottom: 4px;
+      left: 5px;
+      font-size: 9.5px;
       font-weight: 900;
       color: rgba(15, 23, 42, 0.55);
     }
@@ -194,12 +194,12 @@
       width: 100%;
       height: 100%;
       overflow: hidden;
-      border-radius: 2px;
+      border-radius: 1.5px;
       position: relative;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      padding: 9px 8px;
+      padding: 7px 6px;
     }
 
     .cylinder-shade {
@@ -220,38 +220,38 @@
 
     .mini-tape-top {
       position: absolute;
-      top: -4px;
+      top: -3.5px;
       left: 50%;
       transform: translateX(-50%) rotate(-1deg);
-      width: 30px;
-      height: 7.5px;
+      width: 24px;
+      height: 6px;
       z-index: 10;
       box-shadow: 0 1px 2px rgba(0, 0, 0, 0.32);
     }
 
     .mini-tape-bottom {
       position: absolute;
-      bottom: -4px;
+      bottom: -3.5px;
       left: 50%;
       transform: translateX(-50%) rotate(1.5deg);
-      width: 30px;
-      height: 7.5px;
+      width: 24px;
+      height: 6px;
       z-index: 10;
       box-shadow: 0 1px 2px rgba(0, 0, 0, 0.32);
     }
 
     .mini-tag {
-      font-size: 7.5px;
+      font-size: 6px;
       font-weight: 800;
       opacity: 0.75;
-      letter-spacing: 0.25px;
+      letter-spacing: 0.2px;
     }
 
     .mini-title {
-      font-size: 11px;
+      font-size: 9px;
       font-weight: 800;
-      line-height: 1.25;
-      margin-top: 3px;
+      line-height: 1.22;
+      margin-top: 2px;
       display: -webkit-box;
       -webkit-line-clamp: 3;
       -webkit-box-orient: vertical;
@@ -259,7 +259,7 @@
     }
 
     .mini-num {
-      font-size: 9px;
+      font-size: 7.5px;
       font-weight: 800;
       opacity: 0.75;
       border-top: 1px dashed rgba(0, 0, 0, 0.25);
@@ -270,8 +270,8 @@
     /* ================= 5. 動態引導滑鼠鼠標 ================= */
     .guide-cursor {
       position: absolute;
-      width: 44px;
-      height: 44px;
+      width: 42px;
+      height: 42px;
       z-index: 80;
       pointer-events: none;
       transition:
@@ -286,11 +286,11 @@
         opacity: 0.85;
       }
       75% {
-        transform: translate(-50%, -50%) scale(1.45);
+        transform: translate(-50%, -50%) scale(1.4);
         opacity: 0;
       }
       100% {
-        transform: translate(-50%, -50%) scale(1.45);
+        transform: translate(-50%, -50%) scale(1.4);
         opacity: 0;
       }
     }
@@ -299,8 +299,8 @@
       position: absolute;
       top: 4px;
       left: 4px;
-      width: 34px;
-      height: 34px;
+      width: 32px;
+      height: 32px;
       border-radius: 50%;
       border: 2.5px solid #ffffff;
       background: rgba(255, 255, 255, 0.25);
@@ -320,8 +320,8 @@
     }
 
     .cursor-hand {
-      width: 36px;
-      height: 36px;
+      width: 34px;
+      height: 34px;
       filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.55));
       animation: cursorTap 1.6s infinite ease-in-out;
     }
@@ -335,12 +335,12 @@
         white-space: nowrap;
       }
       .pole-flyers-zone {
-        left: 67%;
-        width: 190px;
+        left: 67.5%;
+        width: 126px;
       }
       .mini-flyer {
-        width: 70px;
-        height: 98px;
+        width: 56px;
+        height: 78px;
       }
     }
 
@@ -474,7 +474,7 @@
     <span id="guideText">👆 跟著小手鼠標，從第 1 張傳單開始依序點擊閱讀（0 / 15）</span>
   </div>
 
-  <!-- 3. 電線桿上的 15 張傳單區（含動態引導鼠標） -->
+  <!-- 3. 電線桿上的 15 張傳單區（精準鎖定電線桿柱身寬度 148px） -->
   <div class="pole-flyers-zone" id="poleFlyersZone"></div>
 
   <!-- 4. Zoom-in 放大閱讀視窗 -->
@@ -511,21 +511,25 @@
       { title: "15. 聯絡資訊與面試邀約", tag: "CONTACT", heading: "歡迎與我聯繫聊聊！", desc: "期待有機會加入貴團隊，一起打造兼具美感與影響力的作品。", bgColor: "#dcfce7", textColor: "#166534", imageUrl: "", externalLink: "mailto:example@email.com" }
     ];
 
+    /**
+     * 嚴格貼合電線桿寬度（148px）的 15 張伏貼座標：
+     * x 限制在 -16% ~ +16% 之間，確保 68px 寬的傳單左右邊緣都在電線桿輪廓內，絕不懸空！
+     */
     const POLE_LAYOUT = [
-      { x: -18, y:  6.5, rot: -4, doubleTape: false },
-      { x:  20, y:  9.5, rot:  5, doubleTape: true  },
-      { x:  -2, y: 17.5, rot:  2, doubleTape: false },
-      { x: -22, y: 24.5, rot: -5, doubleTape: true  },
-      { x:  21, y: 28.0, rot:  4, doubleTape: false },
-      { x:   2, y: 35.5, rot: -3, doubleTape: true  },
-      { x: -20, y: 42.5, rot:  4, doubleTape: false },
-      { x:  22, y: 46.5, rot: -4, doubleTape: true  },
-      { x:  -3, y: 54.0, rot:  3, doubleTape: false },
-      { x: -22, y: 61.5, rot: -5, doubleTape: true  },
-      { x:  19, y: 65.0, rot:  5, doubleTape: false },
+      { x: -13, y:  7.0, rot: -3, doubleTape: false },
+      { x:  14, y: 10.5, rot:  4, doubleTape: true  },
+      { x:  -1, y: 18.0, rot:  2, doubleTape: false },
+      { x: -16, y: 25.0, rot: -4, doubleTape: true  },
+      { x:  15, y: 28.5, rot:  3, doubleTape: false },
+      { x:   2, y: 36.0, rot: -2, doubleTape: true  },
+      { x: -14, y: 43.0, rot:  3, doubleTape: false },
+      { x:  16, y: 46.5, rot: -4, doubleTape: true  },
+      { x:  -2, y: 54.0, rot:  2, doubleTape: false },
+      { x: -16, y: 61.5, rot: -4, doubleTape: true  },
+      { x:  13, y: 65.0, rot:  4, doubleTape: false },
       { x:   1, y: 72.5, rot: -2, doubleTape: true  },
-      { x: -20, y: 80.0, rot:  4, doubleTape: false },
-      { x:  21, y: 83.5, rot: -4, doubleTape: true  },
+      { x: -15, y: 80.0, rot:  3, doubleTape: false },
+      { x:  15, y: 83.5, rot: -3, doubleTape: true  },
       { x:  -1, y: 91.5, rot:  2, doubleTape: false }
     ];
 
@@ -612,8 +616,9 @@
         if (isRead) flyer.classList.add("is-read");
 
         const leftPercent = 50 + pos.x;
-        const curveRotateY = pos.x * 1.45;
-        const shadeBrightness = (isRead ? 0.93 : 1) - Math.max(0, pos.x * 0.006);
+        // 強化圓柱包覆透視：兩側傳單順著圓柱弧度向內轉折（rotateY ±32deg），貼合柱身曲率
+        const curveRotateY = pos.x * 2.1;
+        const shadeBrightness = (isRead ? 0.93 : 1) - Math.max(0, pos.x * 0.008);
 
         flyer.style.left = `${leftPercent}%`;
         flyer.style.top = `${pos.y}%`;
@@ -653,10 +658,10 @@
 
         const shade = document.createElement("div");
         shade.className = "cylinder-shade";
-        if (pos.x < -8) {
-          shade.style.background = "linear-gradient(90deg, rgba(0,0,0,0.14) 0%, rgba(255,255,255,0.15) 35%, rgba(0,0,0,0.03) 100%)";
-        } else if (pos.x > 8) {
-          shade.style.background = "linear-gradient(90deg, rgba(255,255,255,0.04) 0%, rgba(0,0,0,0.08) 55%, rgba(0,0,0,0.24) 100%)";
+        if (pos.x < -6) {
+          shade.style.background = "linear-gradient(90deg, rgba(0,0,0,0.16) 0%, rgba(255,255,255,0.16) 35%, rgba(0,0,0,0.03) 100%)";
+        } else if (pos.x > 6) {
+          shade.style.background = "linear-gradient(90deg, rgba(255,255,255,0.04) 0%, rgba(0,0,0,0.1) 55%, rgba(0,0,0,0.28) 100%)";
         } else {
           shade.style.background = "linear-gradient(90deg, rgba(0,0,0,0.07) 0%, rgba(255,255,255,0.1) 45%, rgba(0,0,0,0.12) 100%)";
         }
