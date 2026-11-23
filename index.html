@@ -26,7 +26,7 @@
       position: absolute;
       inset: 0;
       z-index: 0;
-      background-image: url('./bg.jpg?v=30');
+      background-image: url('./bg.jpg?v=31');
       background-size: cover;
       background-position: 69.5% center;
       background-repeat: no-repeat;
@@ -39,13 +39,11 @@
       transform: scale(1.04);
     }
 
-    /* ================= 2. 電線桿上的 9 張傳單容器（採用 vh 等比例縮放，跨 Mac / Windows 螢幕比例一致） ================= */
+    /* ================= 2. 電線桿上的 9 張傳單容器（寬高由 JS 依據背景圖真實渲染比例精準鎖定） ================= */
     .pole-flyers-zone {
       position: absolute;
       left: 69.5%;
       top: 50%;
-      width: 24.5vh;
-      height: 96vh;
       transform: translate(-50%, -50%);
       perspective: 1800px;
       z-index: 10;
@@ -57,11 +55,9 @@
       pointer-events: none;
     }
 
-    /* 單張傳單（標準 A4 比例 1:1.414，隨視窗高度自動等比例縮放） */
+    /* 單張傳單（寬高由 JS 同步背景圖縮放倍率設定，確保在任何電腦上都精準貼合電線桿寬度） */
     .mini-flyer {
       position: absolute;
-      width: 10.5vh;
-      height: 14.8vh;
       cursor: pointer;
       transition:
         transform 0.28s cubic-bezier(0.16, 1, 0.3, 1),
@@ -130,7 +126,6 @@
       position: relative;
       transform-origin: 50% 4px;
       transform-style: preserve-3d;
-      /* 光線從左往右照，投影自然落在紙張右側與下方 */
       box-shadow: 2px 3px 8px rgba(15, 14, 12, 0.4);
       will-change: transform, box-shadow;
     }
@@ -187,22 +182,22 @@
 
     .mini-tape-top {
       position: absolute;
-      top: -0.5vh;
+      top: -4px;
       left: 50%;
       transform: translateX(-50%) rotate(-1deg);
-      width: 3.3vh;
-      height: 0.85vh;
+      width: 30%;
+      height: 6px;
       z-index: 10;
       box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
     }
 
     .mini-tape-bottom {
       position: absolute;
-      bottom: -0.5vh;
+      bottom: -4px;
       left: 50%;
       transform: translateX(-50%) rotate(1.5deg);
-      width: 3.3vh;
-      height: 0.85vh;
+      width: 30%;
+      height: 6px;
       z-index: 10;
       box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
     }
@@ -264,17 +259,6 @@
       height: 36px;
       filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.55));
       animation: cursorTap 1.6s infinite ease-in-out;
-    }
-
-    @media (max-width: 768px) {
-      .pole-flyers-zone {
-        left: 67.5%;
-        width: 21vh;
-      }
-      .mini-flyer {
-        width: 9vh;
-        height: 12.7vh;
-      }
     }
 
     /* ================= 5. Zoom-in 放大閱讀視窗 ================= */
@@ -365,7 +349,7 @@
   <!-- 1. 滿版清晰街景背景 -->
   <div class="street-scene" id="streetScene"></div>
 
-  <!-- 2. 電線桿上的 9 張傳單區（已移除左上角文字膠囊，畫面更乾淨） -->
+  <!-- 2. 電線桿上的 9 張傳單區 -->
   <div class="pole-flyers-zone" id="poleFlyersZone"></div>
 
   <!-- 3. Zoom-in 放大閱讀視窗 -->
@@ -388,10 +372,6 @@
       { imageUrl: "./9.png" }
     ];
 
-    /**
-     * 9 張傳單座標與固定方式：
-     * - doubleTape: true（雙膠帶牢牢伏貼）、false（單膠帶上方固定，隨風輕輕飄動）
-     */
     const POLE_LAYOUT = [
       { x: -10, y:  8.0, rot: -2, doubleTape: true  }, // #01：獨立置頂，整頁完整露出
       { x:  18, y: 19.0, rot:  4, doubleTape: true  }, // #02：貼合右側圓柱弧面
@@ -419,6 +399,32 @@
 
     const visitedSet = new Set();
     let guideCursorEl = null;
+
+    /**
+     * 核心跨螢幕同步演算法：
+     * 因為 bg.jpg 是 16:9 (1.7778) 的滿版 cover 背景圖，當朋友的螢幕比較寬扁或視窗較矮時，
+     * 背景圖會以「寬度」為主放大並裁切上下；當螢幕較高時，則以「高度」為主放大。
+     * 這裡直接計算 bg.jpg 在當前視窗中的「真實渲染像素尺寸」，讓電線桿互動區與傳單寬度永遠與電線桿同步縮放！
+     */
+    function syncPoleMetrics() {
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      const imgAspect = 16 / 9; // bg.jpg 原始長寬比
+      const winAspect = vw / vh;
+
+      // 背景圖實際渲染出來的寬度（px）
+      const renderedBgWidth = winAspect > imgAspect ? vw : vh * imgAspect;
+
+      // 電線桿在原圖中佔約 14.2% 寬度，傳單佔電線桿寬度的 43%（標準 A4 比例 1:1.414）
+      const zoneWidth = renderedBgWidth * 0.142;
+      const flyerWidth = zoneWidth * 0.43;
+      const flyerHeight = flyerWidth * 1.414;
+
+      poleFlyersZone.style.width = `${zoneWidth.toFixed(1)}px`;
+      poleFlyersZone.style.height = `${(vh * 0.96).toFixed(1)}px`;
+
+      return { flyerWidth, flyerHeight };
+    }
 
     function getNextUnreadIndex() {
       for (let i = 0; i < FLYERS_DATA.length; i++) {
@@ -458,6 +464,8 @@
     }
 
     function renderAllPoleFlyers() {
+      const { flyerWidth, flyerHeight } = syncPoleMetrics();
+
       const flyersOnly = poleFlyersZone.querySelectorAll(".mini-flyer");
       flyersOnly.forEach(el => el.remove());
 
@@ -469,12 +477,14 @@
         flyer.className = "mini-flyer";
         flyer.classList.add(pos.doubleTape ? "double-taped" : "can-flutter");
 
+        flyer.style.width = `${flyerWidth.toFixed(1)}px`;
+        flyer.style.height = `${flyerHeight.toFixed(1)}px`;
+
         const isNext = index === nextIdx;
         if (isNext) flyer.classList.add("is-next");
 
         const leftPercent = 50 + pos.x;
         const curveRotateY = pos.x * 0.9;
-        // 左側受光最亮（1.03），越往右側背光面整體亮度自然略降（最低約 0.88）
         const sideBrightness = 0.97 - pos.x * 0.0045;
 
         flyer.style.left = `${leftPercent}%`;
@@ -519,13 +529,10 @@
         const shade = document.createElement("div");
         shade.className = "cylinder-shade";
         if (pos.x < -8) {
-          // 貼在電線桿左側（陽光直射面）：左亮右微柔暗
           shade.style.background = "linear-gradient(90deg, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0.04) 60%, rgba(0,0,0,0.07) 100%)";
         } else if (pos.x > 8) {
-          // 貼在電線桿右側（轉入背光面）：由左往右漸進加深背光陰影
           shade.style.background = "linear-gradient(90deg, rgba(255,255,255,0.03) 0%, rgba(0,0,0,0.1) 48%, rgba(0,0,0,0.32) 100%)";
         } else {
-          // 貼在電線桿正中央：左半邊受光微亮、右半邊開始轉入背光微暗
           shade.style.background = "linear-gradient(90deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.02) 45%, rgba(0,0,0,0.16) 100%)";
         }
         inner.appendChild(shade);
@@ -563,6 +570,7 @@
       }
     });
 
+    window.addEventListener("resize", renderAllPoleFlyers);
     renderAllPoleFlyers();
   </script>
 </body>
