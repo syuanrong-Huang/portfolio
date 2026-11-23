@@ -21,25 +21,47 @@
       position: relative;
     }
 
-    /* ================= 1. 滿版清晰街景背景 ================= */
-    .street-scene {
+    /* ================= 1. 動態街景影片背景（無電線桿版本） ================= */
+    .scene-wrapper {
       position: absolute;
       inset: 0;
       z-index: 0;
-      background-image: url('./bg.jpg?v=32');
-      background-size: cover;
-      background-position: 69.5% center;
-      background-repeat: no-repeat;
+      overflow: hidden;
       transition: filter 0.45s cubic-bezier(0.22, 1, 0.36, 1), transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
       will-change: filter, transform;
     }
 
-    body.zoomed .street-scene {
+    body.zoomed .scene-wrapper {
       filter: blur(12px) brightness(0.62);
       transform: scale(1.04);
     }
 
-    /* ================= 2. 電線桿上的 9 張傳單容器（寬高由 JS 依據背景圖真實渲染比例精準鎖定） ================= */
+    .bg-video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: 69.5% center;
+      pointer-events: none;
+    }
+
+    /* ================= 2. 保留原本照片中的電線桿 ================= */
+    .pole-cutout {
+      position: absolute;
+      left: 69.5%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      background-image: url('./bg.jpg?v=35');
+      background-size: cover;
+      background-position: 69.5% center;
+      background-repeat: no-repeat;
+      z-index: 2;
+      pointer-events: none;
+      box-shadow: -3px 0 10px rgba(24, 22, 20, 0.22), 4px 0 12px rgba(24, 22, 20, 0.28);
+    }
+
+    /* ================= 3. 電線桿上的 9 張傳單容器 ================= */
     .pole-flyers-zone {
       position: absolute;
       left: 69.5%;
@@ -55,7 +77,6 @@
       pointer-events: none;
     }
 
-    /* 單張傳單（寬高由 JS 同步背景圖縮放倍率設定，確保在任何電腦上都精準貼合電線桿寬度） */
     .mini-flyer {
       position: absolute;
       cursor: pointer;
@@ -71,7 +92,7 @@
       filter: brightness(1.04) !important;
     }
 
-    /* ================= 3. 微風吹拂紙張飄動動畫（5秒週期，單段膠帶款專用） ================= */
+    /* ================= 4. 微風吹拂紙張飄動動畫（5秒週期，單段膠帶款專用） ================= */
     @keyframes paperFlutterA {
       0%, 42%, 100% {
         transform: rotateX(0deg) rotateY(0deg) skewX(0deg);
@@ -167,7 +188,6 @@
       display: block;
     }
 
-    /* 由左往右的單向光影遮罩（左側受陽光照射明亮、右側自然轉入背光陰影） */
     .cylinder-shade {
       position: absolute;
       inset: 0;
@@ -202,7 +222,7 @@
       box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
     }
 
-    /* ================= 4. 動態引導滑鼠鼠標 ================= */
+    /* ================= 5. 動態引導滑鼠鼠標 ================= */
     .guide-cursor {
       position: absolute;
       width: 44px;
@@ -261,7 +281,7 @@
       animation: cursorTap 1.6s infinite ease-in-out;
     }
 
-    /* ================= 5. Zoom-in 放大閱讀視窗（維持真實紙張直角） ================= */
+    /* ================= 6. Zoom-in 放大閱讀視窗 ================= */
     .reader-overlay {
       position: fixed;
       inset: 0;
@@ -346,8 +366,11 @@
 </head>
 <body>
 
-  <!-- 1. 滿版清晰街景背景 -->
-  <div class="street-scene" id="streetScene"></div>
+  <!-- 1. 動態街景背景（無電線桿影片 + 保留原本照片中的電線桿） -->
+  <div class="scene-wrapper" id="sceneWrapper">
+    <video class="bg-video" id="bgVideo" src="./bg.mp4?v=35" poster="./bg.jpg?v=35" autoplay loop muted playsinline></video>
+    <div class="pole-cutout" id="poleCutout"></div>
+  </div>
 
   <!-- 2. 電線桿上的 9 張傳單區 -->
   <div class="pole-flyers-zone" id="poleFlyersZone"></div>
@@ -373,15 +396,15 @@
     ];
 
     const POLE_LAYOUT = [
-      { x: -10, y:  8.0, rot: -2, doubleTape: true  }, // #01：獨立置頂，整頁完整露出
-      { x:  18, y: 19.0, rot:  4, doubleTape: true  }, // #02：貼合右側圓柱弧面
-      { x: -18, y: 29.5, rot: -3, doubleTape: false }, // #03：左側，單膠帶隨風微飄
-      { x:  17, y: 40.0, rot:  3, doubleTape: true  }, // #04：右側，雙膠帶伏貼
-      { x:  -2, y: 50.0, rot: -2, doubleTape: false }, // #05：居中微偏左，單膠帶隨風微飄
-      { x: -18, y: 60.5, rot:  4, doubleTape: true  }, // #06：左側，雙膠帶伏貼
-      { x:  18, y: 70.5, rot: -3, doubleTape: false }, // #07：右側，單膠帶隨風微飄
-      { x: -16, y: 81.0, rot: -3, doubleTape: true  }, // #08：左側下方，雙膠帶伏貼
-      { x:  15, y: 91.5, rot:  3, doubleTape: false }  // #09：右側下方，單膠帶隨風微飄
+      { x: -10, y:  8.0, rot: -2, doubleTape: true  },
+      { x:  18, y: 19.0, rot:  4, doubleTape: true  },
+      { x: -18, y: 29.5, rot: -3, doubleTape: false },
+      { x:  17, y: 40.0, rot:  3, doubleTape: true  },
+      { x:  -2, y: 50.0, rot: -2, doubleTape: false },
+      { x: -18, y: 60.5, rot:  4, doubleTape: true  },
+      { x:  18, y: 70.5, rot: -3, doubleTape: false },
+      { x: -16, y: 81.0, rot: -3, doubleTape: true  },
+      { x:  15, y: 91.5, rot:  3, doubleTape: false }
     ];
 
     const TAPE_COLORS = [
@@ -391,6 +414,7 @@
       "rgba(59, 130, 246, 0.78)"
     ];
 
+    const poleCutout = document.getElementById("poleCutout");
     const poleFlyersZone = document.getElementById("poleFlyersZone");
     const readerOverlay = document.getElementById("readerOverlay");
     const readerCard = document.getElementById("readerCard");
@@ -407,10 +431,15 @@
       const winAspect = vw / vh;
 
       const renderedBgWidth = winAspect > imgAspect ? vw : vh * imgAspect;
+      const renderedBgHeight = winAspect > imgAspect ? vw / imgAspect : vh;
 
       const zoneWidth = renderedBgWidth * 0.142;
       const flyerWidth = zoneWidth * 0.43;
       const flyerHeight = flyerWidth * 1.414;
+
+      poleCutout.style.width = `${(zoneWidth * 1.02).toFixed(1)}px`;
+      poleCutout.style.height = `${vh}px`;
+      poleCutout.style.backgroundSize = `${renderedBgWidth.toFixed(1)}px ${renderedBgHeight.toFixed(1)}px`;
 
       poleFlyersZone.style.width = `${zoneWidth.toFixed(1)}px`;
       poleFlyersZone.style.height = `${(vh * 0.96).toFixed(1)}px`;
