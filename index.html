@@ -26,7 +26,7 @@
       position: absolute;
       inset: 0;
       z-index: 0;
-      background-image: url('./bg.jpg?v=25');
+      background-image: url('./bg.jpg?v=26');
       background-size: cover;
       background-position: 69.5% center;
       background-repeat: no-repeat;
@@ -65,15 +65,15 @@
       pointer-events: none;
     }
 
-    /* ================= 3. 電線桿上的 9 張傳單容器（單屏滿高 96vh，貼合電線桿寬度 164px） ================= */
+    /* ================= 3. 電線桿上的 9 張傳單容器（放寬至 204px，善用左右兩側柱身空間） ================= */
     .pole-flyers-zone {
       position: absolute;
       left: 69.5%;
       top: 50%;
-      width: 164px;
+      width: 204px;
       height: 96vh;
       transform: translate(-50%, -50%);
-      perspective: 560px;
+      perspective: 540px;
       z-index: 10;
       transition: opacity 0.3s ease;
     }
@@ -343,7 +343,7 @@
       }
       .pole-flyers-zone {
         left: 67.5%;
-        width: 136px;
+        width: 164px;
       }
       .mini-flyer {
         width: 70px;
@@ -468,21 +468,20 @@
     ];
 
     /**
-     * 單屏 100vh 內的 9 張分散座標：
-     * - #01 獨立貼在最上方（y: 8%）且層級最高，整頁完整露出不被壓到
-     * - #02 往右下錯開（y: 19.5%），與 #01 拉出明顯距離
-     * - #03 ~ #09 均勻分布至 91.5%，保留適度的自然邊角交疊與寬敞呼吸感
+     * 往左右兩側擴張拉開的 9 張座標（在 204px 容器內，x 推開至 -21% ~ +22%）：
+     * - #01 獨立置頂（y: 8%）且層級最高，整頁完整露出不被壓住
+     * - #02 ~ #09 善用電線桿左右兩側空間拉開橫向間距，減少重疊並露出更多電線桿底色
      */
     const POLE_LAYOUT = [
-      { x:  -9, y:  8.0, rot: -2, doubleTape: true  }, // #01：獨立置頂，整頁完整露出不被壓住
-      { x:  13, y: 19.5, rot:  4, doubleTape: true  }, // #02：往右下錯開，與第 1 張拉開距離
-      { x: -13, y: 29.5, rot: -3, doubleTape: false }, // #03：貼合左側圓柱
-      { x:  12, y: 39.5, rot:  3, doubleTape: true  }, // #04：貼合右側圓柱
+      { x: -12, y:  8.0, rot: -2, doubleTape: true  }, // #01：獨立置頂，整頁完整露出不被壓住
+      { x:  21, y: 19.0, rot:  4, doubleTape: true  }, // #02：往右側圓柱邊緣拉開
+      { x: -21, y: 29.5, rot: -3, doubleTape: false }, // #03：往左側圓柱邊緣拉開
+      { x:  20, y: 40.0, rot:  3, doubleTape: true  }, // #04：往右側圓柱邊緣拉開
       { x:  -2, y: 50.0, rot: -2, doubleTape: false }, // #05：居中微偏左
-      { x: -13, y: 60.5, rot:  4, doubleTape: true  }, // #06：貼合左側圓柱
-      { x:  13, y: 70.5, rot: -3, doubleTape: false }, // #07：貼合右側圓柱
-      { x: -11, y: 81.0, rot: -3, doubleTape: true  }, // #08：貼合左側下方警示區
-      { x:  10, y: 91.5, rot:  3, doubleTape: false }  // #09：貼合右側下方警示區
+      { x: -21, y: 60.5, rot:  4, doubleTape: true  }, // #06：往左側圓柱邊緣拉開
+      { x:  22, y: 70.5, rot: -3, doubleTape: false }, // #07：往右側圓柱邊緣拉開
+      { x: -19, y: 81.0, rot: -3, doubleTape: true  }, // #08：貼合左側下方警示區
+      { x:  18, y: 91.5, rot:  3, doubleTape: false }  // #09：貼合右側下方警示區
     ];
 
     const TAPE_COLORS = [
@@ -567,12 +566,12 @@
         if (isRead) flyer.classList.add("is-read");
 
         const leftPercent = 50 + pos.x;
-        const curveRotateY = pos.x * 2.1;
-        const shadeBrightness = (isRead ? 0.94 : 1) - Math.max(0, pos.x * 0.008);
+        // 順著圓柱左右邊緣的曲率透視傾角，讓拉開後的兩側傳單依然伏貼在柱身上
+        const curveRotateY = pos.x * 1.65;
+        const shadeBrightness = (isRead ? 0.94 : 1) - Math.max(0, pos.x * 0.006);
 
         flyer.style.left = `${leftPercent}%`;
         flyer.style.top = `${pos.y}%`;
-        // 第 1 張永遠保持最高層級（60），絕對不被第 2 張疊到
         flyer.style.zIndex = index === 0 ? 60 : (isNext ? 50 : 30 - index);
         flyer.style.transform = `translate(-50%, -50%) rotateY(${curveRotateY}deg) rotate(${pos.rot}deg)`;
         flyer.style.filter = `brightness(${shadeBrightness.toFixed(2)})`;
@@ -608,10 +607,10 @@
 
         const shade = document.createElement("div");
         shade.className = "cylinder-shade";
-        if (pos.x < -5) {
-          shade.style.background = "linear-gradient(90deg, rgba(0,0,0,0.16) 0%, rgba(255,255,255,0.16) 35%, rgba(0,0,0,0.03) 100%)";
-        } else if (pos.x > 5) {
-          shade.style.background = "linear-gradient(90deg, rgba(255,255,255,0.04) 0%, rgba(0,0,0,0.1) 55%, rgba(0,0,0,0.28) 100%)";
+        if (pos.x < -8) {
+          shade.style.background = "linear-gradient(90deg, rgba(0,0,0,0.18) 0%, rgba(255,255,255,0.16) 35%, rgba(0,0,0,0.03) 100%)";
+        } else if (pos.x > 8) {
+          shade.style.background = "linear-gradient(90deg, rgba(255,255,255,0.04) 0%, rgba(0,0,0,0.1) 55%, rgba(0,0,0,0.3) 100%)";
         } else {
           shade.style.background = "linear-gradient(90deg, rgba(0,0,0,0.07) 0%, rgba(255,255,255,0.1) 45%, rgba(0,0,0,0.13) 100%)";
         }
