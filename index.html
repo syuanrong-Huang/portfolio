@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>街角作品集｜15張傳單互動牆</title>
+  <title>街角作品集｜互動展示牆</title>
   <style>
     * {
       box-sizing: border-box;
@@ -26,7 +26,7 @@
       position: absolute;
       inset: 0;
       z-index: 0;
-      background-image: url('./bg.jpg?v=18');
+      background-image: url('./bg.jpg?v=20');
       background-size: cover;
       background-position: 69.5% center;
       background-repeat: no-repeat;
@@ -65,13 +65,13 @@
       pointer-events: none;
     }
 
-    /* ================= 3. 電線桿上的 15 張傳單容器（精準鎖定電線桿真實柱寬 148px） ================= */
+    /* ================= 3. 電線桿上的 9 張傳單容器（精準鎖定電線桿真實柱寬 148px） ================= */
     .pole-flyers-zone {
       position: absolute;
       left: 69.5%;
       top: 50%;
       width: 148px;
-      height: 96vh;
+      height: 94vh;
       transform: translate(-50%, -50%);
       perspective: 520px;
       z-index: 10;
@@ -83,11 +83,11 @@
       pointer-events: none;
     }
 
-    /* 單張傳單（68x96px，所有邊角都穩穩包覆在電線桿柱身之內，絕不懸空） */
+    /* 單張傳單（72x102px） */
     .mini-flyer {
       position: absolute;
-      width: 68px;
-      height: 96px;
+      width: 72px;
+      height: 102px;
       cursor: pointer;
       transition:
         transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
@@ -185,9 +185,16 @@
       position: absolute;
       bottom: 4px;
       left: 5px;
-      font-size: 9.5px;
+      font-size: 10px;
       font-weight: 900;
-      color: rgba(15, 23, 42, 0.55);
+      color: #ffffff;
+      background: rgba(24, 22, 20, 0.65);
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .mini-flyer-inner {
@@ -339,8 +346,8 @@
         width: 126px;
       }
       .mini-flyer {
-        width: 56px;
-        height: 78px;
+        width: 58px;
+        height: 82px;
       }
     }
 
@@ -471,10 +478,10 @@
 
   <!-- 2. 頂部進度提示 -->
   <div class="header-guide" id="headerGuide">
-    <span id="guideText">👆 跟著小手鼠標，從第 1 張傳單開始依序點擊閱讀（0 / 15）</span>
+    <span id="guideText">👆 跟著小手鼠標，從第 1 張傳單開始依序點擊閱讀（0 / 9）</span>
   </div>
 
-  <!-- 3. 電線桿上的 15 張傳單區（精準鎖定電線桿柱身寬度 148px） -->
+  <!-- 3. 電線桿上的 9 張傳單區 -->
   <div class="pole-flyers-zone" id="poleFlyersZone"></div>
 
   <!-- 4. Zoom-in 放大閱讀視窗 -->
@@ -484,7 +491,7 @@
     <div class="reader-card">
       <div class="reader-viewport" id="readerViewport"></div>
       <div class="reader-footer">
-        <span class="page-title" id="pageTitle">01. 作品名稱</span>
+        <span class="page-title" id="pageTitle">01. 作品集</span>
         <a class="ext-link" id="extLink" href="#" target="_blank">開啟完整連結 ↗</a>
       </div>
     </div>
@@ -493,44 +500,33 @@
   </div>
 
   <script>
-    const FLYERS_15 = [
-      { title: "01. 個人簡介與履歷總覽", tag: "RESUME", heading: "個人簡介與求職履歷", desc: "創意設計與行銷企劃背景，擅長品牌視覺規劃與跨媒介整合行銷。", bgColor: "#fef3c7", textColor: "#78350f", imageUrl: "", externalLink: "https://www.linkedin.com" },
-      { title: "02. 品牌識別重塑專案", tag: "BRANDING", heading: "新創咖啡品牌 CIS 識別設計", desc: "從 Logo 造型、字體規範到外帶杯包裝系統，建立溫暖且具記憶點的品牌形象。", bgColor: "#e0f2fe", textColor: "#0c4a6e", imageUrl: "", externalLink: "https://www.behance.net" },
-      { title: "03. 年度社群話題操作", tag: "SOCIAL", heading: "IG 互動濾鏡與迷因企劃", desc: "結合時事話題與高共鳴圖文，單月自然觸及突破 45 萬人次。", bgColor: "#fce7f3", textColor: "#831843", imageUrl: "", externalLink: "https://www.behance.net" },
-      { title: "04. 音樂祭主視覺海報", tag: "POSTER", heading: "城市獨立音樂節主視覺", desc: "運用高對比拼貼與實驗排版，呈現街頭文化與現場音樂的爆發力。", bgColor: "#dcfce7", textColor: "#14532d", imageUrl: "", externalLink: "https://www.behance.net" },
-      { title: "05. 快閃店空間與動線企劃", tag: "EVENT", heading: "信義區週末快閃體驗店", desc: "負責現場打卡裝置視覺、現場體驗動線設計與 KOL 邀請合作。", bgColor: "#ffedd5", textColor: "#7c2d12", imageUrl: "", externalLink: "https://www.behance.net" },
-      { title: "06. 食品包裝插畫系列", tag: "PACKAGING", heading: "手工果醬與茶飲禮盒包裝", desc: "以手繪植物插畫搭配燙金工藝，提升節慶禮盒客單價與送禮質感。", bgColor: "#f3e8ff", textColor: "#581c87", imageUrl: "", externalLink: "https://www.behance.net" },
-      { title: "07. 短影音腳本與視覺指導", tag: "VIDEO", heading: "Reels / TikTok 品牌系列短片", desc: "規劃前 3 秒吸睛鉤子與分鏡視覺，平均完播率提升 38%。", bgColor: "#fef9c3", textColor: "#713f12", imageUrl: "", externalLink: "https://www.behance.net" },
-      { title: "08. 展覽主視覺與導覽手冊", tag: "EXHIBITION", heading: "當代插畫聯展視覺統籌", desc: "包含主視覺海報、展場指標系統、票券與限量周邊商品設計。", bgColor: "#cffafe", textColor: "#164e63", imageUrl: "", externalLink: "https://www.behance.net" },
-      { title: "09. 電商大檔視覺設計", tag: "E-COMMERCE", heading: "雙 11 購物節全站視覺規範", desc: "設計高轉換率商品首圖模板、活動頁 Banner 與社群倒數素材。", bgColor: "#ffe4e6", textColor: "#881337", imageUrl: "", externalLink: "https://www.behance.net" },
-      { title: "10. 聯名周邊商品開發", tag: "MERCH", heading: "街頭潮牌聯名帆布袋與貼紙組", desc: "從插畫創作、材質打樣到社群限量抽獎預熱，開賣 2 小時全數完售。", bgColor: "#d1fae5", textColor: "#064e3b", imageUrl: "", externalLink: "https://www.behance.net" },
-      { title: "11. 永續公益行銷專案", tag: "CSR / ESG", heading: "舊衣回收再造計畫宣傳企劃", desc: "以溫潤再生紙質感為視覺核心，號召超過 3,000 名消費者參與門市回收。", bgColor: "#e0e7ff", textColor: "#312e81", imageUrl: "", externalLink: "https://www.behance.net" },
-      { title: "12. 書籍裝幀與排版設計", tag: "EDITORIAL", heading: "獨立生活風格誌刊物編排", desc: "負責專題攝影藝術指導、網格系統建立與內頁字體排印設計。", bgColor: "#fae8ff", textColor: "#701a75", imageUrl: "", externalLink: "https://www.behance.net" },
-      { title: "13. 產品攝影與美術指導", tag: "ART DIR.", heading: "香氛系列自然光影情境攝影", desc: "設定拍攝腳本、道具陳列與色調規範，打造一致的品牌社群美學。", bgColor: "#f1f5f9", textColor: "#1e293b", imageUrl: "", externalLink: "https://www.behance.net" },
-      { title: "14. 數位廣告素材 A/B 測試", tag: "ADS", heading: "Meta 廣告高點擊率視覺優化", desc: "透過多版本視覺與文案測試，將單次獲客成本（CPA）降低 27%。", bgColor: "#fef3c7", textColor: "#92400e", imageUrl: "", externalLink: "https://www.behance.net" },
-      { title: "15. 聯絡資訊與面試邀約", tag: "CONTACT", heading: "歡迎與我聯繫聊聊！", desc: "期待有機會加入貴團隊，一起打造兼具美感與影響力的作品。", bgColor: "#dcfce7", textColor: "#166534", imageUrl: "", externalLink: "mailto:example@email.com" }
+    /**
+     * =================================================================
+     * 直接對應你資料夾裡的 1.png ~ 9.png！
+     * =================================================================
+     */
+    const FLYERS_DATA = [
+      { title: "01. 作品集 01", tag: "PAGE 01", heading: "作品集 01", desc: "", bgColor: "#fbcfe8", textColor: "#831843", imageUrl: "./1.png", externalLink: "" },
+      { title: "02. 作品集 02", tag: "PAGE 02", heading: "作品集 02", desc: "", bgColor: "#fbcfe8", textColor: "#831843", imageUrl: "./2.png", externalLink: "" },
+      { title: "03. 作品集 03", tag: "PAGE 03", heading: "作品集 03", desc: "", bgColor: "#fbcfe8", textColor: "#831843", imageUrl: "./3.png", externalLink: "" },
+      { title: "04. 作品集 04", tag: "PAGE 04", heading: "作品集 04", desc: "", bgColor: "#fbcfe8", textColor: "#831843", imageUrl: "./4.png", externalLink: "" },
+      { title: "05. 作品集 05", tag: "PAGE 05", heading: "作品集 05", desc: "", bgColor: "#fbcfe8", textColor: "#831843", imageUrl: "./5.png", externalLink: "" },
+      { title: "06. 作品集 06", tag: "PAGE 06", heading: "作品集 06", desc: "", bgColor: "#fbcfe8", textColor: "#831843", imageUrl: "./6.png", externalLink: "" },
+      { title: "07. 作品集 07", tag: "PAGE 07", heading: "作品集 07", desc: "", bgColor: "#fbcfe8", textColor: "#831843", imageUrl: "./7.png", externalLink: "" },
+      { title: "08. 作品集 08", tag: "PAGE 08", heading: "作品集 08", desc: "", bgColor: "#fbcfe8", textColor: "#831843", imageUrl: "./8.png", externalLink: "" },
+      { title: "09. 作品集 09", tag: "PAGE 09", heading: "作品集 09", desc: "", bgColor: "#fbcfe8", textColor: "#831843", imageUrl: "./9.png", externalLink: "" }
     ];
 
-    /**
-     * 嚴格貼合電線桿寬度（148px）的 15 張伏貼座標：
-     * x 限制在 -16% ~ +16% 之間，確保 68px 寬的傳單左右邊緣都在電線桿輪廓內，絕不懸空！
-     */
     const POLE_LAYOUT = [
-      { x: -13, y:  7.0, rot: -3, doubleTape: false },
-      { x:  14, y: 10.5, rot:  4, doubleTape: true  },
-      { x:  -1, y: 18.0, rot:  2, doubleTape: false },
-      { x: -16, y: 25.0, rot: -4, doubleTape: true  },
-      { x:  15, y: 28.5, rot:  3, doubleTape: false },
-      { x:   2, y: 36.0, rot: -2, doubleTape: true  },
-      { x: -14, y: 43.0, rot:  3, doubleTape: false },
-      { x:  16, y: 46.5, rot: -4, doubleTape: true  },
-      { x:  -2, y: 54.0, rot:  2, doubleTape: false },
-      { x: -16, y: 61.5, rot: -4, doubleTape: true  },
-      { x:  13, y: 65.0, rot:  4, doubleTape: false },
-      { x:   1, y: 72.5, rot: -2, doubleTape: true  },
-      { x: -15, y: 80.0, rot:  3, doubleTape: false },
-      { x:  15, y: 83.5, rot: -3, doubleTape: true  },
-      { x:  -1, y: 91.5, rot:  2, doubleTape: false }
+      { x: -13, y: 11.5, rot: -4, doubleTape: false },
+      { x:  14, y: 19.5, rot:  5, doubleTape: true  },
+      { x:  -2, y: 29.5, rot:  2, doubleTape: false },
+      { x: -15, y: 39.5, rot: -5, doubleTape: true  },
+      { x:  15, y: 48.5, rot:  4, doubleTape: false },
+      { x:   1, y: 58.5, rot: -3, doubleTape: true  },
+      { x: -14, y: 68.5, rot:  4, doubleTape: false },
+      { x:  14, y: 78.0, rot: -4, doubleTape: true  },
+      { x:  -1, y: 88.0, rot:  2, doubleTape: false }
     ];
 
     const TAPE_COLORS = [
@@ -553,7 +549,7 @@
     let guideCursorEl = null;
 
     function getNextUnreadIndex() {
-      for (let i = 0; i < FLYERS_15.length; i++) {
+      for (let i = 0; i < FLYERS_DATA.length; i++) {
         if (!visitedSet.has(i)) return i;
       }
       return -1;
@@ -593,17 +589,18 @@
       const flyersOnly = poleFlyersZone.querySelectorAll(".mini-flyer");
       flyersOnly.forEach(el => el.remove());
 
+      const total = FLYERS_DATA.length;
       const nextIdx = getNextUnreadIndex();
 
       if (visitedSet.size === 0) {
-        guideText.textContent = "👆 跟著小手鼠標，從第 1 張傳單開始依序點擊閱讀（0 / 15）";
+        guideText.textContent = `👆 跟著小手鼠標，從第 1 張傳單開始依序點擊閱讀（0 / ${total}）`;
       } else if (nextIdx !== -1) {
-        guideText.textContent = `👆 請繼續點擊小手鼠標指著的第 ${nextIdx + 1} 張傳單（已閱 ${visitedSet.size} / 15）`;
+        guideText.textContent = `👆 請繼續點擊小手鼠標指著的第 ${nextIdx + 1} 張傳單（已閱 ${visitedSet.size} / ${total}）`;
       } else {
-        guideText.textContent = "🎉 已瀏覽全部 15 張作品！可隨時點擊任一張重看";
+        guideText.textContent = `🎉 已瀏覽全部 ${total} 張作品！可隨時點擊任一張重看`;
       }
 
-      FLYERS_15.forEach((item, index) => {
+      FLYERS_DATA.forEach((item, index) => {
         const pos = POLE_LAYOUT[index] || { x: 0, y: 50, rot: 0, doubleTape: false };
         const flyer = document.createElement("div");
         flyer.className = "mini-flyer";
@@ -616,7 +613,6 @@
         if (isRead) flyer.classList.add("is-read");
 
         const leftPercent = 50 + pos.x;
-        // 強化圓柱包覆透視：兩側傳單順著圓柱弧度向內轉折（rotateY ±32deg），貼合柱身曲率
         const curveRotateY = pos.x * 2.1;
         const shadeBrightness = (isRead ? 0.93 : 1) - Math.max(0, pos.x * 0.008);
 
@@ -667,7 +663,20 @@
         }
 
         if (item.imageUrl && item.imageUrl.trim() !== "") {
-          inner.innerHTML = `<img src="${item.imageUrl}" alt="${item.title}" />`;
+          const img = document.createElement("img");
+          img.src = item.imageUrl;
+          img.alt = item.title;
+          img.onerror = () => {
+            img.remove();
+            inner.insertAdjacentHTML("afterbegin", `
+              <div>
+                <div class="mini-tag">${item.tag}</div>
+                <div class="mini-title">${item.heading}</div>
+              </div>
+              <div class="mini-num">#${String(index + 1).padStart(2, "0")}</div>
+            `);
+          };
+          inner.appendChild(img);
         } else {
           inner.innerHTML = `
             <div>
@@ -690,7 +699,7 @@
 
     function openZoomReader(index) {
       visitedSet.add(index);
-      const item = FLYERS_15[index];
+      const item = FLYERS_DATA[index];
 
       pageTitle.textContent = item.title;
 
@@ -711,7 +720,6 @@
               <h2 style="font-size:28px; font-weight:800; margin-top:16px; line-height:1.35;">${item.heading}</h2>
               <p style="font-size:16px; line-height:1.8; margin-top:16px;">${item.desc}</p>
             </div>
-            <p style="font-size:12.5px; opacity:0.72; margin-top:32px;">（提示：將程式碼內第 ${index + 1} 項的 imageUrl 換成圖片檔名後，這裡就會顯示高清設計原圖）</p>
           </div>
         `;
       }
