@@ -12,40 +12,40 @@
       user-select: none;
     }
 
-    html, body {
-      width: 100%;
-      min-height: 185vh; /* 延展垂直空間，讓 9 張放大版 A4 傳單可以真正拉開距離、互不重疊 */
-      overflow-x: hidden;
+    body {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
       font-family: -apple-system, BlinkMacSystemFont, "Noto Sans TC", "Segoe UI", Roboto, sans-serif;
       background: #1c1a17;
       position: relative;
     }
 
-    /* ================= 1. 滿版清晰街景背景（固定在視窗中，隨上下捲動產生微視差） ================= */
+    /* ================= 1. 滿版清晰街景背景 ================= */
     .street-scene {
-      position: fixed;
-      inset: -24px;
+      position: absolute;
+      inset: 0;
       z-index: 0;
-      background-image: url('./bg.jpg?v=24');
+      background-image: url('./bg.jpg?v=25');
       background-size: cover;
       background-position: 69.5% center;
       background-repeat: no-repeat;
-      transition: filter 0.45s cubic-bezier(0.22, 1, 0.36, 1), transform 0.25s ease-out;
+      transition: filter 0.45s cubic-bezier(0.22, 1, 0.36, 1), transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
       will-change: filter, transform;
     }
 
     body.zoomed .street-scene {
       filter: blur(12px) brightness(0.62);
-      transform: scale(1.04) !important;
+      transform: scale(1.04);
     }
 
-    /* ================= 2. 頂部固定進度提示 ================= */
+    /* ================= 2. 頂部簡潔進度提示 ================= */
     .header-guide {
-      position: fixed;
+      position: absolute;
       top: 20px;
       left: 28px;
       z-index: 20;
-      background: rgba(24, 22, 20, 0.8);
+      background: rgba(24, 22, 20, 0.78);
       backdrop-filter: blur(10px);
       border: 1px solid rgba(255, 255, 255, 0.18);
       padding: 9px 18px;
@@ -65,15 +65,15 @@
       pointer-events: none;
     }
 
-    /* ================= 3. 電線桿上的 9 張傳單容器（精準對齊電線桿真實柱寬 162px，垂直拉長至 175vh） ================= */
+    /* ================= 3. 電線桿上的 9 張傳單容器（單屏滿高 96vh，貼合電線桿寬度 164px） ================= */
     .pole-flyers-zone {
       position: absolute;
       left: 69.5%;
-      top: 4vh;
-      width: 162px;
-      height: 176vh;
-      transform: translateX(-50%);
-      perspective: 580px;
+      top: 50%;
+      width: 164px;
+      height: 96vh;
+      transform: translate(-50%, -50%);
+      perspective: 560px;
       z-index: 10;
       transition: opacity 0.3s ease;
     }
@@ -83,11 +83,11 @@
       pointer-events: none;
     }
 
-    /* 單張傳單（標準 A4 比例 92x130px，放大醒目且完全伏貼在電線桿柱寬內） */
+    /* 單張傳單（標準 A4 比例 88x124px，伏貼於電線桿圓柱上） */
     .mini-flyer {
       position: absolute;
-      width: 92px;
-      height: 130px;
+      width: 88px;
+      height: 124px;
       cursor: pointer;
       transition:
         transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
@@ -96,7 +96,7 @@
     }
 
     .mini-flyer:hover {
-      transform: translate(-50%, -50%) scale(1.24) rotateY(0deg) rotate(0deg) !important;
+      transform: translate(-50%, -50%) scale(1.26) rotateY(0deg) rotate(0deg) !important;
       z-index: 99 !important;
       filter: brightness(1.04) !important;
     }
@@ -177,7 +177,7 @@
     }
 
     .mini-flyer.is-next {
-      z-index: 45 !important;
+      z-index: 50 !important;
     }
 
     .mini-flyer.is-read .mini-flyer-inner::after {
@@ -346,8 +346,8 @@
         width: 136px;
       }
       .mini-flyer {
-        width: 74px;
-        height: 104px;
+        width: 70px;
+        height: 99px;
       }
     }
 
@@ -441,10 +441,10 @@
 
   <!-- 2. 頂部進度提示 -->
   <div class="header-guide" id="headerGuide">
-    <span id="guideText">👆 從第 1 張傳單開始點擊閱讀，往下滑動可看更多張（0 / 9）</span>
+    <span id="guideText">👆 跟著小手鼠標，從第 1 張傳單開始依序點擊閱讀（0 / 9）</span>
   </div>
 
-  <!-- 3. 電線桿上的 9 張傳單區（延展垂直高度，每張都拉開距離且伏貼柱身） -->
+  <!-- 3. 電線桿上的 9 張傳單區 -->
   <div class="pole-flyers-zone" id="poleFlyersZone"></div>
 
   <!-- 4. Zoom-in 放大閱讀視窗 -->
@@ -468,20 +468,21 @@
     ];
 
     /**
-     * 延展垂直高度（176vh）後的寬敞錯落座標：
-     * - 每張傳單垂直間距拉開約 11%，彼此之間會露出電線桿本身的水泥與黃黑條紋底色，完全不重疊！
-     * - 水平位置控制在 -13% ~ +13%，確保 92px 寬的傳單完全包覆在 162px 電線桿柱身上，絕不懸空！
+     * 單屏 100vh 內的 9 張分散座標：
+     * - #01 獨立貼在最上方（y: 8%）且層級最高，整頁完整露出不被壓到
+     * - #02 往右下錯開（y: 19.5%），與 #01 拉出明顯距離
+     * - #03 ~ #09 均勻分布至 91.5%，保留適度的自然邊角交疊與寬敞呼吸感
      */
     const POLE_LAYOUT = [
-      { x:  -7, y:  6.0, rot: -2, doubleTape: true  }, // #01：獨立置頂，整頁 100% 完整露出
-      { x:  12, y: 17.5, rot:  4, doubleTape: true  }, // #02：往右下錯開，與第 1 張完全不重疊
-      { x: -12, y: 28.5, rot: -3, doubleTape: false }, // #03：貼合左側圓柱
-      { x:  11, y: 39.5, rot:  3, doubleTape: true  }, // #04：貼合右側圓柱
-      { x:  -2, y: 50.5, rot: -2, doubleTape: false }, // #05：居中微偏左
-      { x: -12, y: 61.5, rot:  4, doubleTape: true  }, // #06：貼合左側圓柱
-      { x:  12, y: 72.5, rot: -3, doubleTape: false }, // #07：貼合右側圓柱
-      { x: -10, y: 83.5, rot: -3, doubleTape: true  }, // #08：貼合左側下方警示區
-      { x:   9, y: 94.0, rot:  3, doubleTape: false }  // #09：貼合右側下方警示區
+      { x:  -9, y:  8.0, rot: -2, doubleTape: true  }, // #01：獨立置頂，整頁完整露出不被壓住
+      { x:  13, y: 19.5, rot:  4, doubleTape: true  }, // #02：往右下錯開，與第 1 張拉開距離
+      { x: -13, y: 29.5, rot: -3, doubleTape: false }, // #03：貼合左側圓柱
+      { x:  12, y: 39.5, rot:  3, doubleTape: true  }, // #04：貼合右側圓柱
+      { x:  -2, y: 50.0, rot: -2, doubleTape: false }, // #05：居中微偏左
+      { x: -13, y: 60.5, rot:  4, doubleTape: true  }, // #06：貼合左側圓柱
+      { x:  13, y: 70.5, rot: -3, doubleTape: false }, // #07：貼合右側圓柱
+      { x: -11, y: 81.0, rot: -3, doubleTape: true  }, // #08：貼合左側下方警示區
+      { x:  10, y: 91.5, rot:  3, doubleTape: false }  // #09：貼合右側下方警示區
     ];
 
     const TAPE_COLORS = [
@@ -491,7 +492,6 @@
       "rgba(59, 130, 246, 0.78)"
     ];
 
-    const streetScene = document.getElementById("streetScene");
     const poleFlyersZone = document.getElementById("poleFlyersZone");
     const guideText = document.getElementById("guideText");
     const readerOverlay = document.getElementById("readerOverlay");
@@ -501,13 +501,6 @@
 
     const visitedSet = new Set();
     let guideCursorEl = null;
-
-    // 捲動頁面時，背景街景產生細微垂直視差，模擬目光沿著電線桿往下移動
-    window.addEventListener("scroll", () => {
-      if (document.body.classList.contains("zoomed")) return;
-      const scrollY = window.scrollY;
-      streetScene.style.transform = `translate3d(0, ${(-scrollY * 0.04).toFixed(1)}px, 0) scale(1.03)`;
-    }, { passive: true });
 
     function getNextUnreadIndex() {
       for (let i = 0; i < FLYERS_DATA.length; i++) {
@@ -532,7 +525,7 @@
       }
     }
 
-    function updateCursorPosition(nextIdx, autoScroll = false) {
+    function updateCursorPosition(nextIdx) {
       ensureGuideCursor();
       if (nextIdx === -1) {
         guideCursorEl.style.opacity = "0";
@@ -540,21 +533,13 @@
       }
       const pos = POLE_LAYOUT[nextIdx] || { x: 0, y: 50 };
       const cursorLeft = 50 + pos.x + 2;
-      const cursorTop = pos.y + 2.5;
+      const cursorTop = pos.y + 3;
       guideCursorEl.style.opacity = "1";
       guideCursorEl.style.left = `${cursorLeft}%`;
       guideCursorEl.style.top = `${cursorTop}%`;
-
-      // 若下一張傳單在畫面下方，關閉放大閱讀後自動平滑捲動帶到該張位置
-      if (autoScroll) {
-        const targetFlyer = poleFlyersZone.querySelectorAll(".mini-flyer")[nextIdx];
-        if (targetFlyer) {
-          targetFlyer.scrollIntoView({ behavior: "smooth", block: "center" });
-        }
-      }
     }
 
-    function renderAllPoleFlyers(autoScrollToNext = false) {
+    function renderAllPoleFlyers() {
       const flyersOnly = poleFlyersZone.querySelectorAll(".mini-flyer");
       flyersOnly.forEach(el => el.remove());
 
@@ -562,7 +547,7 @@
       const nextIdx = getNextUnreadIndex();
 
       if (visitedSet.size === 0) {
-        guideText.textContent = `👆 從第 1 張傳單開始點擊閱讀，往下滑動可看全部（0 / ${total}）`;
+        guideText.textContent = `👆 跟著小手鼠標，從第 1 張傳單開始依序點擊閱讀（0 / ${total}）`;
       } else if (nextIdx !== -1) {
         guideText.textContent = `👆 請繼續點擊小手鼠標指著的第 ${nextIdx + 1} 張傳單（已閱 ${visitedSet.size} / ${total}）`;
       } else {
@@ -582,13 +567,13 @@
         if (isRead) flyer.classList.add("is-read");
 
         const leftPercent = 50 + pos.x;
-        // 順應電線桿圓柱曲率的包覆傾角（±26deg），完全貼合柱身不懸空
         const curveRotateY = pos.x * 2.1;
         const shadeBrightness = (isRead ? 0.94 : 1) - Math.max(0, pos.x * 0.008);
 
         flyer.style.left = `${leftPercent}%`;
         flyer.style.top = `${pos.y}%`;
-        flyer.style.zIndex = index === 0 ? 48 : (isNext ? 45 : 30 - index);
+        // 第 1 張永遠保持最高層級（60），絕對不被第 2 張疊到
+        flyer.style.zIndex = index === 0 ? 60 : (isNext ? 50 : 30 - index);
         flyer.style.transform = `translate(-50%, -50%) rotateY(${curveRotateY}deg) rotate(${pos.rot}deg)`;
         flyer.style.filter = `brightness(${shadeBrightness.toFixed(2)})`;
 
@@ -655,7 +640,7 @@
         poleFlyersZone.appendChild(flyer);
       });
 
-      updateCursorPosition(nextIdx, autoScrollToNext);
+      updateCursorPosition(nextIdx);
     }
 
     function openZoomReader(index) {
@@ -667,7 +652,7 @@
 
     function closeZoomReader() {
       document.body.classList.remove("zoomed");
-      renderAllPoleFlyers(true); // 關閉後自動平滑捲動並把小手鼠標移至下一張
+      renderAllPoleFlyers();
     }
 
     closeBtn.addEventListener("click", closeZoomReader);
@@ -682,7 +667,7 @@
       }
     });
 
-    renderAllPoleFlyers(false);
+    renderAllPoleFlyers();
   </script>
 </body>
 </html>
