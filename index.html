@@ -26,7 +26,7 @@
       position: absolute;
       inset: 0;
       z-index: 0;
-      background-image: url('./bg.jpg?v=27');
+      background-image: url('./bg.jpg?v=28');
       background-size: cover;
       background-position: 69.5% center;
       background-repeat: no-repeat;
@@ -65,7 +65,7 @@
       pointer-events: none;
     }
 
-    /* ================= 3. 電線桿上的 9 張傳單容器（柔和自然視距 1400px，消除梯形硬邊扭曲） ================= */
+    /* ================= 3. 電線桿上的 9 張傳單容器（柔和自然視距 1800px，消除梯形硬邊扭曲） ================= */
     .pole-flyers-zone {
       position: absolute;
       left: 69.5%;
@@ -73,7 +73,7 @@
       width: 204px;
       height: 96vh;
       transform: translate(-50%, -50%);
-      perspective: 1400px;
+      perspective: 1800px;
       z-index: 10;
       transition: opacity 0.3s ease;
     }
@@ -83,7 +83,7 @@
       pointer-events: none;
     }
 
-    /* 單張傳單（88x124px，由 7 條圓柱曲面切片組成真實弧度） */
+    /* 單張傳單（88x124px，完整無縫單張結構） */
     .mini-flyer {
       position: absolute;
       width: 88px;
@@ -96,55 +96,68 @@
     }
 
     .mini-flyer:hover {
-      transform: translate(-50%, -50%) scale(1.26) rotate(0deg) !important;
+      transform: translate(-50%, -50%) scale(1.26) rotateY(0deg) rotate(0deg) !important;
       z-index: 99 !important;
       filter: brightness(1.04) !important;
     }
 
-    /* ================= 4. 微風吹拂紙張飄動動畫 ================= */
+    /* ================= 4. 微風吹拂紙張飄動動畫（單段膠帶款專用） ================= */
     @keyframes paperFlutterA {
       0%, 42%, 100% {
-        transform: rotateX(0deg) skewX(0deg);
+        transform: rotateX(0deg) rotateY(0deg) skewX(0deg);
+        box-shadow: -1.5px 3px 8px rgba(15, 14, 12, 0.44);
       }
       52% {
-        transform: rotateX(15deg) skewX(-1.4deg);
+        transform: rotateX(16deg) rotateY(-4deg) skewX(-1.4deg);
+        box-shadow: -4px 12px 18px rgba(15, 14, 12, 0.34);
       }
       60% {
-        transform: rotateX(6deg) skewX(0.7deg);
+        transform: rotateX(6deg) rotateY(2deg) skewX(0.7deg);
+        box-shadow: -2.5px 7px 12px rgba(15, 14, 12, 0.4);
       }
       68% {
-        transform: rotateX(11deg) skewX(-1deg);
+        transform: rotateX(12deg) rotateY(-3deg) skewX(-1deg);
+        box-shadow: -3.5px 10px 15px rgba(15, 14, 12, 0.36);
       }
       78% {
-        transform: rotateX(2deg) skewX(0.3deg);
+        transform: rotateX(2deg) rotateY(1deg) skewX(0.3deg);
+        box-shadow: -2px 4px 9px rgba(15, 14, 12, 0.42);
       }
     }
 
     @keyframes paperFlutterB {
       0%, 38%, 100% {
-        transform: rotateX(0deg) skewX(0deg);
+        transform: rotateX(0deg) rotateY(0deg) skewX(0deg);
+        box-shadow: -1.5px 3px 8px rgba(15, 14, 12, 0.44);
       }
       49% {
-        transform: rotateX(17deg) skewX(1.5deg);
+        transform: rotateX(18deg) rotateY(4.5deg) skewX(1.6deg);
+        box-shadow: -5px 13px 19px rgba(15, 14, 12, 0.34);
       }
       58% {
-        transform: rotateX(7deg) skewX(-0.6deg);
+        transform: rotateX(7deg) rotateY(-1.5deg) skewX(-0.6deg);
+        box-shadow: -2.5px 7px 12px rgba(15, 14, 12, 0.4);
       }
       67% {
-        transform: rotateX(12deg) skewX(1.1deg);
+        transform: rotateX(13deg) rotateY(3.5deg) skewX(1.2deg);
+        box-shadow: -4px 10px 16px rgba(15, 14, 12, 0.36);
       }
       76% {
-        transform: rotateX(2deg) skewX(-0.2deg);
+        transform: rotateX(2deg) rotateY(-1deg) skewX(-0.2deg);
+        box-shadow: -2px 4px 9px rgba(15, 14, 12, 0.42);
       }
     }
 
     .paper-sheet {
       width: 100%;
       height: 100%;
+      background: #fdfbf7;
+      border-radius: 2px;
       position: relative;
       transform-origin: 50% 4px;
       transform-style: preserve-3d;
-      will-change: transform;
+      box-shadow: -1.5px 3px 8px rgba(15, 14, 12, 0.45);
+      will-change: transform, box-shadow;
     }
 
     .mini-flyer.can-flutter .paper-sheet {
@@ -153,40 +166,22 @@
       animation-iteration-count: infinite;
     }
 
+    .mini-flyer.double-taped .paper-sheet {
+      box-shadow: -1px 2px 6px rgba(15, 14, 12, 0.48);
+    }
+
     .mini-flyer:hover .paper-sheet {
       animation-play-state: paused;
-      transform: rotateX(0deg) skewX(0deg) !important;
-    }
-
-    /* 圓柱曲面切片容器（將傳單彎曲成真實圓柱弧面） */
-    .curved-surface {
-      width: 100%;
-      height: 100%;
-      position: relative;
-      transform-style: preserve-3d;
-      filter: drop-shadow(-2px 4px 7px rgba(15, 14, 12, 0.44));
-    }
-
-    .curve-slice {
-      position: absolute;
-      top: 0;
-      height: 100%;
-      background-repeat: no-repeat;
-      backface-visibility: hidden;
-      transform-style: preserve-3d;
-      transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    /* 滑鼠懸停放大閱讀時，曲面自動攤平方便看清楚細節 */
-    .mini-flyer:hover .curve-slice {
-      transform: translate3d(0, 0, 0) rotateY(0deg) !important;
+      transform: rotateX(0deg) rotateY(0deg) skewX(0deg) !important;
+      box-shadow: 0 18px 36px rgba(0, 0, 0, 0.65) !important;
     }
 
     .mini-flyer.is-next {
       z-index: 50 !important;
     }
 
-    .read-check {
+    .mini-flyer.is-read .mini-flyer-inner::after {
+      content: "✓";
       position: absolute;
       bottom: 5px;
       left: 6px;
@@ -200,19 +195,47 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      z-index: 12;
-      pointer-events: none;
+      z-index: 6;
     }
 
-    /* 膠帶順應曲面微微貼合 */
+    .mini-flyer-inner {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      border-radius: 2px;
+      position: relative;
+    }
+
+    .mini-flyer-inner img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* 模擬電線桿圓柱曲面受光與陰影漸層，讓整張海報自然融入圓柱光影中 */
+    .cylinder-shade {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 4;
+      transition: opacity 0.25s ease;
+    }
+
+    .mini-flyer:hover .cylinder-shade {
+      opacity: 0.2;
+    }
+
     .mini-tape-top {
       position: absolute;
       top: -4px;
       left: 50%;
-      transform: translateX(-50%) rotate(-1deg) translateZ(1px);
+      transform: translateX(-50%) rotate(-1deg);
       width: 28px;
       height: 7px;
-      z-index: 15;
+      z-index: 10;
       box-shadow: 0 1px 2px rgba(0, 0, 0, 0.32);
     }
 
@@ -220,10 +243,10 @@
       position: absolute;
       bottom: -4px;
       left: 50%;
-      transform: translateX(-50%) rotate(1.5deg) translateZ(1px);
+      transform: translateX(-50%) rotate(1.5deg);
       width: 28px;
       height: 7px;
-      z-index: 15;
+      z-index: 10;
       box-shadow: 0 1px 2px rgba(0, 0, 0, 0.32);
     }
 
@@ -421,18 +444,19 @@
     ];
 
     /**
-     * 9 張傳單在電線桿上的位置（控制在電線桿左右柱寬範圍內，搭配真實圓柱多切片彎曲）
+     * 9 張傳單座標與固定方式：
+     * - doubleTape: true（雙膠帶牢牢伏貼）、false（單膠帶上方固定，隨風輕輕飄動）
      */
     const POLE_LAYOUT = [
       { x: -10, y:  8.0, rot: -2, doubleTape: true  }, // #01：獨立置頂，整頁完整露出
       { x:  18, y: 19.0, rot:  4, doubleTape: true  }, // #02：貼合右側圓柱弧面
-      { x: -18, y: 29.5, rot: -3, doubleTape: false }, // #03：貼合左側圓柱弧面
-      { x:  17, y: 40.0, rot:  3, doubleTape: true  }, // #04：貼合右側圓柱弧面
-      { x:  -2, y: 50.0, rot: -2, doubleTape: false }, // #05：居中微偏左
-      { x: -18, y: 60.5, rot:  4, doubleTape: true  }, // #06：貼合左側圓柱弧面
-      { x:  18, y: 70.5, rot: -3, doubleTape: false }, // #07：貼合右側圓柱弧面
-      { x: -16, y: 81.0, rot: -3, doubleTape: true  }, // #08：貼合左側下方警示區
-      { x:  15, y: 91.5, rot:  3, doubleTape: false }  // #09：貼合右側下方警示區
+      { x: -18, y: 29.5, rot: -3, doubleTape: false }, // #03：左側，單膠帶隨風微飄
+      { x:  17, y: 40.0, rot:  3, doubleTape: true  }, // #04：右側，雙膠帶伏貼
+      { x:  -2, y: 50.0, rot: -2, doubleTape: false }, // #05：居中微偏左，單膠帶隨風微飄
+      { x: -18, y: 60.5, rot:  4, doubleTape: true  }, // #06：左側，雙膠帶伏貼
+      { x:  18, y: 70.5, rot: -3, doubleTape: false }, // #07：右側，單膠帶隨風微飄
+      { x: -16, y: 81.0, rot: -3, doubleTape: true  }, // #08：左側下方，雙膠帶伏貼
+      { x:  15, y: 91.5, rot:  3, doubleTape: false }  // #09：右側下方，單膠帶隨風微飄
     ];
 
     const TAPE_COLORS = [
@@ -489,64 +513,6 @@
       guideCursorEl.style.top = `${cursorTop}%`;
     }
 
-    /**
-     * 核心物理曲面建構器：
-     * 將一張平面傳單切成 7 條垂直微切片，根據傳單在電線桿上的水平位置（pos.x），
-     * 計算每個切片貼合在真實圓柱半徑（R = 96px）上的圓弧角度（theta）與 Z 軸深度，
-     * 產生真正平滑彎曲的圓柱貼合質感，徹底告別硬紙板梯形變形！
-     */
-    function buildCurvedPaperSurface(item, pos, isRead) {
-      const container = document.createElement("div");
-      container.className = "curved-surface";
-
-      const isMobile = window.innerWidth <= 768;
-      const cardW = isMobile ? 70 : 88;
-      const cardH = isMobile ? 99 : 124;
-      const poleRadius = isMobile ? 76 : 96; // 對應電線桿真實圓柱半徑（px）
-      const slices = 7;
-      const sliceW = cardW / slices;
-
-      // 傳單中心相對於電線桿中軸線的水平位移（px）
-      const zoneW = isMobile ? 164 : 204;
-      const centerOffsetPx = (pos.x / 100) * zoneW;
-      const centerTheta = Math.asin(Math.max(-0.85, Math.min(0.85, centerOffsetPx / poleRadius)));
-      const centerZ = poleRadius * Math.cos(centerTheta);
-
-      for (let s = 0; s < slices; s++) {
-        const slice = document.createElement("div");
-        slice.className = "curve-slice";
-
-        // 每個切片相對於傳單中心的水平距離
-        const localX = (s + 0.5) * sliceW - cardW / 2;
-        const worldX = centerOffsetPx + localX;
-
-        // 限制在圓柱半徑內計算真實圓弧切線角度
-        const clampedX = Math.max(-poleRadius * 0.92, Math.min(poleRadius * 0.92, worldX));
-        const theta = Math.asin(clampedX / poleRadius);
-        const degY = (theta * 180) / Math.PI;
-        const deltaZ = poleRadius * Math.cos(theta) - centerZ;
-
-        // 隨圓弧轉角產生自然水平透視收窄（cos(theta)），讓左右邊緣優雅收進圓柱弧線
-        const projectedX = (clampedX - centerOffsetPx);
-
-        slice.style.width = `${sliceW + 0.8}px`; // +0.8px 消除切片間微縫
-        slice.style.left = `${cardW / 2 - sliceW / 2}px`;
-        slice.style.backgroundImage = `url('${item.imageUrl}')`;
-        slice.style.backgroundSize = `${cardW}px ${cardH}px`;
-        slice.style.backgroundPosition = `${-s * sliceW}px 0px`;
-
-        // 依據圓柱角度計算真實環境受光（左側陽光亮面、右側轉入背光漸暗）
-        const lightAngle = theta + 0.35; // 陽光從左前方照射
-        const brightness = (isRead ? 0.94 : 1.0) * (0.76 + 0.28 * Math.cos(lightAngle));
-        slice.style.filter = `brightness(${brightness.toFixed(3)})`;
-
-        slice.style.transform = `translate3d(${projectedX.toFixed(2)}px, 0, ${deltaZ.toFixed(2)}px) rotateY(${degY.toFixed(1)}deg)`;
-        container.appendChild(slice);
-      }
-
-      return container;
-    }
-
     function renderAllPoleFlyers() {
       const flyersOnly = poleFlyersZone.querySelectorAll(".mini-flyer");
       flyersOnly.forEach(el => el.remove());
@@ -572,13 +538,18 @@
         const isRead = visitedSet.has(index);
 
         if (isNext) flyer.classList.add("is-next");
+        if (isRead) flyer.classList.add("is-read");
 
         const leftPercent = 50 + pos.x;
+        // 搭配遠視距 1800px，使用適度圓柱包覆傾角（±16deg），產生平滑自然的圓柱透視收窄，絕無尖銳梯形變形
+        const curveRotateY = pos.x * 0.9;
+        const shadeBrightness = (isRead ? 0.94 : 1) - Math.max(0, pos.x * 0.005);
+
         flyer.style.left = `${leftPercent}%`;
         flyer.style.top = `${pos.y}%`;
         flyer.style.zIndex = index === 0 ? 60 : (isNext ? 50 : 30 - index);
-        // 外層只保留自然的微幅歪斜（rot），圓柱彎曲交由內部的 7 切片真實弧面處理
-        flyer.style.transform = `translate(-50%, -50%) rotate(${pos.rot}deg)`;
+        flyer.style.transform = `translate(-50%, -50%) rotateY(${curveRotateY}deg) rotate(${pos.rot}deg)`;
+        flyer.style.filter = `brightness(${shadeBrightness.toFixed(2)})`;
 
         const tapeColor = TAPE_COLORS[index % TAPE_COLORS.length];
 
@@ -604,17 +575,27 @@
           paperSheet.style.animationDelay = `${waveDelay}s`;
         }
 
-        // 建立 7 切片真實圓柱彎曲表面
-        const curvedSurface = buildCurvedPaperSurface(item, pos, isRead);
-        paperSheet.appendChild(curvedSurface);
+        const inner = document.createElement("div");
+        inner.className = "mini-flyer-inner";
 
-        if (isRead) {
-          const check = document.createElement("div");
-          check.className = "read-check";
-          check.textContent = "✓";
-          paperSheet.appendChild(check);
+        const img = document.createElement("img");
+        img.src = item.imageUrl;
+        img.alt = "";
+        inner.appendChild(img);
+
+        // 細膩的圓柱受光與弧度陰影，讓完整單張海報呈現圓潤的包覆立體感
+        const shade = document.createElement("div");
+        shade.className = "cylinder-shade";
+        if (pos.x < -8) {
+          shade.style.background = "linear-gradient(90deg, rgba(0,0,0,0.22) 0%, rgba(255,255,255,0.14) 32%, rgba(0,0,0,0.04) 100%)";
+        } else if (pos.x > 8) {
+          shade.style.background = "linear-gradient(90deg, rgba(255,255,255,0.06) 0%, rgba(0,0,0,0.08) 55%, rgba(0,0,0,0.32) 100%)";
+        } else {
+          shade.style.background = "linear-gradient(90deg, rgba(0,0,0,0.08) 0%, rgba(255,255,255,0.1) 42%, rgba(0,0,0,0.14) 100%)";
         }
+        inner.appendChild(shade);
 
+        paperSheet.appendChild(inner);
         flyer.appendChild(paperSheet);
         flyer.addEventListener("click", () => openZoomReader(index));
         poleFlyersZone.appendChild(flyer);
@@ -647,7 +628,6 @@
       }
     });
 
-    window.addEventListener("resize", renderAllPoleFlyers);
     renderAllPoleFlyers();
   </script>
 </body>
