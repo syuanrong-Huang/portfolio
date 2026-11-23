@@ -21,14 +21,14 @@
       position: relative;
     }
 
-    /* ================= 1. 滿版清晰街景背景 ================= */
+    /* ================= 1. 滿版清晰街景背景（對接柱子加粗版 bg.jpg） ================= */
     .street-scene {
       position: absolute;
       inset: 0;
       z-index: 0;
-      background-image: url('./bg.jpg?v=14');
+      background-image: url('./bg.jpg?v=17');
       background-size: cover;
-      background-position: 72% center;
+      background-position: 69.5% center;
       background-repeat: no-repeat;
       transition: filter 0.45s cubic-bezier(0.22, 1, 0.36, 1), transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
       will-change: filter, transform;
@@ -65,15 +65,15 @@
       pointer-events: none;
     }
 
-    /* ================= 3. 電線桿上的 15 張傳單容器（放寬至 380px，允許海報自然往兩側擴張） ================= */
+    /* ================= 3. 電線桿上的 15 張傳單容器（配合加粗後的柱身調整為 234px） ================= */
     .pole-flyers-zone {
       position: absolute;
-      left: 72%;
+      left: 69.5%;
       top: 50%;
-      width: 380px;
+      width: 234px;
       height: 96vh;
       transform: translate(-50%, -50%);
-      perspective: 1100px;
+      perspective: 700px;
       z-index: 10;
       transition: opacity 0.3s ease;
     }
@@ -83,11 +83,11 @@
       pointer-events: none;
     }
 
-    /* 單張傳單（放大至真實街頭 A4 尺寸：116x164px） */
+    /* 單張傳單（配合加粗後的電線桿比例放大至 90x126px） */
     .mini-flyer {
       position: absolute;
-      width: 116px;
-      height: 164px;
+      width: 90px;
+      height: 126px;
       cursor: pointer;
       transition:
         transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
@@ -96,7 +96,7 @@
     }
 
     .mini-flyer:hover {
-      transform: translate(-50%, -50%) scale(1.22) rotate(0deg) !important;
+      transform: translate(-50%, -50%) scale(1.25) rotateY(0deg) rotate(0deg) !important;
       z-index: 99 !important;
       filter: brightness(1.04) !important;
     }
@@ -105,46 +105,46 @@
     @keyframes paperFlutterA {
       0%, 42%, 100% {
         transform: rotateX(0deg) rotateY(0deg) skewX(0deg);
-        box-shadow: -4px 6px 14px rgba(15, 14, 12, 0.45);
+        box-shadow: -2px 4px 10px rgba(15, 14, 12, 0.42);
       }
       52% {
-        transform: rotateX(22deg) rotateY(-8deg) skewX(-2.5deg);
-        box-shadow: -7px 16px 24px rgba(15, 14, 12, 0.36);
+        transform: rotateX(20deg) rotateY(-6deg) skewX(-2deg);
+        box-shadow: -5px 14px 20px rgba(15, 14, 12, 0.34);
       }
       60% {
-        transform: rotateX(9deg) rotateY(4deg) skewX(1.2deg);
-        box-shadow: -4px 9px 16px rgba(15, 14, 12, 0.42);
+        transform: rotateX(8deg) rotateY(3deg) skewX(1deg);
+        box-shadow: -3px 8px 14px rgba(15, 14, 12, 0.4);
       }
       68% {
-        transform: rotateX(17deg) rotateY(-5deg) skewX(-1.8deg);
-        box-shadow: -6px 13px 20px rgba(15, 14, 12, 0.38);
+        transform: rotateX(15deg) rotateY(-4deg) skewX(-1.5deg);
+        box-shadow: -4px 11px 18px rgba(15, 14, 12, 0.36);
       }
       78% {
-        transform: rotateX(3deg) rotateY(1deg) skewX(0.5deg);
-        box-shadow: -4px 7px 14px rgba(15, 14, 12, 0.44);
+        transform: rotateX(3deg) rotateY(1deg) skewX(0.4deg);
+        box-shadow: -2px 5px 11px rgba(15, 14, 12, 0.42);
       }
     }
 
     @keyframes paperFlutterB {
       0%, 38%, 100% {
         transform: rotateX(0deg) rotateY(0deg) skewX(0deg);
-        box-shadow: -4px 6px 14px rgba(15, 14, 12, 0.45);
+        box-shadow: -2px 4px 10px rgba(15, 14, 12, 0.42);
       }
       49% {
-        transform: rotateX(25deg) rotateY(9deg) skewX(2.8deg);
-        box-shadow: -8px 17px 25px rgba(15, 14, 12, 0.35);
+        transform: rotateX(22deg) rotateY(7deg) skewX(2.2deg);
+        box-shadow: -6px 15px 22px rgba(15, 14, 12, 0.34);
       }
       58% {
-        transform: rotateX(10deg) rotateY(-3deg) skewX(-1deg);
-        box-shadow: -5px 9px 16px rgba(15, 14, 12, 0.42);
+        transform: rotateX(9deg) rotateY(-2deg) skewX(-0.8deg);
+        box-shadow: -3px 8px 14px rgba(15, 14, 12, 0.4);
       }
       67% {
-        transform: rotateX(19deg) rotateY(6deg) skewX(2deg);
-        box-shadow: -6px 14px 21px rgba(15, 14, 12, 0.37);
+        transform: rotateX(17deg) rotateY(5deg) skewX(1.6deg);
+        box-shadow: -5px 12px 18px rgba(15, 14, 12, 0.36);
       }
       76% {
-        transform: rotateX(4deg) rotateY(-1deg) skewX(-0.4deg);
-        box-shadow: -4px 7px 14px rgba(15, 14, 12, 0.44);
+        transform: rotateX(3deg) rotateY(-1deg) skewX(-0.3deg);
+        box-shadow: -2px 5px 11px rgba(15, 14, 12, 0.42);
       }
     }
 
@@ -154,12 +154,20 @@
       background: #fdfbf7;
       border-radius: 2px;
       position: relative;
-      transform-origin: 50% 5px;
+      transform-origin: 50% 4px;
       transform-style: preserve-3d;
+      box-shadow: -2px 3px 8px rgba(15, 14, 12, 0.45);
+      will-change: transform, box-shadow;
+    }
+
+    .mini-flyer.can-flutter .paper-sheet {
       animation-duration: 6.5s;
       animation-timing-function: ease-in-out;
       animation-iteration-count: infinite;
-      will-change: transform, box-shadow;
+    }
+
+    .mini-flyer.double-taped .paper-sheet {
+      box-shadow: -1px 2px 6px rgba(15, 14, 12, 0.48);
     }
 
     .mini-flyer:hover .paper-sheet {
@@ -175,9 +183,9 @@
     .mini-flyer.is-read .mini-flyer-inner::after {
       content: "✓";
       position: absolute;
-      bottom: 6px;
-      left: 8px;
-      font-size: 12px;
+      bottom: 5px;
+      left: 6px;
+      font-size: 10.5px;
       font-weight: 900;
       color: rgba(15, 23, 42, 0.55);
     }
@@ -191,8 +199,14 @@
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      padding: 12px 10px;
-      background-image: linear-gradient(135deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0) 45%, rgba(0,0,0,0.06) 100%);
+      padding: 9px 8px;
+    }
+
+    .cylinder-shade {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 4;
     }
 
     .mini-flyer-inner img {
@@ -204,29 +218,40 @@
       display: block;
     }
 
-    .mini-tape {
+    .mini-tape-top {
       position: absolute;
-      top: -5px;
+      top: -4px;
       left: 50%;
-      transform: translateX(-50%);
-      width: 36px;
-      height: 9px;
+      transform: translateX(-50%) rotate(-1deg);
+      width: 30px;
+      height: 7.5px;
       z-index: 10;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.32);
+    }
+
+    .mini-tape-bottom {
+      position: absolute;
+      bottom: -4px;
+      left: 50%;
+      transform: translateX(-50%) rotate(1.5deg);
+      width: 30px;
+      height: 7.5px;
+      z-index: 10;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.32);
     }
 
     .mini-tag {
-      font-size: 8.5px;
+      font-size: 7.5px;
       font-weight: 800;
       opacity: 0.75;
-      letter-spacing: 0.4px;
+      letter-spacing: 0.25px;
     }
 
     .mini-title {
-      font-size: 13px;
+      font-size: 11px;
       font-weight: 800;
-      line-height: 1.28;
-      margin-top: 5px;
+      line-height: 1.25;
+      margin-top: 3px;
       display: -webkit-box;
       -webkit-line-clamp: 3;
       -webkit-box-orient: vertical;
@@ -234,19 +259,19 @@
     }
 
     .mini-num {
-      font-size: 10px;
+      font-size: 9px;
       font-weight: 800;
       opacity: 0.75;
       border-top: 1px dashed rgba(0, 0, 0, 0.25);
-      padding-top: 4px;
+      padding-top: 2px;
       text-align: right;
     }
 
     /* ================= 5. 動態引導滑鼠鼠標 ================= */
     .guide-cursor {
       position: absolute;
-      width: 46px;
-      height: 46px;
+      width: 44px;
+      height: 44px;
       z-index: 80;
       pointer-events: none;
       transition:
@@ -261,11 +286,11 @@
         opacity: 0.85;
       }
       75% {
-        transform: translate(-50%, -50%) scale(1.5);
+        transform: translate(-50%, -50%) scale(1.45);
         opacity: 0;
       }
       100% {
-        transform: translate(-50%, -50%) scale(1.5);
+        transform: translate(-50%, -50%) scale(1.45);
         opacity: 0;
       }
     }
@@ -274,8 +299,8 @@
       position: absolute;
       top: 4px;
       left: 4px;
-      width: 36px;
-      height: 36px;
+      width: 34px;
+      height: 34px;
       border-radius: 50%;
       border: 2.5px solid #ffffff;
       background: rgba(255, 255, 255, 0.25);
@@ -295,8 +320,8 @@
     }
 
     .cursor-hand {
-      width: 38px;
-      height: 38px;
+      width: 36px;
+      height: 36px;
       filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.55));
       animation: cursorTap 1.6s infinite ease-in-out;
     }
@@ -310,12 +335,12 @@
         white-space: nowrap;
       }
       .pole-flyers-zone {
-        left: 66%;
-        width: 280px;
+        left: 67%;
+        width: 190px;
       }
       .mini-flyer {
-        width: 84px;
-        height: 118px;
+        width: 70px;
+        height: 98px;
       }
     }
 
@@ -486,27 +511,22 @@
       { title: "15. 聯絡資訊與面試邀約", tag: "CONTACT", heading: "歡迎與我聯繫聊聊！", desc: "期待有機會加入貴團隊，一起打造兼具美感與影響力的作品。", bgColor: "#dcfce7", textColor: "#166534", imageUrl: "", externalLink: "mailto:example@email.com" }
     ];
 
-    /**
-     * 自然散落、往兩側邊緣擴張的 15 張傳單座標：
-     * - x 範圍拉大至 -34% ~ +35%，讓左右兩側的海報自然突出電線桿邊界
-     * - 打破規律對稱（不再是死板的左、右、中循環），加入不同傾斜角度（-9deg ~ +9deg）與不規則高低錯落
-     */
     const POLE_LAYOUT = [
-      { x: -24, y:  9.0, rot: -7 },
-      { x:  28, y: 12.5, rot:  8 },
-      { x:  -4, y: 20.5, rot:  3 },
-      { x: -33, y: 27.0, rot: -9 },
-      { x:  31, y: 31.5, rot:  6 },
-      { x:   5, y: 38.5, rot: -4 },
-      { x: -27, y: 45.0, rot:  7 },
-      { x:  34, y: 49.5, rot: -6 },
-      { x:  -7, y: 55.5, rot:  4 },
-      { x: -34, y: 63.0, rot: -8 },
-      { x:  26, y: 66.5, rot:  9 },
-      { x:   3, y: 73.5, rot: -3 },
-      { x: -29, y: 80.5, rot:  6 },
-      { x:  32, y: 84.0, rot: -7 },
-      { x:  -2, y: 90.5, rot:  2 }
+      { x: -18, y:  6.5, rot: -4, doubleTape: false },
+      { x:  20, y:  9.5, rot:  5, doubleTape: true  },
+      { x:  -2, y: 17.5, rot:  2, doubleTape: false },
+      { x: -22, y: 24.5, rot: -5, doubleTape: true  },
+      { x:  21, y: 28.0, rot:  4, doubleTape: false },
+      { x:   2, y: 35.5, rot: -3, doubleTape: true  },
+      { x: -20, y: 42.5, rot:  4, doubleTape: false },
+      { x:  22, y: 46.5, rot: -4, doubleTape: true  },
+      { x:  -3, y: 54.0, rot:  3, doubleTape: false },
+      { x: -22, y: 61.5, rot: -5, doubleTape: true  },
+      { x:  19, y: 65.0, rot:  5, doubleTape: false },
+      { x:   1, y: 72.5, rot: -2, doubleTape: true  },
+      { x: -20, y: 80.0, rot:  4, doubleTape: false },
+      { x:  21, y: 83.5, rot: -4, doubleTape: true  },
+      { x:  -1, y: 91.5, rot:  2, doubleTape: false }
     ];
 
     const TAPE_COLORS = [
@@ -558,7 +578,7 @@
         return;
       }
       const pos = POLE_LAYOUT[nextIdx] || { x: 0, y: 50 };
-      const cursorLeft = 50 + pos.x + 3;
+      const cursorLeft = 50 + pos.x + 2;
       const cursorTop = pos.y + 3;
       guideCursorEl.style.opacity = "1";
       guideCursorEl.style.left = `${cursorLeft}%`;
@@ -580,9 +600,10 @@
       }
 
       FLYERS_15.forEach((item, index) => {
-        const pos = POLE_LAYOUT[index] || { x: 0, y: 50, rot: 0 };
+        const pos = POLE_LAYOUT[index] || { x: 0, y: 50, rot: 0, doubleTape: false };
         const flyer = document.createElement("div");
         flyer.className = "mini-flyer";
+        flyer.classList.add(pos.doubleTape ? "double-taped" : "can-flutter");
 
         const isNext = index === nextIdx;
         const isRead = visitedSet.has(index);
@@ -591,8 +612,8 @@
         if (isRead) flyer.classList.add("is-read");
 
         const leftPercent = 50 + pos.x;
-        const curveRotateY = pos.x * 0.55;
-        const shadeBrightness = (isRead ? 0.92 : 1) - Math.max(0, pos.x * 0.0035);
+        const curveRotateY = pos.x * 1.45;
+        const shadeBrightness = (isRead ? 0.93 : 1) - Math.max(0, pos.x * 0.006);
 
         flyer.style.left = `${leftPercent}%`;
         flyer.style.top = `${pos.y}%`;
@@ -601,22 +622,44 @@
         flyer.style.filter = `brightness(${shadeBrightness.toFixed(2)})`;
         flyer.title = `${item.title}（點擊放大閱讀）`;
 
-        const tape = document.createElement("div");
-        tape.className = "mini-tape";
-        tape.style.background = TAPE_COLORS[index % TAPE_COLORS.length];
-        flyer.appendChild(tape);
+        const tapeColor = TAPE_COLORS[index % TAPE_COLORS.length];
+
+        const tapeTop = document.createElement("div");
+        tapeTop.className = "mini-tape-top";
+        tapeTop.style.background = tapeColor;
+        flyer.appendChild(tapeTop);
+
+        if (pos.doubleTape) {
+          const tapeBottom = document.createElement("div");
+          tapeBottom.className = "mini-tape-bottom";
+          tapeBottom.style.background = tapeColor;
+          flyer.appendChild(tapeBottom);
+        }
 
         const paperSheet = document.createElement("div");
         paperSheet.className = "paper-sheet";
-        const animName = index % 2 === 0 ? "paperFlutterA" : "paperFlutterB";
-        const waveDelay = (pos.y * 0.028 + (index % 3) * 0.35).toFixed(2);
-        paperSheet.style.animationName = animName;
-        paperSheet.style.animationDelay = `${waveDelay}s`;
+
+        if (!pos.doubleTape) {
+          const animName = index % 2 === 0 ? "paperFlutterA" : "paperFlutterB";
+          const waveDelay = (pos.y * 0.028 + (index % 3) * 0.35).toFixed(2);
+          paperSheet.style.animationName = animName;
+          paperSheet.style.animationDelay = `${waveDelay}s`;
+        }
 
         const inner = document.createElement("div");
         inner.className = "mini-flyer-inner";
         inner.style.backgroundColor = item.bgColor;
         inner.style.color = item.textColor;
+
+        const shade = document.createElement("div");
+        shade.className = "cylinder-shade";
+        if (pos.x < -8) {
+          shade.style.background = "linear-gradient(90deg, rgba(0,0,0,0.14) 0%, rgba(255,255,255,0.15) 35%, rgba(0,0,0,0.03) 100%)";
+        } else if (pos.x > 8) {
+          shade.style.background = "linear-gradient(90deg, rgba(255,255,255,0.04) 0%, rgba(0,0,0,0.08) 55%, rgba(0,0,0,0.24) 100%)";
+        } else {
+          shade.style.background = "linear-gradient(90deg, rgba(0,0,0,0.07) 0%, rgba(255,255,255,0.1) 45%, rgba(0,0,0,0.12) 100%)";
+        }
 
         if (item.imageUrl && item.imageUrl.trim() !== "") {
           inner.innerHTML = `<img src="${item.imageUrl}" alt="${item.title}" />`;
@@ -630,6 +673,7 @@
           `;
         }
 
+        inner.appendChild(shade);
         paperSheet.appendChild(inner);
         flyer.appendChild(paperSheet);
         flyer.addEventListener("click", () => openZoomReader(index));
