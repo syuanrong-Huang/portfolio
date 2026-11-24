@@ -353,7 +353,7 @@
 
   <!-- 1. 動態街景影片背景 -->
   <div class="scene-wrapper" id="sceneWrapper">
-    <video class="bg-video" id="bgVideo" src="./bg.mp4?v=37" poster="./bg.jpg?v=37" autoplay loop muted playsinline></video>
+    <video class="bg-video" id="bgVideo" src="./bg.mp4?v=38" poster="./bg.jpg?v=38" autoplay loop muted playsinline></video>
   </div>
 
   <!-- 2. 電線桿上的 9 張傳單區 -->
@@ -380,15 +380,15 @@
     ];
 
     const POLE_LAYOUT = [
-      { x: -10, y:  8.0, rot: -2, doubleTape: true  },
-      { x:  18, y: 19.0, rot:  4, doubleTape: true  },
-      { x: -18, y: 29.5, rot: -3, doubleTape: false },
-      { x:  17, y: 40.0, rot:  3, doubleTape: true  },
-      { x:  -2, y: 50.0, rot: -2, doubleTape: false },
-      { x: -18, y: 60.5, rot:  4, doubleTape: true  },
-      { x:  18, y: 70.5, rot: -3, doubleTape: false },
-      { x: -16, y: 81.0, rot: -3, doubleTape: true  },
-      { x:  15, y: 91.5, rot:  3, doubleTape: false }
+      { x: -10, y: 12.5, rot: -2, doubleTape: true  }, // #01：往下留出頂部安全間距，避免在 Windows 寬扁視窗被切到
+      { x:  18, y: 22.0, rot:  4, doubleTape: true  },
+      { x: -18, y: 31.8, rot: -3, doubleTape: false },
+      { x:  17, y: 41.6, rot:  3, doubleTape: true  },
+      { x:  -2, y: 51.4, rot: -2, doubleTape: false },
+      { x: -18, y: 61.2, rot:  4, doubleTape: true  },
+      { x:  18, y: 71.0, rot: -3, doubleTape: false },
+      { x: -16, y: 80.8, rot: -3, doubleTape: true  },
+      { x:  15, y: 90.6, rot:  3, doubleTape: false }
     ];
 
     const TAPE_COLORS = [
