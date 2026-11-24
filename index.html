@@ -570,6 +570,14 @@
 
     window.addEventListener("resize", renderAllPoleFlyers);
     renderAllPoleFlyers();
+    const bgVideo = document.getElementById("bgVideo");
+    document.addEventListener("pointerdown", () => {
+      if (bgVideo && bgVideo.muted) {
+        bgVideo.volume = 0.25; // 預設先以 25% 音量開聲，比較柔和
+        bgVideo.muted = false;
+        bgVideo.play().catch(() => {});
+      }
+    }, { once: true });
   </script>
 </body>
 </html>
