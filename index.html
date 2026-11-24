@@ -4,7 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>黃舒筵的作品集</title>
-  <meta name="description" content=" ">
+  <meta property="og:title" content="黃舒筵的作品集" />
+  <meta property="og:description" content=" " />
+  <meta name="description" content=" " />
   <style>
     * {
       box-sizing: border-box;
@@ -267,7 +269,7 @@
       animation: cursorTap 1.6s infinite ease-in-out;
     }
 
-    /* ================= 5. Zoom-in 放大閱讀視窗（維持真實紙張直角） ================= */
+    /* ================= 5. Zoom-in 放大閱讀視窗（支援局部放大檢視小字） ================= */
     .reader-overlay {
       position: fixed;
       inset: 0;
@@ -336,6 +338,13 @@
       max-height: 88vh;
       object-fit: contain;
       cursor: zoom-in;
+      transform-origin: center center;
+      transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .reader-card.is-inspected img {
+      transform: scale(2);
+      cursor: zoom-out;
     }
 
     .back-hint {
@@ -355,7 +364,7 @@
 
   <!-- 1. 動態街景影片背景 -->
   <div class="scene-wrapper" id="sceneWrapper">
-    <video class="bg-video" id="bgVideo" src="./bg.mp4?v=39" poster="./bg.jpg?v=39" autoplay loop muted playsinline></video>
+    <video class="bg-video" id="bgVideo" src="./bg.mp4?v=41" poster="./bg.jpg?v=41" autoplay loop muted playsinline></video>
   </div>
 
   <!-- 2. 電線桿上的 9 張傳單區 -->
@@ -365,7 +374,7 @@
   <div class="reader-overlay" id="readerOverlay">
     <button class="btn-close" id="closeBtn" title="返回電線桿 (ESC)">✕</button>
     <div class="reader-card" id="readerCard"></div>
-    <div class="back-hint" id="backHint">點擊空白處或按 ESC 返回電線桿挑選下一張</div>
+    <div class="back-hint" id="backHint">點擊傳單可局部放大，點擊空白處或按 ESC 返回電線桿</div>
   </div>
 
   <script>
@@ -382,7 +391,7 @@
     ];
 
     const POLE_LAYOUT = [
-      { x: -10, y: 10.5, rot: -2, doubleTape: true  }, // #01：微微上移，同時維持頂部安全間距
+      { x: -10, y: 10.5, rot: -2, doubleTape: true  },
       { x:  18, y: 22.0, rot:  4, doubleTape: true  },
       { x: -18, y: 31.8, rot: -3, doubleTape: false },
       { x:  17, y: 41.6, rot:  3, doubleTape: false },
@@ -408,6 +417,7 @@
 
     const visitedSet = new Set();
     let guideCursorEl = null;
+    let isInspected = false;
 
     function syncPoleMetrics() {
       const vw = window.innerWidth;
@@ -546,17 +556,57 @@
       updateCursorPosition(nextIdx);
     }
 
+    function resetInspection() {
+      isInspected = false;
+      readerCard.classList.remove("is-inspected");
+      const img = readerCard.querySelector("img");
+      if (img) {
+        img.style.transformOrigin = "center center";
+      }
+    }
+
     function openZoomReader(index) {
       visitedSet.add(index);
       const item = FLYERS_DATA[index];
       readerCard.innerHTML = `<img src="${item.imageUrl}" alt="" />`;
+      resetInspection();
       document.body.classList.add("zoomed");
     }
 
     function closeZoomReader() {
+      resetInspection();
       document.body.classList.remove("zoomed");
       renderAllPoleFlyers();
     }
+
+    readerCard.addEventListener("click", (e) => {
+      const img = readerCard.querySelector("img");
+      if (!img) return;
+
+      e.stopPropagation();
+      const rect = img.getBoundingClientRect();
+      const offsetX = ((e.clientX - rect.left) / rect.width) * 100;
+      const offsetY = ((e.clientY - rect.top) / rect.height) * 100;
+
+      if (!isInspected) {
+        img.style.transformOrigin = `${offsetX.toFixed(1)}% ${offsetY.toFixed(1)}%`;
+        readerCard.classList.add("is-inspected");
+        isInspected = true;
+      } else {
+        resetInspection();
+      }
+    });
+
+    readerCard.addEventListener("mousemove", (e) => {
+      if (!isInspected) return;
+      const img = readerCard.querySelector("img");
+      if (!img) return;
+
+      const rect = img.getBoundingClientRect();
+      const offsetX = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
+      const offsetY = Math.max(0, Math.min(100, ((e.clientY - rect.top) / rect.height) * 100));
+      img.style.transformOrigin = `${offsetX.toFixed(1)}% ${offsetY.toFixed(1)}%`;
+    });
 
     closeBtn.addEventListener("click", closeZoomReader);
     backHint.addEventListener("click", closeZoomReader);
@@ -572,10 +622,11 @@
 
     window.addEventListener("resize", renderAllPoleFlyers);
     renderAllPoleFlyers();
+
     const bgVideo = document.getElementById("bgVideo");
     document.addEventListener("pointerdown", () => {
       if (bgVideo && bgVideo.muted) {
-        bgVideo.volume = 0.6; // 預設先以 60% 音量開聲，比較柔和
+        bgVideo.volume = 0.6;
         bgVideo.muted = false;
         bgVideo.play().catch(() => {});
       }
