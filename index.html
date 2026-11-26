@@ -662,7 +662,7 @@
       resetInspection();
 
       const spots = item.hotspots || [];
-      spots.forEach((h, idx) => {
+      spots.forEach((h) => {
         if (!h || !h.url) return;
 
         const spot = document.createElement("a");
@@ -693,7 +693,6 @@
           </svg>
         `;
         spot.appendChild(hint);
-        }
 
         readerCard.appendChild(spot);
       });
