@@ -379,27 +379,35 @@
 
   <script>
     const FLYERS_DATA = [
-      { imageUrl: "./1.png?v=1124" },
-      { imageUrl: "./2.png?v=1124" },
-      { imageUrl: "./3.png?v=1124" },
-      { imageUrl: "./4.png?v=1124" },
-      { imageUrl: "./5.png?v=1124" },
-      { imageUrl: "./6.png?v=1124" },
-      { imageUrl: "./7.png?v=1124" },
-      { imageUrl: "./8.png?v=1124" },
-      { imageUrl: "./9.png?v=1124" }
+      { imageUrl: "./1.png?v=1126" },
+      { imageUrl: "./2.png?v=1126" },
+      { imageUrl: "./3.png?v=1126" },
+      { imageUrl: "./4.png?v=1126" },
+      { imageUrl: "./5.png?v=1126" },
+      { imageUrl: "./6.png?v=1126" },
+      { imageUrl: "./7.png?v=1126" },
+      { imageUrl: "./8.png?v=1126" },
+      { imageUrl: "./9.png?v=1126" },
+      { imageUrl: "./10.png?v=1126" },
+      { imageUrl: "./11.png?v=1126" },
+      { imageUrl: "./12.png?v=1126" },
+      { imageUrl: "./13.png?v=1126" }
     ];
 
     const POLE_LAYOUT = [
-      { x: -10, y: 10.5, rot: -2, doubleTape: true  },
-      { x:  18, y: 22.0, rot:  4, doubleTape: true  },
-      { x: -18, y: 31.8, rot: -3, doubleTape: false },
-      { x:  17, y: 41.6, rot:  3, doubleTape: false },
-      { x:  -2, y: 51.4, rot: -2, doubleTape: false },
-      { x: -18, y: 61.2, rot:  4, doubleTape: true  },
-      { x:  18, y: 71.0, rot: -3, doubleTape: false },
-      { x: -16, y: 80.8, rot: -3, doubleTape: true  },
-      { x:  15, y: 90.6, rot:  3, doubleTape: false }
+      { x:  -8, y:  8.5, rot: -2, doubleTape: true  },
+      { x:  16, y: 15.5, rot:  3, doubleTape: false },
+      { x: -17, y: 22.5, rot: -3, doubleTape: false },
+      { x:  15, y: 29.5, rot:  4, doubleTape: true  },
+      { x:  -4, y: 36.5, rot: -2, doubleTape: false },
+      { x:  17, y: 43.5, rot:  3, doubleTape: false },
+      { x: -18, y: 50.5, rot: -3, doubleTape: true  },
+      { x:  14, y: 57.5, rot:  2, doubleTape: false },
+      { x: -16, y: 64.5, rot: -4, doubleTape: false },
+      { x:   3, y: 71.5, rot:  3, doubleTape: true  },
+      { x: -17, y: 78.5, rot: -2, doubleTape: false },
+      { x:  16, y: 85.5, rot:  4, doubleTape: true  },
+      { x:  -9, y: 92.5, rot: -3, doubleTape: false }
     ];
 
     const TAPE_COLORS = [
@@ -428,7 +436,7 @@
       const renderedBgWidth = winAspect > imgAspect ? vw : vh * imgAspect;
 
       const zoneWidth = renderedBgWidth * 0.155;
-      const flyerWidth = zoneWidth * 0.42;
+      const flyerWidth = zoneWidth * 0.36;
       const flyerHeight = flyerWidth * 1.414;
 
       poleFlyersZone.style.width = `${zoneWidth.toFixed(1)}px`;
