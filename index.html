@@ -360,12 +360,11 @@
       /* 對準後若不想要虛線框，可刪除下面這行 border */
       border: 1.5px dashed rgba(255, 255, 255, 0.85);
       background: rgba(255, 255, 255, 0.04);
-      transition: background 0.2s ease, transform 0.2s ease, opacity 0.2s ease;
+      transition: background 0.2s ease, opacity 0.2s ease;
     }
 
     .hotspot-link:hover {
       background: rgba(255, 255, 255, 0.22);
-      transform: scale(1.02);
     }
 
     .back-hint {
@@ -438,19 +437,6 @@
             url: "https://www.instagram.com/music_auditor/",
             label: "前往 Instagram @music_auditor"
           }
-        ]
-      }
-2. 在 openZoomReader(index) 裡套用 h.rotate
-找到 openZoomReader(index) 裡建立 spot 的那一段，把 transform 一起設定上去：
-
-JavaScript
-        const angle = h.rotate || 0;
-        spot.style.left = `${h.left}%`;
-        spot.style.top = `${h.top}%`;
-        spot.style.width = `${h.width}%`;
-        spot.style.height = `${h.height}%`;
-        spot.style.transform = `rotate(${angle}deg)`;
-        spot.style.transformOrigin = "center center";
         ]
       }
     ];
@@ -650,10 +636,13 @@ JavaScript
         spot.target = "_blank";
         spot.rel = "noopener noreferrer";
         spot.title = h.label || "開啟外部連結";
+        const angle = h.rotate || 0;
         spot.style.left = `${h.left}%`;
         spot.style.top = `${h.top}%`;
         spot.style.width = `${h.width}%`;
         spot.style.height = `${h.height}%`;
+        spot.style.transform = `rotate(${angle}deg)`;
+        spot.style.transformOrigin = "center center";
 
         spot.addEventListener("click", (e) => {
           e.stopPropagation();
