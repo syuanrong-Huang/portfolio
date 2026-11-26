@@ -683,17 +683,16 @@
           e.stopPropagation();
         });
 
-        // 第 12 張在第一格顯示引導，第 13 張在該圖片顯示，閃 3 下後自動淡出
-        if (idx === 0) {
-          const hint = document.createElement("div");
-          hint.className = "hotspot-hint";
-          hint.innerHTML = `
-            <div class="cursor-ripple"></div>
-            <svg class="cursor-hand" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M11.5 5.5C11.5 4.11929 12.6193 3 14 3C15.3807 3 16.5 4.11929 16.5 5.5V13.5H17.5C18.6046 13.5 19.5 14.3954 19.5 15.5V16.2H20.5C21.6046 16.2 22.5 17.0954 22.5 18.2V19C23.6046 19 24.5 19.8954 24.5 21V24.5C24.5 27.5376 22.0376 30 19 30H14.5C11.8 30 9.8 28.4 8.4 26.2L5.3 21.3C4.5 20.1 4.9 18.5 6.1 17.7C7.2 17 8.7 17.3 9.5 18.4L11.5 21V5.5Z" fill="#FFFFFF" stroke="#18181B" stroke-width="2" stroke-linejoin="round"/>
-            </svg>
-          `;
-          spot.appendChild(hint);
+        // 第 12 張 6 張小圖與第 13 張圖片都顯示引導，閃 3 下後自動淡出
+        const hint = document.createElement("div");
+        hint.className = "hotspot-hint";
+        hint.innerHTML = `
+          <div class="cursor-ripple"></div>
+          <svg class="cursor-hand" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M11.5 5.5C11.5 4.11929 12.6193 3 14 3C15.3807 3 16.5 4.11929 16.5 5.5V13.5H17.5C18.6046 13.5 19.5 14.3954 19.5 15.5V16.2H20.5C21.6046 16.2 22.5 17.0954 22.5 18.2V19C23.6046 19 24.5 19.8954 24.5 21V24.5C24.5 27.5376 22.0376 30 19 30H14.5C11.8 30 9.8 28.4 8.4 26.2L5.3 21.3C4.5 20.1 4.9 18.5 6.1 17.7C7.2 17 8.7 17.3 9.5 18.4L11.5 21V5.5Z" fill="#FFFFFF" stroke="#18181B" stroke-width="2" stroke-linejoin="round"/>
+          </svg>
+        `;
+        spot.appendChild(hint);
         }
 
         readerCard.appendChild(spot);
