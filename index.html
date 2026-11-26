@@ -49,7 +49,7 @@
       pointer-events: none;
     }
 
-    /* ================= 2. 電線桿上的 9 張傳單容器 ================= */
+    /* ================= 2. 電線桿上的 13 張傳單容器 ================= */
     .pole-flyers-zone {
       position: absolute;
       left: 70.5%;
@@ -80,7 +80,7 @@
       filter: brightness(1.04) !important;
     }
 
-    /* ================= 3. 微風吹拂紙張飄動動畫（5秒週期，單段膠帶款專用） ================= */
+    /* ================= 3. 微風吹拂紙張飄動動畫（單段膠帶款專用） ================= */
     @keyframes paperFlutterA {
       0%, 42%, 100% {
         transform: rotateX(0deg) rotateY(0deg) skewX(0deg);
@@ -269,7 +269,7 @@
       animation: cursorTap 1.6s infinite ease-in-out;
     }
 
-    /* ================= 5. Zoom-in 放大閱讀視窗（支援局部放大檢視小字） ================= */
+    /* ================= 5. Zoom-in 放大閱讀視窗（支援局部放大與小圖超連結熱區） ================= */
     .reader-overlay {
       position: fixed;
       inset: 0;
@@ -347,6 +347,27 @@
       cursor: zoom-out;
     }
 
+    /* 局部放大時暫時隱藏熱區，避免座標偏移；還原大小後可點擊連結 */
+    .reader-card.is-inspected .hotspot-link {
+      pointer-events: none;
+      opacity: 0;
+    }
+
+    .hotspot-link {
+      position: absolute;
+      z-index: 25;
+      cursor: pointer;
+      /* 調好位置後若想讓框線完全隱藏，可將下面這行 border 刪除 */
+      border: 1.5px dashed rgba(255, 255, 255, 0.8);
+      background: rgba(255, 255, 255, 0.06);
+      transition: background 0.2s ease, transform 0.2s ease, opacity 0.2s ease;
+    }
+
+    .hotspot-link:hover {
+      background: rgba(255, 255, 255, 0.22);
+      transform: scale(1.02);
+    }
+
     .back-hint {
       margin-top: 12px;
       font-size: 12px;
@@ -367,14 +388,14 @@
     <video class="bg-video" id="bgVideo" src="./bg.mp4?v=41" poster="./bg.jpg?v=41" autoplay loop muted playsinline></video>
   </div>
 
-  <!-- 2. 電線桿上的 9 張傳單區 -->
+  <!-- 2. 電線桿上的 13 張傳單區 -->
   <div class="pole-flyers-zone" id="poleFlyersZone"></div>
 
   <!-- 3. Zoom-in 放大閱讀視窗 -->
   <div class="reader-overlay" id="readerOverlay">
     <button class="btn-close" id="closeBtn" title="返回電線桿 (ESC)">✕</button>
     <div class="reader-card" id="readerCard"></div>
-    <div class="back-hint" id="backHint">點擊傳單可局部放大，點擊空白處或按 ESC 返回電線桿</div>
+    <div class="back-hint" id="backHint">點擊傳單可局部放大，點擊標示區塊可開啟外部連結，點空白處或按 ESC 返回</div>
   </div>
 
   <script>
@@ -390,24 +411,43 @@
       { imageUrl: "./9.png?v=1126" },
       { imageUrl: "./10.png?v=1126" },
       { imageUrl: "./11.png?v=1126" },
-      { imageUrl: "./12.png?v=1126" },
-      { imageUrl: "./13.png?v=1126" }
+      {
+        // 第 12 張：社群文案（6 張小圖分別對應 6 個貼文連結）
+        imageUrl: "./12.png?v=1126",
+        hotspots: [
+          // 上排左、中、右
+          { left:  8.5, top: 53.0, width: 25.5, height: 18.0, url: "https://www.facebook.com/share/p/1HVugV9jYM/", label: "Facebook 貼文 1" },
+          { left: 37.2, top: 53.0, width: 25.5, height: 18.0, url: "https://www.facebook.com/share/p/1BjF7ULEay/", label: "Facebook 貼文 2" },
+          { left: 66.0, top: 53.0, width: 25.5, height: 18.0, url: "https://www.facebook.com/share/p/18vQmUZkKJ/", label: "Facebook 貼文 3" },
+          // 下排左、中、右
+          { left:  8.5, top: 73.5, width: 25.5, height: 18.0, url: "https://www.instagram.com/p/Da1u2tIEy8d/?img_index=1", label: "Instagram 貼文 1" },
+          { left: 37.2, top: 73.5, width: 25.5, height: 18.0, url: "https://www.instagram.com/p/DajtT0-gc28/?img_index=1", label: "Instagram 貼文 2" },
+          { left: 66.0, top: 73.5, width: 25.5, height: 18.0, url: "https://www.instagram.com/reel/DYQ8EmTjZI6/", label: "Instagram Reels" }
+        ]
+      },
+      {
+        // 第 13 張：音樂媒體（圖片區塊對應 IG 帳號）
+        imageUrl: "./13.png?v=1126",
+        hotspots: [
+          { left: 9.0, top: 51.0, width: 82.0, height: 42.0, url: "https://www.instagram.com/music_auditor/", label: "前往 Instagram @music_auditor" }
+        ]
+      }
     ];
 
     const POLE_LAYOUT = [
       { x:  -8, y:  8.5, rot: -2, doubleTape: true  },
       { x:  16, y: 15.5, rot:  3, doubleTape: false },
       { x: -17, y: 22.5, rot: -3, doubleTape: false },
-      { x:  15, y: 29.5, rot:  4, doubleTape: false  },
+      { x:  15, y: 29.5, rot:  4, doubleTape: false },
       { x:  -4, y: 36.5, rot: -2, doubleTape: false },
       { x:  17, y: 43.5, rot:  3, doubleTape: false },
       { x: -18, y: 48.5, rot: -3, doubleTape: true  },
       { x:  14, y: 57.5, rot:  2, doubleTape: false },
       { x: -16, y: 64.5, rot: -4, doubleTape: false },
-      { x:   3, y: 71.5, rot:  3, doubleTape: false  },
+      { x:   3, y: 71.5, rot:  3, doubleTape: false },
       { x: -17, y: 78.5, rot: -2, doubleTape: false },
       { x:  16, y: 85.5, rot:  4, doubleTape: true  },
-      { x:  -9, y: 92.5, rot: -3, doubleTape: true }
+      { x:  -9, y: 92.5, rot: -3, doubleTape: true  }
     ];
 
     const TAPE_COLORS = [
@@ -578,6 +618,29 @@
       const item = FLYERS_DATA[index];
       readerCard.innerHTML = `<img src="${item.imageUrl}" alt="" />`;
       resetInspection();
+
+      const spots = item.hotspots || [];
+      spots.forEach((h) => {
+        if (!h || !h.url) return;
+
+        const spot = document.createElement("a");
+        spot.className = "hotspot-link";
+        spot.href = h.url;
+        spot.target = "_blank";
+        spot.rel = "noopener noreferrer";
+        spot.title = h.label || "開啟外部連結";
+        spot.style.left = `${h.left}%`;
+        spot.style.top = `${h.top}%`;
+        spot.style.width = `${h.width}%`;
+        spot.style.height = `${h.height}%`;
+
+        spot.addEventListener("click", (e) => {
+          e.stopPropagation();
+        });
+
+        readerCard.appendChild(spot);
+      });
+
       document.body.classList.add("zoomed");
     }
 
