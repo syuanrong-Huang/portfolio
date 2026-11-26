@@ -416,27 +416,41 @@
         imageUrl: "./12.png?v=1126",
         hotspots: [
           // 上排左、中、右
-          { left:  6.4, top: 44.2, width: 26.2, height: 19.6, url: "https://www.facebook.com/share/p/1HVugV9jYM/", label: "Facebook 貼文 1" },
-          { left: 36.8, top: 44.2, width: 26.4, height: 19.6, url: "https://www.facebook.com/share/p/1BjF7ULEay/", label: "Facebook 貼文 2" },
-          { left: 67.2, top: 44.2, width: 26.2, height: 19.6, url: "https://www.facebook.com/share/p/18vQmUZkKJ/", label: "Facebook 貼文 3" },
+          { left:  6.8, top: 44.6, width: 25.6, height: 19.2, url: "https://www.facebook.com/share/p/1HVugV9jYM/", label: "Facebook 貼文 1" },
+          { left: 37.0, top: 44.6, width: 25.8, height: 19.2, url: "https://www.facebook.com/share/p/1BjF7ULEay/", label: "Facebook 貼文 2" },
+          { left: 67.2, top: 44.6, width: 25.6, height: 19.2, url: "https://www.facebook.com/share/p/18vQmUZkKJ/", label: "Facebook 貼文 3" },
           // 下排左、中、右
-          { left:  6.4, top: 67.6, width: 26.2, height: 19.6, url: "https://www.instagram.com/p/Da1u2tIEy8d/?img_index=1", label: "Instagram 貼文 1" },
-          { left: 36.8, top: 67.6, width: 26.4, height: 19.6, url: "https://www.instagram.com/p/DajtT0-gc28/?img_index=1", label: "Instagram 貼文 2" },
-          { left: 67.2, top: 67.6, width: 26.2, height: 19.6, url: "https://www.instagram.com/reel/DYQ8EmTjZI6/", label: "Instagram Reels" }
+          { left:  6.8, top: 67.4, width: 25.6, height: 19.2, url: "https://www.instagram.com/p/Da1u2tIEy8d/?img_index=1", label: "Instagram 貼文 1" },
+          { left: 37.0, top: 67.4, width: 25.8, height: 19.2, url: "https://www.instagram.com/p/DajtT0-gc28/?img_index=1", label: "Instagram 貼文 2" },
+          { left: 67.2, top: 67.4, width: 25.6, height: 19.2, url: "https://www.instagram.com/reel/DYQ8EmTjZI6/", label: "Instagram Reels" }
         ]
       },
       {
-        // 第 13 張：音樂媒體（點擊左邊 music_auditor 圖片開啟連結）
+        // 第 13 張：音樂媒體（傾斜圖片加上 rotate 跟著旋轉對齊）
         imageUrl: "./13.png?v=1126",
         hotspots: [
           {
-            left: 11.2,
-            top: 34.5,
-            width: 36.2,
-            height: 51.0,
+            left: 12.2,
+            top: 35.8,
+            width: 33.8,
+            height: 49.0,
+            rotate: -10,
             url: "https://www.instagram.com/music_auditor/",
             label: "前往 Instagram @music_auditor"
           }
+        ]
+      }
+2. 在 openZoomReader(index) 裡套用 h.rotate
+找到 openZoomReader(index) 裡建立 spot 的那一段，把 transform 一起設定上去：
+
+JavaScript
+        const angle = h.rotate || 0;
+        spot.style.left = `${h.left}%`;
+        spot.style.top = `${h.top}%`;
+        spot.style.width = `${h.width}%`;
+        spot.style.height = `${h.height}%`;
+        spot.style.transform = `rotate(${angle}deg)`;
+        spot.style.transformOrigin = "center center";
         ]
       }
     ];
