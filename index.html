@@ -357,9 +357,9 @@
       position: absolute;
       z-index: 25;
       cursor: pointer;
-      /* 調好位置後若想讓框線完全隱藏，可將下面這行 border 刪除 */
-      border: 1.5px dashed rgba(255, 255, 255, 0.8);
-      background: rgba(255, 255, 255, 0.06);
+      /* 對準後若不想要虛線框，可刪除下面這行 border */
+      border: 1.5px dashed rgba(255, 255, 255, 0.85);
+      background: rgba(255, 255, 255, 0.04);
       transition: background 0.2s ease, transform 0.2s ease, opacity 0.2s ease;
     }
 
@@ -416,20 +416,27 @@
         imageUrl: "./12.png?v=1126",
         hotspots: [
           // 上排左、中、右
-          { left:  8.5, top: 53.0, width: 25.5, height: 18.0, url: "https://www.facebook.com/share/p/1HVugV9jYM/", label: "Facebook 貼文 1" },
-          { left: 37.2, top: 53.0, width: 25.5, height: 18.0, url: "https://www.facebook.com/share/p/1BjF7ULEay/", label: "Facebook 貼文 2" },
-          { left: 66.0, top: 53.0, width: 25.5, height: 18.0, url: "https://www.facebook.com/share/p/18vQmUZkKJ/", label: "Facebook 貼文 3" },
+          { left:  6.0, top: 43.2, width: 27.2, height: 21.8, url: "https://www.facebook.com/share/p/1HVugV9jYM/", label: "Facebook 貼文 1" },
+          { left: 36.2, top: 43.2, width: 27.5, height: 21.8, url: "https://www.facebook.com/share/p/1BjF7ULEay/", label: "Facebook 貼文 2" },
+          { left: 66.8, top: 43.2, width: 27.2, height: 21.8, url: "https://www.facebook.com/share/p/18vQmUZkKJ/", label: "Facebook 貼文 3" },
           // 下排左、中、右
-          { left:  8.5, top: 73.5, width: 25.5, height: 18.0, url: "https://www.instagram.com/p/Da1u2tIEy8d/?img_index=1", label: "Instagram 貼文 1" },
-          { left: 37.2, top: 73.5, width: 25.5, height: 18.0, url: "https://www.instagram.com/p/DajtT0-gc28/?img_index=1", label: "Instagram 貼文 2" },
-          { left: 66.0, top: 73.5, width: 25.5, height: 18.0, url: "https://www.instagram.com/reel/DYQ8EmTjZI6/", label: "Instagram Reels" }
+          { left:  6.0, top: 67.2, width: 27.2, height: 21.8, url: "https://www.instagram.com/p/Da1u2tIEy8d/?img_index=1", label: "Instagram 貼文 1" },
+          { left: 36.2, top: 67.2, width: 27.5, height: 21.8, url: "https://www.instagram.com/p/DajtT0-gc28/?img_index=1", label: "Instagram 貼文 2" },
+          { left: 66.8, top: 67.2, width: 27.2, height: 21.8, url: "https://www.instagram.com/reel/DYQ8EmTjZI6/", label: "Instagram Reels" }
         ]
       },
       {
-        // 第 13 張：音樂媒體（圖片區塊對應 IG 帳號）
+        // 第 13 張：音樂媒體（點擊左邊 music_auditor 圖片開啟連結）
         imageUrl: "./13.png?v=1126",
         hotspots: [
-          { left: 9.0, top: 51.0, width: 82.0, height: 42.0, url: "https://www.instagram.com/music_auditor/", label: "前往 Instagram @music_auditor" }
+          {
+            left: 10.5,
+            top: 31.5,
+            width: 39.0,
+            height: 55.5,
+            url: "https://www.instagram.com/music_auditor/",
+            label: "前往 Instagram @music_auditor"
+          }
         ]
       }
     ];
